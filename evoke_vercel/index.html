@@ -530,7 +530,7 @@ function selEv(id){DB.curEv=id;renderEL();renderDet(id);}
 function renderDet(id){
   const ev=DB.events[id];if(!ev)return;
   const songs=ev.songs||[],used=ev.usedCredits,total=ev.credits,pct=total>0?Math.round(used/total*100):0;
-  const base=window.location.origin;
+  const base=window.location.hostname.includes('vercel.app')&&!window.location.hostname.includes('evoke-ecru')?'https://evoke-ecru.vercel.app':window.location.origin;
   document.getElementById('event-detail').style.display='block';
   document.getElementById('link-guests').textContent=base+'/mariage/'+id;
   document.getElementById('link-gallery').textContent=base+'/galerie/'+id+'?token='+ev.token;
