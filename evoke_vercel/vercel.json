@@ -4,8 +4,8 @@
     { "source": "/api/poll",         "destination": "/api/poll" },
     { "source": "/api/upload",       "destination": "/api/upload" },
     { "source": "/api/init-credits", "destination": "/api/init-credits" },
-    { "source": "/mariage/(.*)",     "destination": "/public/index.html" },
-    { "source": "/galerie/(.*)",     "destination": "/public/index.html" },
-    { "source": "/(.*)",             "destination": "/public/index.html" }
+    { "source": "/mariage/(.*)",     "destination": "/index.html" },
+    { "source": "/galerie/(.*)",     "destination": "/index.html" },
+    { "source": "/(.*)",             "destination": "/index.html" }
   ]
 }

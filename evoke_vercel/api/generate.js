@@ -83,7 +83,27 @@ export default async function handler(req, res) {
   // ─────────────────────────────────────────────────────────────────────────
 
   // ── Étape 2 : Générer la musique avec les paroles ─────────────────────────
-  const prompt = `A beautiful ${musicStyle} wedding song, ${voiceLabel} voice, emotional and celebratory, 90 seconds.`;
+  // Prompt adapté au style pour orienter MusicGPT correctement
+  const stylePrompts = {
+    'blues':             `A soulful blues wedding song, ${voiceLabel} voice, slow and emotional, heartfelt guitar, deep feeling, 90 seconds.`,
+    'jazz':              `An intimate jazz wedding song, ${voiceLabel} voice, romantic piano and double bass, warm and sophisticated, 90 seconds.`,
+    'hip-hop':           `A hip-hop wedding song, ${voiceLabel} voice, modern beats, rhythmic flow, punchy and celebratory, 90 seconds.`,
+    'reggae':            `A reggae wedding song, ${voiceLabel} voice, upbeat positive vibes, jamaican rhythm, joyful and warm, 90 seconds.`,
+    'rock':              `An acoustic rock wedding song, ${voiceLabel} voice, powerful guitar, anthemic and emotional, 90 seconds.`,
+    'gospel':            `A gospel wedding song, ${voiceLabel} voice, uplifting choir energy, joyful and spiritual, 90 seconds.`,
+    'soul r&b':          `A soul and r&b wedding song, ${voiceLabel} voice, smooth groove, emotional and romantic, 90 seconds.`,
+    'orchestral classical': `A cinematic orchestral wedding song, ${voiceLabel} voice, grand strings and piano, majestic and emotional, 90 seconds.`,
+    'country':           `A country wedding song, ${voiceLabel} voice, acoustic guitar, heartfelt and warm, southern charm, 90 seconds.`,
+    'bossa nova':        `A bossa nova wedding song, ${voiceLabel} voice, soft brazilian guitar, intimate and romantic, 90 seconds.`,
+    'acoustic folk':     `An acoustic folk wedding song, ${voiceLabel} voice, fingerpicking guitar, storytelling, warm and tender, 90 seconds.`,
+    'electronic pop':    `An electronic pop wedding song, ${voiceLabel} voice, dreamy synths, modern and romantic, gentle beats, 90 seconds.`,
+    'lo-fi':             `A lo-fi wedding song, ${voiceLabel} voice, soft warm beats, nostalgic and tender, chill and emotional, 90 seconds.`,
+    'french chanson':    `A french chanson wedding song, ${voiceLabel} voice, poetic and romantic, accordion and piano, heartfelt, 90 seconds.`,
+    'afrobeat':          `An afrobeat wedding song, ${voiceLabel} voice, west african rhythms, upbeat and joyful, celebratory energy, 90 seconds.`,
+    'pop':               `A romantic pop wedding song, ${voiceLabel} voice, catchy and emotional, modern production, heartfelt, 90 seconds.`,
+    'romantic pop':      `A romantic pop wedding song, ${voiceLabel} voice, emotional piano ballad, heartfelt and celebratory, 90 seconds.`,
+  };
+  const prompt = stylePrompts[musicStyle] || `A beautiful ${musicStyle} wedding song, ${voiceLabel} voice, emotional and celebratory, 90 seconds.`;
 
   try {
     const r = await fetch(`${BASE}/MusicAI`, {
