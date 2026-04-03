@@ -4,6 +4,7 @@
     { "src": "/api/poll",         "dest": "/api/poll.js" },
     { "src": "/api/upload",       "dest": "/api/upload.js" },
     { "src": "/api/init-credits", "dest": "/api/init-credits.js" },
+    { "src": "/api/event",        "dest": "/api/event.js" },
     { "src": "/mariage/(.*)",     "dest": "/index.html" },
     { "src": "/galerie/(.*)",     "dest": "/index.html" },
     { "src": "/(.*)",             "dest": "/index.html" }

@@ -372,12 +372,35 @@ const DB={adminPwd:'admin123',events:{},adminLoggedIn:false,curEv:null,guestEv:n
 function loadDB(){try{const s=localStorage.getItem('evoke_v3');if(s){const p=JSON.parse(s);DB.adminPwd=p.adminPwd||'admin123';DB.events=p.events||{};}}catch(e){}}
 function saveDB(){localStorage.setItem('evoke_v3',JSON.stringify({adminPwd:DB.adminPwd,events:DB.events}));}
 function sp(n){stopAudio();document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-'+n).classList.add('active');}
-function route(){
+async function route(){
   const path=window.location.pathname,params=new URLSearchParams(window.location.search);
   const mm=path.match(/\/mariage\/([^\/]+)/);
-  if(mm){const ev=DB.events[mm[1]];if(!ev){sp('notfound');return;}DB.guestEv=mm[1];initGuest(ev);sp('guest');return;}
+  if(mm){
+    const id=mm[1];
+    // Chercher d'abord dans localStorage, sinon fetch Supabase
+    let ev=DB.events[id];
+    if(!ev){
+      try{
+        const r=await fetch('/api/event?id='+encodeURIComponent(id));
+        if(r.ok){ev=await r.json();DB.events[id]=ev;saveDB();}
+      }catch(e){}
+    }
+    if(!ev){sp('notfound');return;}
+    DB.guestEv=id;initGuest(ev);sp('guest');return;
+  }
   const gm=path.match(/\/galerie\/([^\/]+)/);
-  if(gm){const ev=DB.events[gm[1]],tok=params.get('token');if(!ev||ev.token!==tok){sp('notfound');return;}DB.galEv=gm[1];initGal(ev);sp('gallery');return;}
+  if(gm){
+    const id=gm[1],tok=params.get('token');
+    let ev=DB.events[id];
+    if(!ev){
+      try{
+        const r=await fetch('/api/event?id='+encodeURIComponent(id));
+        if(r.ok){ev=await r.json();DB.events[id]=ev;saveDB();}
+      }catch(e){}
+    }
+    if(!ev||ev.token!==tok){sp('notfound');return;}
+    DB.galEv=id;initGal(ev);sp('gallery');return;
+  }
   sp('admin');
 }
 function initGuest(ev){
@@ -451,6 +474,8 @@ async function saveToGallery(){
   if(!ev.songs)ev.songs=[];
   ev.songs.unshift({id:Date.now().toString(),title:'Mélodie de '+name,author:name,message:msg,style,voice,url:finalUrl,createdAt:new Date().toISOString()});
   ev.lastGenerated=null;saveDB();
+  // Sync l'événement mis à jour sur Supabase
+  fetch('/api/event',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(ev)}).catch(()=>{});
   stopAudio();document.getElementById('result-wrap').classList.remove('active');
   document.getElementById('conf-name').textContent=name;
   document.getElementById('conf-wrap').classList.add('active');
@@ -526,15 +551,19 @@ function newEvent(){
   if(!p1||!p2){toast('Entrez les deux prénoms');return;}
   const slug=(p1+'-'+p2).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,'-').replace(/-+/g,'-');
   const id=slug+'-'+Date.now().toString(36),token=Math.random().toString(36).substring(2)+Math.random().toString(36).substring(2);
-  DB.events[id]={id,couple:p1+' & '+p2,p1,p2,date,guests,credits,usedCredits:0,token,songs:[],createdAt:new Date().toISOString()};
+  const evObj={id,couple:p1+' & '+p2,p1,p2,date,guests,credits,usedCredits:0,token,songs:[],createdAt:new Date().toISOString()};
+  DB.events[id]=evObj;
   saveDB();
-  // Sync crédits dans Supabase pour la vérification serveur
+  // Sauvegarder dans Supabase pour accès multi-appareils
+  fetch('/api/event',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(evObj)}).catch(()=>{});
+  // Sync crédits dans Supabase
   fetch('/api/init-credits',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({event_id:id,credits})}).catch(()=>{});
   ['np1','np2','ndate','nguests','ncredits'].forEach(x=>document.getElementById(x).value='');
   stab('events',document.getElementById('tb-ev'));renderEL();selEv(id);toast('✦ Événement créé !');
 }
 function delEv(id){
   if(!confirm('Supprimer cet événement et toutes ses musiques ?'))return;
+  fetch('/api/event?id='+encodeURIComponent(id),{method:'DELETE'}).catch(()=>{});
   delete DB.events[id];if(DB.curEv===id){DB.curEv=null;document.getElementById('event-detail').style.display='none';}
   saveDB();renderEL();toast('Événement supprimé');
 }
