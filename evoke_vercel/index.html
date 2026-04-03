@@ -223,31 +223,11 @@ audio{width:100%;margin-bottom:1.2rem;accent-color:var(--green2);}
   </div>
   <div class="fs">
     <div class="fc">
-      <div class="cl"><div class="cli">✍️</div>Votre message</div>
-      <textarea class="fta" id="input-message" placeholder="Écrivez ce que vous souhaitez leur dire…"></textarea>
+      <div class="cl"><div class="cli">✍️</div>Votre message &amp; style souhaité</div>
+      <textarea class="fta" id="input-message" placeholder="Écrivez votre message et précisez le style souhaité… ex: Je vous souhaite tout le bonheur du monde, style jazz romantique"></textarea>
       <input class="fin" id="input-name" type="text" placeholder="Votre prénom ou « La famille Martin »">
     </div>
-    <div class="fc">
-      <div class="cl"><div class="cli">🎵</div>Style musical</div>
-      <div class="chips">
-        <input type="radio" name="style" id="s1" value="acoustique folk" class="cin"><label for="s1" class="clb">Acoustique folk</label>
-        <input type="radio" name="style" id="s2" value="afrobeat" class="cin"><label for="s2" class="clb">Afrobeat</label>
-        <input type="radio" name="style" id="s3" value="blues" class="cin"><label for="s3" class="clb">Blues</label>
-        <input type="radio" name="style" id="s4" value="bossa nova" class="cin"><label for="s4" class="clb">Bossa nova</label>
-        <input type="radio" name="style" id="s5" value="classique orchestral" class="cin"><label for="s5" class="clb">Classique</label>
-        <input type="radio" name="style" id="s6" value="country" class="cin"><label for="s6" class="clb">Country</label>
-        <input type="radio" name="style" id="s7" value="électro doux" class="cin"><label for="s7" class="clb">Électro doux</label>
-        <input type="radio" name="style" id="s8" value="gospel" class="cin"><label for="s8" class="clb">Gospel</label>
-        <input type="radio" name="style" id="s9" value="jazz intime" class="cin"><label for="s9" class="clb">Jazz</label>
-        <input type="radio" name="style" id="s10" value="lo-fi chill" class="cin"><label for="s10" class="clb">Lo-fi chill</label>
-        <input type="radio" name="style" id="s11" value="pop romantique" class="cin" checked><label for="s11" class="clb">Pop romantique</label>
-        <input type="radio" name="style" id="s12" value="rap & hip-hop" class="cin"><label for="s12" class="clb">Rap & Hip-hop</label>
-        <input type="radio" name="style" id="s13" value="reggae" class="cin"><label for="s13" class="clb">Reggae</label>
-        <input type="radio" name="style" id="s14" value="rock acoustique" class="cin"><label for="s14" class="clb">Rock acoustique</label>
-        <input type="radio" name="style" id="s15" value="soul & r&b" class="cin"><label for="s15" class="clb">Soul & R&B</label>
-        <input type="radio" name="style" id="s16" value="variété française" class="cin"><label for="s16" class="clb">Variété française</label>
-      </div>
-    </div>
+
     <div class="fc">
       <div class="cl"><div class="cli">🎤</div>Voix</div>
       <div class="vg">
@@ -278,16 +258,24 @@ audio{width:100%;margin-bottom:1.2rem;accent-color:var(--green2);}
       </div>
     </div>
   </div>
-</div>
 
-<!-- GALERIE -->
-<div class="noc" id="noc-wrap">
+  <div class="conf" id="conf-wrap">
+    <div class="confc">
+      <div class="conf-icon">✦</div>
+      <div class="conf-title">Merci <span class="conf-name" id="conf-name"></span> —<br>ton œuvre est en route vers les mariés.</div>
+      <div class="conf-sub">Ta mélodie a rejoint la galerie du mariage.</div>
+      <button class="bnew" onclick="newComposition()">♪ &nbsp;Composer une nouvelle mélodie</button>
+    </div>
+  </div>
+
+  <div class="noc" id="noc-wrap">
     <div class="nocc">
       <div class="noc-icon">✦</div>
       <div class="noc-title">Toutes les mélodies ont été composées.</div>
       <div class="noc-sub">Le nombre de créations pour ce mariage est atteint.<br>Merci d'avoir participé à cette belle journée.</div>
     </div>
   </div>
+</div>
 
 <div class="page" id="page-gallery">
   <div class="gt">
@@ -383,13 +371,36 @@ audio{width:100%;margin-bottom:1.2rem;accent-color:var(--green2);}
 const DB={adminPwd:'admin123',events:{},adminLoggedIn:false,curEv:null,guestEv:null,galEv:null};
 function loadDB(){try{const s=localStorage.getItem('evoke_v3');if(s){const p=JSON.parse(s);DB.adminPwd=p.adminPwd||'admin123';DB.events=p.events||{};}}catch(e){}}
 function saveDB(){localStorage.setItem('evoke_v3',JSON.stringify({adminPwd:DB.adminPwd,events:DB.events}));}
-function sp(n){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-'+n).classList.add('active');}
-function route(){
+function sp(n){stopAudio();document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-'+n).classList.add('active');}
+async function route(){
   const path=window.location.pathname,params=new URLSearchParams(window.location.search);
   const mm=path.match(/\/mariage\/([^\/]+)/);
-  if(mm){const ev=DB.events[mm[1]];if(!ev){sp('notfound');return;}DB.guestEv=mm[1];initGuest(ev);sp('guest');return;}
+  if(mm){
+    const id=mm[1];
+    // Chercher d'abord dans localStorage, sinon fetch Supabase
+    let ev=DB.events[id];
+    if(!ev){
+      try{
+        const r=await fetch('/api/event?id='+encodeURIComponent(id));
+        if(r.ok){ev=await r.json();DB.events[id]=ev;saveDB();}
+      }catch(e){}
+    }
+    if(!ev){sp('notfound');return;}
+    DB.guestEv=id;initGuest(ev);sp('guest');return;
+  }
   const gm=path.match(/\/galerie\/([^\/]+)/);
-  if(gm){const ev=DB.events[gm[1]],tok=params.get('token');if(!ev||ev.token!==tok){sp('notfound');return;}DB.galEv=gm[1];initGal(ev);sp('gallery');return;}
+  if(gm){
+    const id=gm[1],tok=params.get('token');
+    let ev=DB.events[id];
+    if(!ev){
+      try{
+        const r=await fetch('/api/event?id='+encodeURIComponent(id));
+        if(r.ok){ev=await r.json();DB.events[id]=ev;saveDB();}
+      }catch(e){}
+    }
+    if(!ev||ev.token!==tok){sp('notfound');return;}
+    DB.galEv=id;initGal(ev);sp('gallery');return;
+  }
   sp('admin');
 }
 function initGuest(ev){
@@ -404,7 +415,7 @@ function initGuest(ev){
 async function generateMusic(){
   const ev=DB.events[DB.guestEv];if(!ev)return;
   const msg=document.getElementById('input-message').value.trim(),name=document.getElementById('input-name').value.trim()||'Un invité';
-  const style=document.querySelector('input[name="style"]:checked')?.value||'pop romantique',voice=document.querySelector('input[name="voice"]:checked')?.value||'female';
+  const style='',voice=document.querySelector('input[name="voice"]:checked')?.value||'female';
   if(!msg){toast('Écrivez votre message d\'abord');return;}
   if(msg.length>500){toast('Message trop long (500 caractères max)');return;}
   if(ev.credits-ev.usedCredits<=0){document.querySelector('.fs').style.display='none';document.querySelector('.hs').style.display='none';document.getElementById('noc-wrap').classList.add('active');return;}
@@ -439,7 +450,13 @@ async function generateMusic(){
     // Fallback démo si pas d'URL
     if(!url){await new Promise(res=>setTimeout(res,1000));url=genDemo();}
 
-    ev.lastGenerated={name:cleanN,msg,style,voice,url};
+    // Décrémenter le crédit dès que la musique est générée
+  ev.usedCredits++;
+  const remAfter=ev.credits-ev.usedCredits;
+  document.getElementById('credits-hero').textContent=remAfter;
+  document.getElementById('ncred').textContent=remAfter+' crédits';
+  saveDB();
+  ev.lastGenerated={name:cleanN,msg,style,voice,url};
     document.getElementById('result-title').textContent='Mélodie de '+cleanN;
     document.getElementById('result-meta').textContent=style+' · '+(voice==='female'?'Voix féminine':'Voix masculine')+' · 1 min 30';
     document.getElementById('result-audio').src=url;
@@ -448,17 +465,18 @@ async function generateMusic(){
   document.getElementById('loading').classList.remove('active');
   document.getElementById('btn-cta').disabled=false;
 }
-function rForm(){document.querySelector('.fs').style.display='';document.querySelector('.hs').style.display='';}
+function stopAudio(){const a=document.getElementById('result-audio');a.pause();a.currentTime=0;a.src='';}
+function rForm(){stopAudio();document.querySelector('.fs').style.display='';document.querySelector('.hs').style.display='';}
 async function saveToGallery(){
   const ev=DB.events[DB.guestEv];if(!ev||!ev.lastGenerated)return;
   const{name,msg,style,voice,url}=ev.lastGenerated;let finalUrl=url;
   try{const r=await fetch('/api/upload',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({audioUrl:url,author:name,style})});if(r.ok){const d=await r.json();finalUrl=d.publicUrl||url;}}catch(e){}
   if(!ev.songs)ev.songs=[];
   ev.songs.unshift({id:Date.now().toString(),title:'Mélodie de '+name,author:name,message:msg,style,voice,url:finalUrl,createdAt:new Date().toISOString()});
-  ev.usedCredits++;ev.lastGenerated=null;saveDB();
-  const rem=ev.credits-ev.usedCredits;
-  document.getElementById('credits-hero').textContent=rem;document.getElementById('ncred').textContent=rem+' crédits';
-  document.getElementById('result-wrap').classList.remove('active');
+  ev.lastGenerated=null;saveDB();
+  // Sync l'événement mis à jour sur Supabase
+  fetch('/api/event',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(ev)}).catch(()=>{});
+  stopAudio();document.getElementById('result-wrap').classList.remove('active');
   document.getElementById('conf-name').textContent=name;
   document.getElementById('conf-wrap').classList.add('active');
   document.getElementById('btn-cta').disabled=false;
@@ -533,15 +551,19 @@ function newEvent(){
   if(!p1||!p2){toast('Entrez les deux prénoms');return;}
   const slug=(p1+'-'+p2).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,'-').replace(/-+/g,'-');
   const id=slug+'-'+Date.now().toString(36),token=Math.random().toString(36).substring(2)+Math.random().toString(36).substring(2);
-  DB.events[id]={id,couple:p1+' & '+p2,p1,p2,date,guests,credits,usedCredits:0,token,songs:[],createdAt:new Date().toISOString()};
+  const evObj={id,couple:p1+' & '+p2,p1,p2,date,guests,credits,usedCredits:0,token,songs:[],createdAt:new Date().toISOString()};
+  DB.events[id]=evObj;
   saveDB();
-  // Sync crédits dans Supabase pour la vérification serveur
+  // Sauvegarder dans Supabase pour accès multi-appareils
+  fetch('/api/event',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(evObj)}).catch(()=>{});
+  // Sync crédits dans Supabase
   fetch('/api/init-credits',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({event_id:id,credits})}).catch(()=>{});
   ['np1','np2','ndate','nguests','ncredits'].forEach(x=>document.getElementById(x).value='');
   stab('events',document.getElementById('tb-ev'));renderEL();selEv(id);toast('✦ Événement créé !');
 }
 function delEv(id){
   if(!confirm('Supprimer cet événement et toutes ses musiques ?'))return;
+  fetch('/api/event?id='+encodeURIComponent(id),{method:'DELETE'}).catch(()=>{});
   delete DB.events[id];if(DB.curEv===id){DB.curEv=null;document.getElementById('event-detail').style.display='none';}
   saveDB();renderEL();toast('Événement supprimé');
 }
