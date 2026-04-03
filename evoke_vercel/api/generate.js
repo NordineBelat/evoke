@@ -49,28 +49,34 @@ export default async function handler(req, res) {
         headers: { 'Authorization': `Bearer ${GROQ}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({
           model: 'llama3-8b-8192',
-          max_tokens: 400,
-          messages: [{
-            role: 'user',
-            content: `You are a professional wedding song lyricist.
+          max_tokens: 500,
+          response_format: { type: 'json_object' },
+          messages: [
+            {
+              role: 'system',
+              content: 'You are a professional wedding song lyricist. Always respond with valid JSON only, no markdown, no explanation.'
+            },
+            {
+              role: 'user',
+              content: `A wedding guest wrote this message: "${guestMessage}"
 
-A wedding guest wrote this message: "${guestMessage}"
+Tasks:
+1. Detect the music style mentioned (if any). If none mentioned, use "romantic pop".
+2. Write complete wedding song lyrics in FRENCH with sections: [verse], [chorus], [verse], [chorus], [bridge], [chorus].
+3. Naturally weave the guest message into the lyrics as inspiration — transform it into beautiful poetic French lyrics.
+4. Keep lyrics warm, emotional, celebratory. Max 200 words.
 
-Your tasks:
-1. Detect the music style mentioned (if any). If none, use "romantic pop".
-2. Write complete wedding song lyrics with: [verse], [chorus], [verse], [chorus], [bridge], [chorus].
-3. Naturally weave the guest's message into the lyrics — do NOT copy it word for word, transform it into beautiful poetic lyrics.
-4. Keep lyrics warm, emotional, celebratory.
-5. Max 250 words.
-
-Respond ONLY with this JSON (no markdown, no explanation):
-{"style":"detected style in english","lyrics":"full lyrics here with section tags"}`
-          }]
+Respond ONLY with this JSON:
+{"style":"detected style in english (e.g. blues, jazz, hip-hop, romantic pop)","lyrics":"full french lyrics here with section tags"}`
+            }
+          ]
         })
       });
       const groqData = await groqRes.json();
       const raw = groqData.choices?.[0]?.message?.content || '';
-      const parsed = JSON.parse(raw.trim());
+      // Nettoyer les backticks markdown si présents
+      const cleaned = raw.replace(/```json|```/g, '').trim();
+      const parsed = JSON.parse(cleaned);
       lyrics = parsed.lyrics || '';
       musicStyle = parsed.style || 'romantic pop';
     } catch (e) {
