@@ -1,34 +1,17 @@
 const BASE = 'https://api.musicgpt.com/api/public/v1';
-
-const STYLE_MAP = {
-  'acoustique folk':      'acoustic folk, fingerpicking guitar, warm, storytelling',
-  'afrobeat':             'afrobeat, west african rhythms, upbeat, percussion, groovy',
-  'blues':                'blues, soulful, electric guitar, emotional, heartfelt',
-  'bossa nova':           'bossa nova, brazilian jazz, soft guitar, romantic, intimate',
-  'classique orchestral': 'orchestral, cinematic, strings, piano, grand, emotional',
-  'country':              'country, acoustic guitar, heartfelt, southern, warm',
-  'électro doux':         'electronic, soft synths, dreamy, ambient pop, gentle beats',
-  'gospel':               'gospel, choir, uplifting, soulful, joyful, spiritual',
-  'jazz intime':          'jazz, intimate, piano, double bass, romantic, lounge',
-  'lo-fi chill':          'lo-fi, chill beats, soft piano, warm, relaxed, nostalgic',
-  'pop romantique':       'romantic pop, emotional, piano, heartfelt ballad, love song',
-  'rap & hip-hop':        'hip-hop, rap, modern beats, rhythmic, urban, storytelling',
-  'reggae':               'reggae, jamaican, upbeat, positive vibes, guitar, rhythm',
-  'rock acoustique':      'acoustic rock, guitar, powerful, emotional, anthemic',
-  'soul & r&b':           'soul, r&b, smooth, emotional vocals, groove, love',
-  'variété française':    'french chanson, romantic, poetic, piano, heartfelt',
-};
+const GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const KEY    = process.env.MUSICGPT_API_KEY;
-  const SB_URL = process.env.SUPABASE_URL;
-  const SB_KEY = process.env.SUPABASE_SERVICE_KEY;
+  const KEY     = process.env.MUSICGPT_API_KEY;
+  const GROQ    = process.env.GROQ_API_KEY;
+  const SB_URL  = process.env.SUPABASE_URL;
+  const SB_KEY  = process.env.SUPABASE_SERVICE_KEY;
 
   if (!KEY) return res.status(500).json({ error: 'API not configured' });
 
-  const { message, name, style, voice, event_id } = req.body || {};
+  const { message, name, voice, event_id } = req.body || {};
   if (!message || message.length < 3) return res.status(400).json({ error: 'Message trop court' });
 
   // ── Vérification crédits Supabase ─────────────────────────────────────────
@@ -41,7 +24,7 @@ export default async function handler(req, res) {
       const rows = await cr.json();
       if (rows && rows.length > 0) {
         const { credits, used } = rows[0];
-        if (used >= credits) return res.status(403).json({ error: 'credits_exhausted', credits, used });
+        if (used >= credits) return res.status(403).json({ error: 'credits_exhausted' });
         await fetch(`${SB_URL}/rest/v1/rpc/increment_used`, {
           method: 'POST',
           headers: { 'Authorization': `Bearer ${SB_KEY}`, 'apikey': SB_KEY, 'Content-Type': 'application/json' },
@@ -52,17 +35,68 @@ export default async function handler(req, res) {
   }
   // ─────────────────────────────────────────────────────────────────────────
 
-  const styleTags  = STYLE_MAP[style?.toLowerCase()] || 'romantic pop, emotional, piano, love song';
   const voiceLabel = voice === 'male' ? 'male' : 'female';
-  const guestLine  = message.trim();
-  const lyrics     = `[verse]\n${guestLine}\n\n[chorus]\n`;
-  const prompt     = `A ${styleTags} wedding song, ${voiceLabel} voice, 90 seconds. Incorporate this personal message in the lyrics: ${guestLine}`;
+  const guestMessage = message.trim();
+
+  // ── Génération des paroles via Groq (gratuit) ─────────────────────────────
+  let lyrics = '';
+  let musicStyle = 'romantic pop';
+
+  if (GROQ) {
+    try {
+      const groqRes = await fetch(GROQ_URL, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${GROQ}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'llama3-8b-8192',
+          max_tokens: 400,
+          messages: [{
+            role: 'user',
+            content: `You are a professional wedding song lyricist.
+
+A wedding guest wrote this message: "${guestMessage}"
+
+Your tasks:
+1. Detect the music style mentioned (if any). If none, use "romantic pop".
+2. Write complete wedding song lyrics with: [verse], [chorus], [verse], [chorus], [bridge], [chorus].
+3. Naturally weave the guest's message into the lyrics — do NOT copy it word for word, transform it into beautiful poetic lyrics.
+4. Keep lyrics warm, emotional, celebratory.
+5. Max 250 words.
+
+Respond ONLY with this JSON (no markdown, no explanation):
+{"style":"detected style in english","lyrics":"full lyrics here with section tags"}`
+          }]
+        })
+      });
+      const groqData = await groqRes.json();
+      const raw = groqData.choices?.[0]?.message?.content || '';
+      const parsed = JSON.parse(raw.trim());
+      lyrics = parsed.lyrics || '';
+      musicStyle = parsed.style || 'romantic pop';
+    } catch (e) {
+      console.warn('[GENERATE] Groq error:', e.message);
+      // Fallback si Groq échoue
+      lyrics = '';
+      musicStyle = 'romantic pop';
+    }
+  }
+  // ─────────────────────────────────────────────────────────────────────────
+
+  const prompt = `A beautiful ${musicStyle} wedding song, ${voiceLabel} voice, emotional and celebratory, 90 seconds.`;
 
   try {
     const r = await fetch(`${BASE}/MusicAI`, {
       method: 'POST',
       headers: { 'Authorization': `Bearer ${KEY}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ prompt, lyrics, music_style: styleTags, gender: voiceLabel, make_instrumental: false, vocal_only: false, output_length: 90 })
+      body: JSON.stringify({
+        prompt,
+        lyrics,
+        music_style: musicStyle,
+        gender: voiceLabel,
+        make_instrumental: false,
+        vocal_only: false,
+        output_length: 90
+      })
     });
 
     const txt = await r.text();
@@ -72,6 +106,7 @@ export default async function handler(req, res) {
     if (!d.task_id) return res.status(502).json({ error: 'Pas de task_id: ' + txt.substring(0, 300) });
 
     return res.status(200).json({ task_id: d.task_id, name: name || 'Invité', eta: d.eta || 90 });
+
   } catch (e) {
     return res.status(500).json({ error: 'Fetch error: ' + e.message });
   }

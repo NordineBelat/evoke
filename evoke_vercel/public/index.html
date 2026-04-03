@@ -223,31 +223,11 @@ audio{width:100%;margin-bottom:1.2rem;accent-color:var(--green2);}
   </div>
   <div class="fs">
     <div class="fc">
-      <div class="cl"><div class="cli">✍️</div>Votre message</div>
-      <textarea class="fta" id="input-message" placeholder="Écrivez ce que vous souhaitez leur dire…"></textarea>
+      <div class="cl"><div class="cli">✍️</div>Votre message &amp; style souhaité</div>
+      <textarea class="fta" id="input-message" placeholder="Écrivez votre message et précisez le style souhaité… ex: Je vous souhaite tout le bonheur du monde, style jazz romantique"></textarea>
       <input class="fin" id="input-name" type="text" placeholder="Votre prénom ou « La famille Martin »">
     </div>
-    <div class="fc">
-      <div class="cl"><div class="cli">🎵</div>Style musical</div>
-      <div class="chips">
-        <input type="radio" name="style" id="s1" value="acoustique folk" class="cin"><label for="s1" class="clb">Acoustique folk</label>
-        <input type="radio" name="style" id="s2" value="afrobeat" class="cin"><label for="s2" class="clb">Afrobeat</label>
-        <input type="radio" name="style" id="s3" value="blues" class="cin"><label for="s3" class="clb">Blues</label>
-        <input type="radio" name="style" id="s4" value="bossa nova" class="cin"><label for="s4" class="clb">Bossa nova</label>
-        <input type="radio" name="style" id="s5" value="classique orchestral" class="cin"><label for="s5" class="clb">Classique</label>
-        <input type="radio" name="style" id="s6" value="country" class="cin"><label for="s6" class="clb">Country</label>
-        <input type="radio" name="style" id="s7" value="électro doux" class="cin"><label for="s7" class="clb">Électro doux</label>
-        <input type="radio" name="style" id="s8" value="gospel" class="cin"><label for="s8" class="clb">Gospel</label>
-        <input type="radio" name="style" id="s9" value="jazz intime" class="cin"><label for="s9" class="clb">Jazz</label>
-        <input type="radio" name="style" id="s10" value="lo-fi chill" class="cin"><label for="s10" class="clb">Lo-fi chill</label>
-        <input type="radio" name="style" id="s11" value="pop romantique" class="cin" checked><label for="s11" class="clb">Pop romantique</label>
-        <input type="radio" name="style" id="s12" value="rap & hip-hop" class="cin"><label for="s12" class="clb">Rap & Hip-hop</label>
-        <input type="radio" name="style" id="s13" value="reggae" class="cin"><label for="s13" class="clb">Reggae</label>
-        <input type="radio" name="style" id="s14" value="rock acoustique" class="cin"><label for="s14" class="clb">Rock acoustique</label>
-        <input type="radio" name="style" id="s15" value="soul & r&b" class="cin"><label for="s15" class="clb">Soul & R&B</label>
-        <input type="radio" name="style" id="s16" value="variété française" class="cin"><label for="s16" class="clb">Variété française</label>
-      </div>
-    </div>
+
     <div class="fc">
       <div class="cl"><div class="cli">🎤</div>Voix</div>
       <div class="vg">
@@ -281,7 +261,16 @@ audio{width:100%;margin-bottom:1.2rem;accent-color:var(--green2);}
 </div>
 
 <!-- GALERIE -->
-<div class="noc" id="noc-wrap">
+<div class="conf" id="conf-wrap">
+    <div class="confc">
+      <div class="conf-icon">✦</div>
+      <div class="conf-title">Merci <span class="conf-name" id="conf-name"></span> —<br>ton œuvre est en route vers les mariés.</div>
+      <div class="conf-sub">Ta mélodie a rejoint la galerie du mariage.</div>
+      <button class="bnew" onclick="newComposition()">♪ &nbsp;Composer une nouvelle mélodie</button>
+    </div>
+  </div>
+
+  <div class="noc" id="noc-wrap">
     <div class="nocc">
       <div class="noc-icon">✦</div>
       <div class="noc-title">Toutes les mélodies ont été composées.</div>
@@ -404,7 +393,7 @@ function initGuest(ev){
 async function generateMusic(){
   const ev=DB.events[DB.guestEv];if(!ev)return;
   const msg=document.getElementById('input-message').value.trim(),name=document.getElementById('input-name').value.trim()||'Un invité';
-  const style=document.querySelector('input[name="style"]:checked')?.value||'pop romantique',voice=document.querySelector('input[name="voice"]:checked')?.value||'female';
+  const style='',voice=document.querySelector('input[name="voice"]:checked')?.value||'female';
   if(!msg){toast('Écrivez votre message d\'abord');return;}
   if(msg.length>500){toast('Message trop long (500 caractères max)');return;}
   if(ev.credits-ev.usedCredits<=0){document.querySelector('.fs').style.display='none';document.querySelector('.hs').style.display='none';document.getElementById('noc-wrap').classList.add('active');return;}
@@ -439,7 +428,13 @@ async function generateMusic(){
     // Fallback démo si pas d'URL
     if(!url){await new Promise(res=>setTimeout(res,1000));url=genDemo();}
 
-    ev.lastGenerated={name:cleanN,msg,style,voice,url};
+    // Décrémenter le crédit dès que la musique est générée
+  ev.usedCredits++;
+  const remAfter=ev.credits-ev.usedCredits;
+  document.getElementById('credits-hero').textContent=remAfter;
+  document.getElementById('ncred').textContent=remAfter+' crédits';
+  saveDB();
+  ev.lastGenerated={name:cleanN,msg,style,voice,url};
     document.getElementById('result-title').textContent='Mélodie de '+cleanN;
     document.getElementById('result-meta').textContent=style+' · '+(voice==='female'?'Voix féminine':'Voix masculine')+' · 1 min 30';
     document.getElementById('result-audio').src=url;
@@ -455,9 +450,7 @@ async function saveToGallery(){
   try{const r=await fetch('/api/upload',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({audioUrl:url,author:name,style})});if(r.ok){const d=await r.json();finalUrl=d.publicUrl||url;}}catch(e){}
   if(!ev.songs)ev.songs=[];
   ev.songs.unshift({id:Date.now().toString(),title:'Mélodie de '+name,author:name,message:msg,style,voice,url:finalUrl,createdAt:new Date().toISOString()});
-  ev.usedCredits++;ev.lastGenerated=null;saveDB();
-  const rem=ev.credits-ev.usedCredits;
-  document.getElementById('credits-hero').textContent=rem;document.getElementById('ncred').textContent=rem+' crédits';
+  ev.lastGenerated=null;saveDB();
   document.getElementById('result-wrap').classList.remove('active');
   document.getElementById('conf-name').textContent=name;
   document.getElementById('conf-wrap').classList.add('active');
