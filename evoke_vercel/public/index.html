@@ -371,7 +371,7 @@ audio{width:100%;margin-bottom:1.2rem;accent-color:var(--green2);}
 const DB={adminPwd:'admin123',events:{},adminLoggedIn:false,curEv:null,guestEv:null,galEv:null};
 function loadDB(){try{const s=localStorage.getItem('evoke_v3');if(s){const p=JSON.parse(s);DB.adminPwd=p.adminPwd||'admin123';DB.events=p.events||{};}}catch(e){}}
 function saveDB(){localStorage.setItem('evoke_v3',JSON.stringify({adminPwd:DB.adminPwd,events:DB.events}));}
-function sp(n){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-'+n).classList.add('active');}
+function sp(n){stopAudio();document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-'+n).classList.add('active');}
 function route(){
   const path=window.location.pathname,params=new URLSearchParams(window.location.search);
   const mm=path.match(/\/mariage\/([^\/]+)/);
@@ -442,7 +442,8 @@ async function generateMusic(){
   document.getElementById('loading').classList.remove('active');
   document.getElementById('btn-cta').disabled=false;
 }
-function rForm(){document.querySelector('.fs').style.display='';document.querySelector('.hs').style.display='';}
+function stopAudio(){const a=document.getElementById('result-audio');a.pause();a.currentTime=0;a.src='';}
+function rForm(){stopAudio();document.querySelector('.fs').style.display='';document.querySelector('.hs').style.display='';}
 async function saveToGallery(){
   const ev=DB.events[DB.guestEv];if(!ev||!ev.lastGenerated)return;
   const{name,msg,style,voice,url}=ev.lastGenerated;let finalUrl=url;
@@ -450,7 +451,7 @@ async function saveToGallery(){
   if(!ev.songs)ev.songs=[];
   ev.songs.unshift({id:Date.now().toString(),title:'Mélodie de '+name,author:name,message:msg,style,voice,url:finalUrl,createdAt:new Date().toISOString()});
   ev.lastGenerated=null;saveDB();
-  document.getElementById('result-wrap').classList.remove('active');
+  stopAudio();document.getElementById('result-wrap').classList.remove('active');
   document.getElementById('conf-name').textContent=name;
   document.getElementById('conf-wrap').classList.add('active');
   document.getElementById('btn-cta').disabled=false;
