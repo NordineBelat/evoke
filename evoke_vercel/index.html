@@ -72,6 +72,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
 @keyframes wb{0%,100%{height:6px;opacity:.15;}50%{height:44px;opacity:1;}}
 .ldt{font-size:1.15rem;font-weight:800;color:var(--dark);margin-bottom:.4rem;}
 .lds{font-size:.8rem;color:var(--text2);}
+.queue-info{margin-top:.8rem;background:rgba(255,193,7,.1);border:1px solid rgba(255,193,7,.3);border-radius:var(--rmd);padding:.7rem 1rem;font-size:.78rem;color:#b8860b;font-weight:600;text-align:center;}
 .res{display:none;padding:0 1.5rem 1rem;max-width:520px;margin:0 auto;animation:ci .4s ease both;}
 .res.active{display:block;}
 .resc{background:var(--dark);border-radius:var(--rxl);padding:1.8rem;position:relative;overflow:hidden;}
@@ -178,6 +179,14 @@ audio{width:100%;margin-bottom:1.2rem;accent-color:var(--green2);}
 .mm{font-size:.68rem;color:var(--text2);margin-top:2px;}
 .mb2{display:inline;font-size:.6rem;font-weight:700;background:var(--bg);border-radius:var(--rp);padding:.15rem .5rem;margin-left:.4rem;color:var(--text2);}
 .db{width:32px;height:32px;border-radius:50%;background:var(--bg);border:none;font-size:.75rem;color:var(--text2);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.edit-form{background:var(--bg);border-radius:var(--rmd);padding:1rem;margin-top:.5rem;}
+.edit-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;}
+.edit-row.full{grid-template-columns:1fr;}
+.efl{font-size:.6rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:.3rem;}
+.efi{width:100%;background:var(--white);border:1.5px solid var(--border);border-radius:var(--rp);font-family:'Plus Jakarta Sans',sans-serif;font-size:.82rem;color:var(--text);padding:.5rem .7rem;outline:none;transition:border-color .15s;box-sizing:border-box;}
+.efi:focus{border-color:var(--dark);}
+.esb{width:100%;padding:.7rem;background:var(--dark);border:none;border-radius:var(--rp);font-family:'Plus Jakarta Sans',sans-serif;font-size:.75rem;font-weight:800;color:white;cursor:pointer;margin-top:4px;transition:opacity .15s;}
+.esb:hover{opacity:.85;}
 .db:hover{background:#ffe0e0;color:#c03030;}
 .ba{width:100%;padding:.8rem;background:var(--dark);border:none;border-radius:var(--rxl);font-family:'Plus Jakarta Sans',sans-serif;font-size:.75rem;font-weight:800;color:white;cursor:pointer;transition:opacity .15s;margin-top:8px;}
 .ba:hover{opacity:.8;}
@@ -244,6 +253,7 @@ audio{width:100%;margin-bottom:1.2rem;accent-color:var(--green2);}
       <div class="wr"><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div></div>
       <p class="ldt">Composition en cours…</p>
       <p class="lds">Votre mélodie prend vie — environ 30 secondes</p>
+      <div class="queue-info" id="queue-info" style="display:none"></div>
     </div>
   </div>
   <div class="res" id="result-wrap">
@@ -325,6 +335,28 @@ audio{width:100%;margin-bottom:1.2rem;accent-color:var(--green2);}
             <div class="pb"><div class="pf" id="d-prog" style="width:0%"></div></div>
             <div class="pl" id="d-lbl"></div>
           </div>
+          <div class="ab">
+            <div class="abt" style="display:flex;align-items:center;justify-content:space-between">
+              Modifier l'événement
+              <button style="background:none;border:none;font-size:.7rem;font-weight:700;color:var(--text2);cursor:pointer;padding:.2rem .6rem;border-radius:var(--rp);background:var(--bg)" onclick="toggleEdit()">✏️ Modifier</button>
+            </div>
+            <div id="edit-form" style="display:none">
+              <div class="edit-form">
+                <div class="edit-row">
+                  <div><div class="efl">Prénom 1</div><input class="efi" id="edit-p1" type="text"></div>
+                  <div><div class="efl">Prénom 2</div><input class="efi" id="edit-p2" type="text"></div>
+                </div>
+                <div class="edit-row">
+                  <div><div class="efl">Date</div><input class="efi" id="edit-date" type="date"></div>
+                  <div><div class="efl">Nb invités</div><input class="efi" id="edit-guests" type="number" min="1"></div>
+                </div>
+                <div class="edit-row full">
+                  <div><div class="efl">Crédits max</div><input class="efi" id="edit-credits" type="number" min="1"></div>
+                </div>
+                <button class="esb" onclick="saveEdit()">✦ Enregistrer les modifications</button>
+              </div>
+            </div>
+          </div>
           <div class="ab"><div class="abt">Musiques générées</div><div id="d-songs"></div></div>
         </div>
       </div>
@@ -370,6 +402,16 @@ audio{width:100%;margin-bottom:1.2rem;accent-color:var(--green2);}
 <script>
 const DB={adminPwd:'admin123',events:{},adminLoggedIn:false,curEv:null,guestEv:null,galEv:null};
 function loadDB(){try{const s=localStorage.getItem('evoke_v3');if(s){const p=JSON.parse(s);DB.adminPwd=p.adminPwd||'admin123';DB.events=p.events||{};}}catch(e){}}
+async function syncEventsFromSupabase(){
+  try{
+    const r=await fetch('/api/events');
+    if(!r.ok)return;
+    const evs=await r.json();
+    if(!Array.isArray(evs))return;
+    evs.forEach(ev=>{DB.events[ev.id]=ev;});
+    saveDB();
+  }catch(e){console.warn('Sync Supabase failed:',e);}
+}
 function saveDB(){localStorage.setItem('evoke_v3',JSON.stringify({adminPwd:DB.adminPwd,events:DB.events}));}
 function sp(n){stopAudio();document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-'+n).classList.add('active');}
 async function route(){
@@ -422,6 +464,39 @@ async function generateMusic(){
   document.getElementById('btn-cta').disabled=true;
   document.querySelector('.fs').style.display='none';document.querySelector('.hs').style.display='none';
   document.getElementById('loading').classList.add('active');document.getElementById('result-wrap').classList.remove('active');
+
+  // ── File d'attente ────────────────────────────────────────────────────────
+  const queueId=Date.now().toString(36)+Math.random().toString(36).substring(2);
+  const MAX_PARALLEL=8; // max simultané sur cet événement
+  let queueJoined=false;
+  try{
+    // Vérifier combien de générations sont en cours
+    const qr=await fetch('/api/queue?event_id='+encodeURIComponent(DB.guestEv));
+    if(qr.ok){
+      const qd=await qr.json();
+      if(qd.active>=MAX_PARALLEL){
+        // File d'attente — attendre que ça se libère
+        const qinfo=document.getElementById('queue-info');
+        qinfo.style.display='block';
+        qinfo.textContent='⏳ Plusieurs mélodies en cours… Tu passeras dans quelques instants.';
+        // Attendre jusqu'à ce qu'une place se libère (max 3 min)
+        let waited=0;
+        while(waited<180){
+          await new Promise(r=>setTimeout(r,5000));
+          waited+=5;
+          const qr2=await fetch('/api/queue?event_id='+encodeURIComponent(DB.guestEv));
+          if(qr2.ok){const qd2=await qr2.json();if(qd2.active<MAX_PARALLEL)break;}
+          const pos=Math.max(1,qd.active-Math.floor(waited/5));
+          qinfo.textContent=`⏳ ${pos} mélodie${pos>1?'s':''} avant toi — encore quelques secondes…`;
+        }
+        qinfo.style.display='none';
+      }
+    }
+    // Rejoindre la file
+    await fetch('/api/queue',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({queue_id:queueId,event_id:DB.guestEv})});
+    queueJoined=true;
+  }catch(e){} // Si la file échoue on continue quand même
+  // ─────────────────────────────────────────────────────────────────────────
   try{
     // ÉTAPE 1 — Lancer la génération, récupérer task_id
     let task_id=null,cleanN=name;
@@ -461,7 +536,7 @@ async function generateMusic(){
     document.getElementById('result-meta').textContent=style+' · '+(voice==='female'?'Voix féminine':'Voix masculine')+' · 1 min 30';
     document.getElementById('result-audio').src=url;
     document.getElementById('result-wrap').classList.add('active');
-  }catch(e){console.error(e);toast('Erreur lors de la composition');rForm();}
+  }catch(e){console.error(e);toast('Erreur lors de la composition');rForm();if(typeof queueJoined!=='undefined'&&queueJoined)fetch('/api/queue?queue_id='+queueId,{method:'DELETE'}).catch(()=>{});}
   document.getElementById('loading').classList.remove('active');
   document.getElementById('btn-cta').disabled=false;
 }
@@ -506,7 +581,7 @@ function initGal(ev){
 function adminLogin(){
   if(document.getElementById('admin-pwd').value===DB.adminPwd){
     DB.adminLoggedIn=true;document.getElementById('admin-login-card').style.display='none';document.getElementById('admin-panel').style.display='block';
-    renderEL();toast('✦ Accès accordé');
+    syncEventsFromSupabase().then(()=>{renderEL();});toast('✦ Accès accordé');
   }else toast('Mot de passe incorrect');
 }
 function stab(n,btn){
@@ -526,7 +601,14 @@ function renderEL(){
       </div>
     </div>`).join('');
 }
-function selEv(id){DB.curEv=id;renderEL();renderDet(id);}
+function selEv(id){
+  DB.curEv=id;renderEL();
+  // Recharger l'événement depuis Supabase pour avoir les dernières chansons/crédits
+  fetch('/api/event?id='+encodeURIComponent(id)).then(r=>r.ok?r.json():null).then(ev=>{
+    if(ev){DB.events[id]=ev;saveDB();renderEL();renderDet(id);}
+    else renderDet(id);
+  }).catch(()=>renderDet(id));
+}
 function renderDet(id){
   const ev=DB.events[id];if(!ev)return;
   const songs=ev.songs||[],used=ev.usedCredits,total=ev.credits,pct=total>0?Math.round(used/total*100):0;
@@ -537,6 +619,13 @@ function renderDet(id){
   document.getElementById('d-gen').textContent=used;document.getElementById('d-rem').textContent=total-used;
   document.getElementById('d-act').textContent=new Set(songs.map(s=>s.author)).size;
   document.getElementById('d-prog').style.width=pct+'%';document.getElementById('d-lbl').textContent=used+' / '+total+' crédits ('+pct+'%)';
+  // Pré-remplir le formulaire d'édition
+  document.getElementById('edit-p1').value=ev.p1||'';
+  document.getElementById('edit-p2').value=ev.p2||'';
+  document.getElementById('edit-date').value=ev.date||'';
+  document.getElementById('edit-guests').value=ev.guests||'';
+  document.getElementById('edit-credits').value=ev.credits||'';
+  document.getElementById('edit-form').style.display='none';
   const ml=document.getElementById('d-songs');
   if(!songs.length){ml.innerHTML='<div class="es"><div class="esi">🎵</div><div class="est">Aucune musique pour l\'instant</div></div>';return;}
   ml.innerHTML=songs.map(s=>`
@@ -544,6 +633,30 @@ function renderDet(id){
       <div><div class="mt">${esc(s.title)}<span class="mb2">${esc(s.style)}</span></div><div class="mm">${fmt(s.createdAt)} · ${s.voice==='female'?'👩':'👨'}</div></div>
       <button class="db" onclick="delSong('${id}','${s.id}')">✕</button>
     </div>`).join('');
+}
+function toggleEdit(){
+  const f=document.getElementById('edit-form');
+  f.style.display=f.style.display==='none'?'block':'none';
+}
+async function saveEdit(){
+  const id=DB.curEv;if(!id)return;
+  const ev=DB.events[id];if(!ev)return;
+  const p1=document.getElementById('edit-p1').value.trim();
+  const p2=document.getElementById('edit-p2').value.trim();
+  const date=document.getElementById('edit-date').value;
+  const guests=parseInt(document.getElementById('edit-guests').value)||ev.guests;
+  const credits=parseInt(document.getElementById('edit-credits').value)||ev.credits;
+  if(!p1||!p2){toast('Les prénoms sont requis');return;}
+  ev.p1=p1;ev.p2=p2;ev.couple=p1+' & '+p2;ev.date=date;ev.guests=guests;ev.credits=credits;
+  saveDB();
+  // Sync Supabase
+  try{
+    await fetch('/api/event',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(ev)});
+    // Mettre à jour les crédits dans event_credits aussi
+    await fetch('/api/init-credits',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({event_id:id,credits})});
+  }catch(e){}
+  document.getElementById('edit-form').style.display='none';
+  renderEL();renderDet(id);toast('✦ Événement mis à jour !');
 }
 function newEvent(){
   const p1=document.getElementById('np1').value.trim(),p2=document.getElementById('np2').value.trim();

@@ -64,3 +64,9 @@ export default async function handler(req, res) {
 
   return res.status(405).json({ error: 'Method not allowed' });
 }
+
+// Export séparé pour GET /api/events (liste tous les événements)
+export { listEvents };
+async function listEvents(req, res) {
+  // Cette fonction n'est pas utilisée directement — voir api/events.js
+}
