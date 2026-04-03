@@ -1,10 +1,16 @@
 {
-  "rewrites": [
-    { "source": "/api/generate",     "destination": "/api/generate" },
-    { "source": "/api/poll",         "destination": "/api/poll" },
-    { "source": "/api/upload",       "destination": "/api/upload" },
-    { "source": "/api/init-credits", "destination": "/api/init-credits" },
-    { "source": "/mariage/(.*)",     "destination": "/index.html" },
-    { "source": "/galerie/(.*)",     "destination": "/index.html" }
+  "version": 2,
+  "builds": [
+    { "src": "index.html", "use": "@vercel/static" },
+    { "src": "api/*.js", "use": "@vercel/node" }
+  ],
+  "routes": [
+    { "src": "/api/generate",     "dest": "/api/generate.js" },
+    { "src": "/api/poll",         "dest": "/api/poll.js" },
+    { "src": "/api/upload",       "dest": "/api/upload.js" },
+    { "src": "/api/init-credits", "dest": "/api/init-credits.js" },
+    { "src": "/mariage/(.*)",     "dest": "/index.html" },
+    { "src": "/galerie/(.*)",     "dest": "/index.html" },
+    { "src": "/(.*)",             "dest": "/index.html" }
   ]
 }
