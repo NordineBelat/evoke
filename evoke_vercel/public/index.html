@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EVOKE</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{--bg:#f2f2f7;--white:#fff;--dark:#111118;--text:#111118;--text2:#6b6b80;--text3:#aeaec0;--green:#b8f0c8;--green2:#3ecf6a;--red:#ff6b6b;--border:rgba(0,0,0,0.07);--sh:0 4px 24px rgba(0,0,0,0.07);--sh2:0 12px 40px rgba(0,0,0,0.12);--rmd:24px;--rlg:32px;--rxl:40px;--rp:100px;}
+html{scroll-behavior:smooth;}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased;}
+nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;height:64px;background:rgba(242,242,247,0.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
+.nlogo{display:flex;align-items:center;}
+.nright{display:flex;align-items:center;gap:.5rem;background:var(--white);border-radius:var(--rp);padding:.4rem .9rem;box-shadow:var(--sh);}
+.ndot{width:8px;height:8px;border-radius:50%;background:var(--green2);}
+.ncred{font-size:.72rem;font-weight:700;color:var(--dark);}
+.page{display:none;padding-top:64px;min-height:100vh;}
+.page.active{display:block;}
+/* HERO */
+.hs{padding:2.5rem 1.5rem 1rem;max-width:520px;margin:0 auto;}
+.hc{background:var(--dark);border-radius:var(--rxl);padding:2.2rem 1.8rem 2rem;position:relative;overflow:hidden;margin-bottom:1rem;}
+.hcd{position:absolute;right:-40px;top:-40px;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,.04);}
+.hcd2{position:absolute;right:20px;top:20px;width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,.04);}
+.htag{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.1);border-radius:var(--rp);padding:.3rem .8rem;font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.7);margin-bottom:1.2rem;}
+.htdot{width:6px;height:6px;border-radius:50%;background:var(--green2);}
+.hc h1{font-size:clamp(1.8rem,5vw,2.8rem);font-weight:800;line-height:1.1;color:white;margin-bottom:.6rem;letter-spacing:-.02em;}
+.hc h1 em{font-style:normal;background:linear-gradient(135deg,#b8f0c8,#5dd8a0);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.hc p{font-size:.85rem;color:rgba(255,255,255,.55);line-height:1.6;max-width:280px;}
+.sp{display:inline-flex;align-items:center;gap:.4rem;background:rgba(255,255,255,.08);border-radius:var(--rp);padding:.5rem 1rem;margin-top:1.5rem;}
+.spn{font-size:.92rem;font-weight:800;color:white;}
+.spl{font-size:.65rem;font-weight:500;color:rgba(255,255,255,.5);}
+/* FORM */
+.fs{padding:0 1.5rem 6rem;max-width:520px;margin:0 auto;}
+.fc{background:var(--white);border-radius:var(--rlg);padding:1.4rem;margin-bottom:10px;box-shadow:var(--sh);animation:ci .4s ease both;}
+.fc:nth-child(1){animation-delay:.05s;}.fc:nth-child(2){animation-delay:.1s;}.fc:nth-child(3){animation-delay:.15s;}
+@keyframes ci{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:none;}}
+.cl{font-size:.65rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);margin-bottom:.9rem;display:flex;align-items:center;gap:.5rem;}
+.cli{width:24px;height:24px;border-radius:8px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:.75rem;}
+.fta,.fin{width:100%;background:var(--bg);border:none;font-family:'Plus Jakarta Sans',sans-serif;font-size:.9rem;color:var(--text);padding:.85rem 1.1rem;outline:none;transition:box-shadow .2s;caret-color:var(--dark);}
+.fta{border-radius:var(--rmd);resize:none;min-height:90px;line-height:1.65;}
+.fin{border-radius:var(--rp);margin-top:.6rem;}
+.fta:focus,.fin:focus{box-shadow:0 0 0 2.5px rgba(17,17,24,.15);}
+.fta::placeholder,.fin::placeholder{color:var(--text3);}
+.chips{display:flex;flex-wrap:wrap;gap:7px;}
+.cin{display:none;}
+.clb{display:inline-block;padding:.5rem 1.1rem;background:var(--bg);border:none;border-radius:var(--rp);font-family:'Plus Jakarta Sans',sans-serif;font-size:.76rem;font-weight:600;color:var(--text2);cursor:pointer;transition:all .18s;}
+.clb:hover{background:rgba(17,17,24,.07);}
+.cin:checked+.clb{background:var(--dark);color:white;}
+.vg{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.vin{display:none;}
+.vlb{display:block;background:var(--bg);border-radius:var(--rmd);padding:1.1rem;cursor:pointer;transition:all .18s;border:2px solid transparent;}
+.vlb:hover{background:rgba(17,17,24,.05);}
+.vin:checked+.vlb{background:var(--dark);border-color:var(--dark);}
+.vi{width:40px;height:40px;border-radius:var(--rmd);background:white;display:flex;align-items:center;justify-content:center;font-size:1.2rem;margin-bottom:.7rem;}
+.vin:checked+.vlb .vi{background:rgba(255,255,255,.12);}
+.vn{font-size:.85rem;font-weight:800;color:var(--text);margin-bottom:.15rem;}
+.vs{font-size:.72rem;color:var(--text2);}
+.vin:checked+.vlb .vn{color:white;}
+.vin:checked+.vlb .vs{color:rgba(255,255,255,.55);}
+.bcta{width:100%;padding:1.1rem;background:var(--dark);border:none;border-radius:var(--rxl);font-family:'Plus Jakarta Sans',sans-serif;font-size:.88rem;font-weight:800;color:white;cursor:pointer;transition:all .25s;display:flex;align-items:center;justify-content:center;gap:.7rem;box-shadow:0 8px 24px rgba(17,17,24,.25);margin-top:10px;}
+.bcta:hover{transform:translateY(-2px);box-shadow:0 14px 32px rgba(17,17,24,.3);}
+.bcta:disabled{opacity:.35;cursor:not-allowed;transform:none;box-shadow:none;}
+.bctai{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;transition:transform .2s;}
+.bcta:hover .bctai{transform:translateX(4px);}
+.ldg{display:none;padding:2.5rem 1.5rem;text-align:center;max-width:520px;margin:0 auto;}
+.ldg.active{display:block;}
+.ldc{background:var(--white);border-radius:var(--rxl);padding:2.5rem 2rem;box-shadow:var(--sh2);}
+.wr{display:flex;align-items:center;justify-content:center;gap:5px;height:52px;margin-bottom:1.4rem;}
+.wb{background:var(--dark);border-radius:100px;width:5px;animation:wb 1.2s ease-in-out infinite;}
+.wb:nth-child(1){animation-delay:0s;}.wb:nth-child(2){animation-delay:.08s;}.wb:nth-child(3){animation-delay:.16s;}.wb:nth-child(4){animation-delay:.24s;}.wb:nth-child(5){animation-delay:.32s;}.wb:nth-child(6){animation-delay:.4s;}.wb:nth-child(7){animation-delay:.48s;}.wb:nth-child(8){animation-delay:.4s;}.wb:nth-child(9){animation-delay:.32s;}
+@keyframes wb{0%,100%{height:6px;opacity:.15;}50%{height:44px;opacity:1;}}
+.ldt{font-size:1.15rem;font-weight:800;color:var(--dark);margin-bottom:.4rem;}
+.lds{font-size:.8rem;color:var(--text2);}
+.res{display:none;padding:0 1.5rem 1rem;max-width:520px;margin:0 auto;animation:ci .4s ease both;}
+.res.active{display:block;}
+.resc{background:var(--dark);border-radius:var(--rxl);padding:1.8rem;position:relative;overflow:hidden;}
+.resc::before{content:'';position:absolute;top:-60px;right:-60px;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,.03);}
+.rp2{display:inline-flex;align-items:center;background:var(--green);border-radius:var(--rp);padding:.3rem .8rem;margin-bottom:1rem;}
+.rp2 span{font-size:.65rem;font-weight:800;color:#1a5c2a;letter-spacing:.08em;text-transform:uppercase;}
+.rt{font-size:1.25rem;font-weight:800;color:white;margin-bottom:.2rem;}
+.rm{font-size:.75rem;color:rgba(255,255,255,.45);margin-bottom:1.2rem;}
+audio{width:100%;margin-bottom:1.2rem;accent-color:var(--green2);}
+.rbs{display:grid;grid-template-columns:1fr 2fr;gap:8px;}
+.bow{padding:.75rem;background:rgba(255,255,255,.08);border:none;border-radius:var(--rxl);font-family:'Plus Jakarta Sans',sans-serif;font-size:.72rem;font-weight:700;color:rgba(255,255,255,.7);cursor:pointer;transition:all .18s;}
+.bow:hover{background:rgba(255,255,255,.14);}
+.conf{display:none;padding:0 1.5rem 1rem;max-width:520px;margin:0 auto;animation:ci .4s ease both;}
+.conf.active{display:block;}
+.confc{background:var(--dark);border-radius:var(--rxl);padding:2rem 1.8rem;text-align:center;position:relative;overflow:hidden;}
+.confc::before{content:'';position:absolute;top:-60px;right:-60px;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,.03);}
+.conf-icon{font-size:2.2rem;margin-bottom:1rem;}
+.conf-title{font-size:1.15rem;font-weight:800;color:white;margin-bottom:.5rem;line-height:1.3;}
+.conf-sub{font-size:.8rem;color:rgba(255,255,255,.45);margin-bottom:1.6rem;line-height:1.5;}
+.conf-name{color:var(--green);font-weight:800;}
+.bnew{width:100%;padding:.85rem;background:var(--green2);border:none;border-radius:var(--rxl);font-family:'Plus Jakarta Sans',sans-serif;font-size:.8rem;font-weight:800;color:white;cursor:pointer;transition:opacity .18s;}
+.bnew:hover{opacity:.85;}
+.noc{display:none;padding:0 1.5rem 1rem;max-width:520px;margin:0 auto;animation:ci .4s ease both;}
+.noc.active{display:block;}
+.nocc{background:var(--dark);border-radius:var(--rxl);padding:2rem 1.8rem;text-align:center;position:relative;overflow:hidden;}
+.nocc::before{content:'';position:absolute;top:-60px;right:-60px;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,.03);}
+.noc-icon{font-size:2.2rem;margin-bottom:1rem;}
+.noc-title{font-size:1.1rem;font-weight:800;color:white;margin-bottom:.5rem;line-height:1.3;}
+.noc-sub{font-size:.8rem;color:rgba(255,255,255,.45);line-height:1.6;}
+.bgr{padding:.75rem;background:var(--green2);border:none;border-radius:var(--rxl);font-family:'Plus Jakarta Sans',sans-serif;font-size:.72rem;font-weight:800;color:white;cursor:pointer;transition:opacity .18s;}
+.bgr:hover{opacity:.85;}
+/* GALERIE */
+.gt{padding:2rem 1.5rem 1rem;max-width:680px;margin:0 auto;}
+.ghc{background:var(--dark);border-radius:var(--rxl);padding:1.8rem;margin-bottom:1rem;display:flex;align-items:flex-end;justify-content:space-between;}
+.ght{font-size:1.4rem;font-weight:800;color:white;line-height:1.2;}
+.ght em{font-style:normal;color:var(--green2);}
+.ghct{background:rgba(255,255,255,.1);border-radius:var(--rp);padding:.4rem .9rem;font-size:.78rem;font-weight:800;color:white;white-space:nowrap;}
+.gg{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px;padding:0 1.5rem 5rem;max-width:680px;margin:0 auto;}
+.gca{background:var(--white);border-radius:var(--rxl);padding:1.4rem;box-shadow:var(--sh);animation:ci .4s ease both;}
+.gct{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:.7rem;}
+.gcn{font-size:.6rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--text3);}
+.gcs{background:var(--bg);border-radius:var(--rp);padding:.25rem .7rem;font-size:.62rem;font-weight:700;color:var(--text2);}
+.gcti{font-size:1.05rem;font-weight:800;color:var(--dark);margin-bottom:.1rem;}
+.gca2{font-size:.7rem;font-weight:500;color:var(--text2);margin-bottom:.8rem;}
+.gcm{font-size:.82rem;font-style:italic;color:var(--text2);line-height:1.6;margin-bottom:1rem;background:var(--bg);border-radius:var(--rmd);padding:.75rem .9rem;}
+.gf{display:flex;justify-content:space-between;align-items:center;}
+.gvp{display:flex;align-items:center;gap:.4rem;background:var(--bg);border-radius:var(--rp);padding:.3rem .7rem;font-size:.65rem;font-weight:700;color:var(--text2);}
+.gdl{display:inline-flex;align-items:center;gap:.35rem;background:var(--dark);color:white;border-radius:var(--rp);padding:.45rem 1rem;font-size:.68rem;font-weight:700;text-decoration:none;transition:opacity .15s;}
+.gdl:hover{opacity:.8;}
+.ge{grid-column:1/-1;text-align:center;padding:4rem 2rem;background:var(--white);border-radius:var(--rxl);}
+.gei{font-size:2.5rem;margin-bottom:.8rem;opacity:.3;}
+.get{font-size:.95rem;font-weight:600;color:var(--text2);}
+/* ADMIN */
+.ao{padding:2rem 1.5rem 6rem;max-width:620px;margin:0 auto;}
+.ah{background:var(--dark);border-radius:var(--rxl);padding:1.8rem;margin-bottom:10px;}
+.aht{font-size:1.6rem;font-weight:800;color:white;margin-bottom:.2rem;}
+.ahs{font-size:.8rem;color:rgba(255,255,255,.45);}
+.lc,.ab{background:var(--white);border-radius:var(--rxl);padding:1.4rem;box-shadow:var(--sh);margin-bottom:10px;}
+.abt{font-size:.65rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--text3);margin-bottom:1.1rem;}
+.ats{display:flex;gap:4px;background:var(--white);border-radius:var(--rp);padding:4px;box-shadow:var(--sh);margin-bottom:10px;}
+.at{flex:1;padding:.5rem;border:none;background:transparent;font-family:'Plus Jakarta Sans',sans-serif;font-size:.68rem;font-weight:700;color:var(--text2);border-radius:var(--rp);cursor:pointer;transition:all .2s;}
+.at.active{background:var(--dark);color:white;}
+.el{display:flex;flex-direction:column;gap:8px;}
+.er{background:var(--bg);border-radius:var(--rlg);padding:1rem 1.2rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;cursor:pointer;transition:all .18s;}
+.er:hover{background:rgba(17,17,24,.06);}
+.er.aev{background:var(--dark);}
+.erl{flex:1;min-width:0;}
+.ern{font-size:.92rem;font-weight:800;color:var(--dark);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.er.aev .ern{color:white;}
+.erd{font-size:.68rem;font-weight:500;color:var(--text2);margin-top:2px;}
+.er.aev .erd{color:rgba(255,255,255,.5);}
+.err{display:flex;align-items:center;gap:6px;flex-shrink:0;}
+.ecp{background:var(--green);border-radius:var(--rp);padding:.2rem .6rem;font-size:.62rem;font-weight:800;color:#1a5c2a;}
+.er.aev .ecp{background:rgba(184,240,200,.2);color:var(--green2);}
+.edb{width:28px;height:28px;border-radius:50%;background:rgba(255,107,107,.1);border:none;color:var(--red);font-size:.7rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.edb:hover{background:rgba(255,107,107,.25);}
+.lb2{background:var(--bg);border-radius:var(--rlg);padding:1rem;margin-top:8px;}
+.lr{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.lr:last-child{margin-bottom:0;}
+.ll{font-size:.6rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);min-width:60px;flex-shrink:0;}
+.lv{flex:1;font-size:.72rem;font-weight:500;color:var(--dark);background:var(--white);border-radius:var(--rp);padding:.4rem .8rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.lcp{background:var(--dark);color:white;border:none;border-radius:var(--rp);padding:.4rem .8rem;font-size:.62rem;font-weight:700;cursor:pointer;flex-shrink:0;transition:opacity .15s;}
+.lcp:hover{opacity:.8;}
+.lop{background:transparent;color:var(--dark);border:1.5px solid var(--border);border-radius:var(--rp);padding:.4rem .65rem;font-size:.75rem;font-weight:700;cursor:pointer;flex-shrink:0;transition:all .15s;}
+.lop:hover{background:var(--dark);color:white;border-color:var(--dark);}
+.sg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:1rem;}
+.sc{background:var(--bg);border-radius:var(--rmd);padding:1rem .8rem;text-align:center;}
+.sn{font-size:1.6rem;font-weight:800;color:var(--dark);display:block;line-height:1;}
+.sl{font-size:.6rem;font-weight:600;color:var(--text2);margin-top:3px;}
+.pb{height:6px;background:var(--bg);border-radius:100px;margin:.8rem 0 .3rem;border:1px solid var(--border);}
+.pf{height:6px;background:var(--dark);border-radius:100px;transition:width .5s ease;}
+.pl{font-size:.68rem;color:var(--text2);}
+.f2c{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;}
+.fb{display:flex;flex-direction:column;gap:5px;margin-bottom:8px;}
+.fl{font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);}
+.fi{width:100%;background:var(--bg);border:none;border-radius:var(--rp);font-family:'Plus Jakarta Sans',sans-serif;font-size:.85rem;color:var(--text);padding:.65rem .9rem;outline:none;transition:box-shadow .15s;}
+.fi:focus{box-shadow:0 0 0 2px rgba(17,17,24,.18);}
+.fi::placeholder{color:var(--text3);}
+.pw{position:relative;}
+.pb2{position:absolute;right:.8rem;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text3);cursor:pointer;font-size:.75rem;}
+.mr{display:flex;align-items:center;justify-content:space-between;padding:.8rem 0;border-bottom:1px solid var(--bg);}
+.mr:last-child{border-bottom:none;}
+.mt{font-size:.85rem;font-weight:700;color:var(--dark);}
+.mm{font-size:.68rem;color:var(--text2);margin-top:2px;}
+.mb2{display:inline;font-size:.6rem;font-weight:700;background:var(--bg);border-radius:var(--rp);padding:.15rem .5rem;margin-left:.4rem;color:var(--text2);}
+.db{width:32px;height:32px;border-radius:50%;background:var(--bg);border:none;font-size:.75rem;color:var(--text2);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.db:hover{background:#ffe0e0;color:#c03030;}
+.ba{width:100%;padding:.8rem;background:var(--dark);border:none;border-radius:var(--rxl);font-family:'Plus Jakarta Sans',sans-serif;font-size:.75rem;font-weight:800;color:white;cursor:pointer;transition:opacity .15s;margin-top:8px;}
+.ba:hover{opacity:.8;}
+.es{text-align:center;padding:1.5rem 1rem;}
+.esi{font-size:2rem;margin-bottom:.5rem;opacity:.3;}
+.est{font-size:.85rem;font-weight:600;color:var(--text2);}
+.nf{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:80vh;padding:2rem;text-align:center;gap:.8rem;}
+.nfi{font-size:3rem;opacity:.3;}
+.nft{font-size:1.2rem;font-weight:800;}
+.nfs{font-size:.85rem;color:var(--text2);}
+.toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(20px);background:var(--dark);color:white;padding:.7rem 1.4rem;border-radius:var(--rp);font-size:.75rem;font-weight:700;z-index:999;opacity:0;transition:all .25s;pointer-events:none;white-space:nowrap;box-shadow:var(--sh2);}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+@media(max-width:380px){.rbs,.f2c{grid-template-columns:1fr;}.nright{display:none!important;}}
+</style>
+</head>
+<body>
+<div class="toast" id="toast"></div>
+<nav>
+  <div class="nlogo">
+    <svg width="116" height="32" viewBox="0 0 116 32" style="display:block;overflow:visible">
+      <defs><style>.bc1{animation:bca 1s ease-in-out infinite alternate;}.bc2{animation:bca 1s ease-in-out .25s infinite alternate;}.bc3{animation:bca 1s ease-in-out .5s infinite alternate;}@keyframes bca{0%{transform:scaleY(.15);}100%{transform:scaleY(1);}}</style></defs>
+      <text x="0" y="25" font-family="'Plus Jakarta Sans',sans-serif" font-size="22" font-weight="800" fill="#111118" letter-spacing="-.3">EVOKE</text>
+      <g transform="translate(82,7)">
+        <rect class="bc1" x="0" y="0" width="4" height="18" rx="2" fill="#111118" transform-origin="2 18"/>
+        <rect class="bc2" x="7" y="0" width="4" height="18" rx="2" fill="#111118" transform-origin="9 18"/>
+        <rect class="bc3" x="14" y="0" width="4" height="18" rx="2" fill="#111118" transform-origin="16 18"/>
+      </g>
+    </svg>
+  </div>
+  <div class="nright" id="nright" style="display:none"><div class="ndot"></div><span class="ncred" id="ncred"></span></div>
+</nav>
+
+<!-- INVITÉS -->
+<div class="page" id="page-guest">
+  <div class="hs">
+    <div class="hc">
+      <div class="hcd"></div><div class="hcd2"></div>
+      <div class="htag"><div class="htdot"></div>Cadeau musical unique</div>
+      <h1>Composez pour<br><em id="couple-display">…</em></h1>
+      <p>Vos mots transformés en mélodie. Votre mélodie prend vie en quelques secondes.</p>
+      <div class="sp"><span class="spn" id="credits-hero">—</span><span class="spl">crédits restants</span></div>
+    </div>
+  </div>
+  <div class="fs">
+    <div class="fc">
+      <div class="cl"><div class="cli">✍️</div>Votre message</div>
+      <textarea class="fta" id="input-message" placeholder="Écrivez ce que vous souhaitez leur dire…"></textarea>
+      <input class="fin" id="input-name" type="text" placeholder="Votre prénom ou « La famille Martin »">
+    </div>
+    <div class="fc">
+      <div class="cl"><div class="cli">🎵</div>Style musical</div>
+      <div class="chips">
+        <input type="radio" name="style" id="s1" value="acoustique folk" class="cin"><label for="s1" class="clb">Acoustique folk</label>
+        <input type="radio" name="style" id="s2" value="afrobeat" class="cin"><label for="s2" class="clb">Afrobeat</label>
+        <input type="radio" name="style" id="s3" value="blues" class="cin"><label for="s3" class="clb">Blues</label>
+        <input type="radio" name="style" id="s4" value="bossa nova" class="cin"><label for="s4" class="clb">Bossa nova</label>
+        <input type="radio" name="style" id="s5" value="classique orchestral" class="cin"><label for="s5" class="clb">Classique</label>
+        <input type="radio" name="style" id="s6" value="country" class="cin"><label for="s6" class="clb">Country</label>
+        <input type="radio" name="style" id="s7" value="électro doux" class="cin"><label for="s7" class="clb">Électro doux</label>
+        <input type="radio" name="style" id="s8" value="gospel" class="cin"><label for="s8" class="clb">Gospel</label>
+        <input type="radio" name="style" id="s9" value="jazz intime" class="cin"><label for="s9" class="clb">Jazz</label>
+        <input type="radio" name="style" id="s10" value="lo-fi chill" class="cin"><label for="s10" class="clb">Lo-fi chill</label>
+        <input type="radio" name="style" id="s11" value="pop romantique" class="cin" checked><label for="s11" class="clb">Pop romantique</label>
+        <input type="radio" name="style" id="s12" value="rap & hip-hop" class="cin"><label for="s12" class="clb">Rap & Hip-hop</label>
+        <input type="radio" name="style" id="s13" value="reggae" class="cin"><label for="s13" class="clb">Reggae</label>
+        <input type="radio" name="style" id="s14" value="rock acoustique" class="cin"><label for="s14" class="clb">Rock acoustique</label>
+        <input type="radio" name="style" id="s15" value="soul & r&b" class="cin"><label for="s15" class="clb">Soul & R&B</label>
+        <input type="radio" name="style" id="s16" value="variété française" class="cin"><label for="s16" class="clb">Variété française</label>
+      </div>
+    </div>
+    <div class="fc">
+      <div class="cl"><div class="cli">🎤</div>Voix</div>
+      <div class="vg">
+        <input type="radio" name="voice" id="v1" value="female" class="vin" checked>
+        <label for="v1" class="vlb"><div class="vi">👩</div><div class="vn">Féminine</div><div class="vs">Douce & chaleureuse</div></label>
+        <input type="radio" name="voice" id="v2" value="male" class="vin">
+        <label for="v2" class="vlb"><div class="vi">👨</div><div class="vn">Masculine</div><div class="vs">Profonde & veloutée</div></label>
+      </div>
+    </div>
+    <button class="bcta" id="btn-cta" onclick="generateMusic()"><span>Composer ma mélodie</span><div class="bctai">→</div></button>
+  </div>
+  <div class="ldg" id="loading">
+    <div class="ldc">
+      <div class="wr"><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div></div>
+      <p class="ldt">Composition en cours…</p>
+      <p class="lds">Votre mélodie prend vie — environ 30 secondes</p>
+    </div>
+  </div>
+  <div class="res" id="result-wrap">
+    <div class="resc">
+      <div class="rp2"><span>✦ Mélodie prête</span></div>
+      <div class="rt" id="result-title"></div>
+      <div class="rm" id="result-meta"></div>
+      <audio id="result-audio" controls></audio>
+      <div class="rbs">
+        <button class="bow" onclick="regenerate()">↺ Refaire</button>
+        <button class="bgr" onclick="saveToGallery()">Envoyer à la galerie →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- GALERIE -->
+<div class="noc" id="noc-wrap">
+    <div class="nocc">
+      <div class="noc-icon">✦</div>
+      <div class="noc-title">Toutes les mélodies ont été composées.</div>
+      <div class="noc-sub">Le nombre de créations pour ce mariage est atteint.<br>Merci d'avoir participé à cette belle journée.</div>
+    </div>
+  </div>
+
+<div class="page" id="page-gallery">
+  <div class="gt">
+    <div class="ghc">
+      <div><div class="ght" id="gal-title">La <em>Galerie</em></div></div>
+      <div class="ghct" id="gal-count">0 mélodie</div>
+    </div>
+  </div>
+  <div class="gg" id="gal-grid"></div>
+</div>
+
+<!-- ADMIN -->
+<div class="page" id="page-admin">
+  <div class="ao">
+    <div class="ah"><div class="aht">Backstage ✦</div><div class="ahs">Panel organisateur · Tous vos événements</div></div>
+    <div class="lc" id="admin-login-card">
+      <div class="abt">Accès organisateur</div>
+      <div class="pw" style="margin-bottom:8px">
+        <input class="fi" type="password" id="admin-pwd" placeholder="Mot de passe" style="padding-right:2.4rem">
+        <button class="pb2" onclick="tpwd('admin-pwd')">👁</button>
+      </div>
+      <button class="ba" onclick="adminLogin()">Accéder →</button>
+    </div>
+    <div id="admin-panel" style="display:none">
+      <div class="ats">
+        <button class="at active" id="tb-ev" onclick="stab('events',this)">Événements</button>
+        <button class="at" id="tb-cr" onclick="stab('create',this)">+ Créer</button>
+        <button class="at" id="tb-st" onclick="stab('settings',this)">Réglages</button>
+      </div>
+      <div id="tab-events">
+        <div class="ab"><div class="abt">Vos événements</div><div class="el" id="event-list"></div></div>
+        <div id="event-detail" style="display:none">
+          <div class="ab">
+            <div class="abt">Liens à partager</div>
+            <div class="lb2">
+              <div class="lr"><span class="ll">Invités</span><span class="lv" id="link-guests"></span><button class="lcp" onclick="copyLink('link-guests')">Copier</button><button class="lop" onclick="openLink('link-guests')">↗</button></div>
+              <div class="lr"><span class="ll">Galerie</span><span class="lv" id="link-gallery"></span><button class="lcp" onclick="copyLink('link-gallery')">Copier</button><button class="lop" onclick="openLink('link-gallery')">↗</button></div>
+            </div>
+          </div>
+          <div class="ab">
+            <div class="abt">Statistiques</div>
+            <div class="sg">
+              <div class="sc"><span class="sn" id="d-gen">0</span><span class="sl">Créées</span></div>
+              <div class="sc"><span class="sn" id="d-rem">—</span><span class="sl">Restants</span></div>
+              <div class="sc"><span class="sn" id="d-act">0</span><span class="sl">Actifs</span></div>
+            </div>
+            <div class="pb"><div class="pf" id="d-prog" style="width:0%"></div></div>
+            <div class="pl" id="d-lbl"></div>
+          </div>
+          <div class="ab"><div class="abt">Musiques générées</div><div id="d-songs"></div></div>
+        </div>
+      </div>
+      <div id="tab-create" style="display:none">
+        <div class="ab">
+          <div class="abt">Nouvel événement</div>
+          <div class="f2c">
+            <div class="fb"><label class="fl">Prénom 1</label><input class="fi" id="np1" type="text" placeholder="Sophie"></div>
+            <div class="fb"><label class="fl">Prénom 2</label><input class="fi" id="np2" type="text" placeholder="Thomas"></div>
+          </div>
+          <div class="f2c">
+            <div class="fb"><label class="fl">Date</label><input class="fi" id="ndate" type="date"></div>
+            <div class="fb"><label class="fl">Invités</label><input class="fi" id="nguests" type="number" placeholder="80" min="1"></div>
+          </div>
+          <div class="fb"><label class="fl">Crédits (= nb max de musiques)</label><input class="fi" id="ncredits" type="number" placeholder="50" min="1"></div>
+          <button class="ba" onclick="newEvent()">Créer l'événement →</button>
+        </div>
+      </div>
+      <div id="tab-settings" style="display:none">
+        <div class="ab">
+          <div class="abt">Changer le mot de passe</div>
+          <div class="fb"><label class="fl">Nouveau mot de passe</label><div class="pw"><input class="fi" type="password" id="npwd" placeholder="Minimum 8 caractères" style="padding-right:2.4rem"><button class="pb2" onclick="tpwd('npwd')">👁</button></div></div>
+          <div class="fb"><label class="fl">Confirmer</label><div class="pw"><input class="fi" type="password" id="cpwd" placeholder="Répétez" style="padding-right:2.4rem"><button class="pb2" onclick="tpwd('cpwd')">👁</button></div></div>
+          <button class="ba" onclick="changePwd()">Mettre à jour</button>
+        </div>
+        <div class="ab">
+          <div class="abt">Connexion API</div>
+          <div style="background:var(--bg);border-radius:var(--rmd);padding:1rem;font-size:.82rem;color:var(--text2);line-height:1.6">
+            🔒 Les clés API sont dans les variables d'environnement Netlify — jamais visibles ici.<br><br>
+            Pour les modifier : <strong style="color:var(--dark)">app.netlify.com</strong> → votre site → <strong style="color:var(--dark)">Site configuration → Environment variables</strong>.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- LIEN INVALIDE -->
+<div class="page" id="page-notfound">
+  <div class="nf"><div class="nfi">🔒</div><div class="nft">Lien non reconnu</div><div class="nfs">Ce lien est invalide ou a expiré.<br>Contactez l'organisateur.</div></div>
+</div>
+
+<script>
+const DB={adminPwd:'admin123',events:{},adminLoggedIn:false,curEv:null,guestEv:null,galEv:null};
+function loadDB(){try{const s=localStorage.getItem('evoke_v3');if(s){const p=JSON.parse(s);DB.adminPwd=p.adminPwd||'admin123';DB.events=p.events||{};}}catch(e){}}
+function saveDB(){localStorage.setItem('evoke_v3',JSON.stringify({adminPwd:DB.adminPwd,events:DB.events}));}
+function sp(n){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-'+n).classList.add('active');}
+function route(){
+  const path=window.location.pathname,params=new URLSearchParams(window.location.search);
+  const mm=path.match(/\/mariage\/([^\/]+)/);
+  if(mm){const ev=DB.events[mm[1]];if(!ev){sp('notfound');return;}DB.guestEv=mm[1];initGuest(ev);sp('guest');return;}
+  const gm=path.match(/\/galerie\/([^\/]+)/);
+  if(gm){const ev=DB.events[gm[1]],tok=params.get('token');if(!ev||ev.token!==tok){sp('notfound');return;}DB.galEv=gm[1];initGal(ev);sp('gallery');return;}
+  sp('admin');
+}
+function initGuest(ev){
+  const rem=ev.credits-ev.usedCredits;
+  document.getElementById('couple-display').textContent=ev.couple;
+  document.getElementById('credits-hero').textContent=rem;
+  document.getElementById('nright').style.display='flex';
+  document.getElementById('ncred').textContent=rem+' crédits';
+  document.title='EVOKE — '+ev.couple;
+  if(rem<=0){document.getElementById('btn-cta').disabled=true;document.querySelector('.fs').style.display='none';document.querySelector('.hs').style.display='none';document.getElementById('noc-wrap').classList.add('active');}
+}
+async function generateMusic(){
+  const ev=DB.events[DB.guestEv];if(!ev)return;
+  const msg=document.getElementById('input-message').value.trim(),name=document.getElementById('input-name').value.trim()||'Un invité';
+  const style=document.querySelector('input[name="style"]:checked')?.value||'pop romantique',voice=document.querySelector('input[name="voice"]:checked')?.value||'female';
+  if(!msg){toast('Écrivez votre message d\'abord');return;}
+  if(msg.length>500){toast('Message trop long (500 caractères max)');return;}
+  if(ev.credits-ev.usedCredits<=0){document.querySelector('.fs').style.display='none';document.querySelector('.hs').style.display='none';document.getElementById('noc-wrap').classList.add('active');return;}
+  document.getElementById('btn-cta').disabled=true;
+  document.querySelector('.fs').style.display='none';document.querySelector('.hs').style.display='none';
+  document.getElementById('loading').classList.add('active');document.getElementById('result-wrap').classList.remove('active');
+  try{
+    // ÉTAPE 1 — Lancer la génération, récupérer task_id
+    let task_id=null,cleanN=name;
+    const r=await fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:msg,name,style,voice,event_id:DB.guestEv})});
+    if(r.status===403){document.getElementById('loading').classList.remove('active');document.querySelector('.fs').style.display='none';document.querySelector('.hs').style.display='none';document.getElementById('noc-wrap').classList.add('active');document.getElementById('btn-cta').disabled=false;return;}
+    if(r.ok){const d=await r.json();task_id=d.task_id;cleanN=d.name||name;}
+
+    let url=null;
+    if(task_id){
+      // ÉTAPE 2 — Polling côté frontend : premier appel après 2s puis toutes les 4s
+      document.querySelector('.lds').textContent='Votre mélodie est en cours de composition — cela peut prendre jusqu\'à 2 minutes…';
+      const maxAttempts=45;
+      for(let i=0;i<maxAttempts;i++){
+        await new Promise(res=>setTimeout(res,i===0?2000:4000));
+        try{
+          const pr=await fetch(`/api/poll?task_id=${task_id}`);
+          if(pr.ok){
+            const pd=await pr.json();
+            if(pd.audioUrl){url=pd.audioUrl;break;}
+            if(pd.status==='FAILED'){toast('Erreur lors de la composition');rForm();document.getElementById('loading').classList.remove('active');document.getElementById('btn-cta').disabled=false;return;}
+          }
+        }catch(e){}
+      }
+    }
+
+    // Fallback démo si pas d'URL
+    if(!url){await new Promise(res=>setTimeout(res,1000));url=genDemo();}
+
+    ev.lastGenerated={name:cleanN,msg,style,voice,url};
+    document.getElementById('result-title').textContent='Mélodie de '+cleanN;
+    document.getElementById('result-meta').textContent=style+' · '+(voice==='female'?'Voix féminine':'Voix masculine')+' · 1 min 30';
+    document.getElementById('result-audio').src=url;
+    document.getElementById('result-wrap').classList.add('active');
+  }catch(e){console.error(e);toast('Erreur lors de la composition');rForm();}
+  document.getElementById('loading').classList.remove('active');
+  document.getElementById('btn-cta').disabled=false;
+}
+function rForm(){document.querySelector('.fs').style.display='';document.querySelector('.hs').style.display='';}
+async function saveToGallery(){
+  const ev=DB.events[DB.guestEv];if(!ev||!ev.lastGenerated)return;
+  const{name,msg,style,voice,url}=ev.lastGenerated;let finalUrl=url;
+  try{const r=await fetch('/api/upload',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({audioUrl:url,author:name,style})});if(r.ok){const d=await r.json();finalUrl=d.publicUrl||url;}}catch(e){}
+  if(!ev.songs)ev.songs=[];
+  ev.songs.unshift({id:Date.now().toString(),title:'Mélodie de '+name,author:name,message:msg,style,voice,url:finalUrl,createdAt:new Date().toISOString()});
+  ev.usedCredits++;ev.lastGenerated=null;saveDB();
+  const rem=ev.credits-ev.usedCredits;
+  document.getElementById('credits-hero').textContent=rem;document.getElementById('ncred').textContent=rem+' crédits';
+  document.getElementById('result-wrap').classList.remove('active');
+  document.getElementById('conf-name').textContent=name;
+  document.getElementById('conf-wrap').classList.add('active');
+  document.getElementById('btn-cta').disabled=false;
+}
+function newComposition(){document.getElementById('conf-wrap').classList.remove('active');rForm();document.getElementById('btn-cta').disabled=false;if(DB.guestEv&&DB.events[DB.guestEv])DB.events[DB.guestEv].lastGenerated=null;}
+function regenerate(){document.getElementById('result-wrap').classList.remove('active');rForm();document.getElementById('btn-cta').disabled=false;if(DB.guestEv&&DB.events[DB.guestEv])DB.events[DB.guestEv].lastGenerated=null;}
+function initGal(ev){
+  const songs=ev.songs||[];
+  document.getElementById('gal-title').innerHTML='Galerie de <em>'+esc(ev.couple)+'</em>';
+  document.getElementById('gal-count').textContent=songs.length+' mélodie'+(songs.length>1?'s':'');
+  document.title='EVOKE — Galerie '+ev.couple;
+  const g=document.getElementById('gal-grid');
+  if(!songs.length){g.innerHTML='<div class="ge"><div class="gei">🎵</div><p class="get">Aucune mélodie pour l\'instant…</p></div>';return;}
+  g.innerHTML=songs.map((s,i)=>`
+    <div class="gca" style="animation-delay:${i*.05}s">
+      <div class="gct"><span class="gcn">Track ${String(songs.length-i).padStart(2,'0')}</span><span class="gcs">${esc(s.style)}</span></div>
+      <div class="gcti">${esc(s.title)}</div>
+      <div class="gca2">par ${esc(s.author)} · ${fmt(s.createdAt)}</div>
+      <div class="gcm">"${esc(s.message.substring(0,100))}${s.message.length>100?'…':''}"</div>
+      ${s.url?`<audio controls src="${s.url}" style="width:100%;margin-bottom:.8rem;accent-color:#3ecf6a"></audio>`:''}
+      <div class="gf">
+        <div class="gvp">${s.voice==='female'?'👩':'👨'} 90s</div>
+        ${s.url?`<a class="gdl" href="${s.url}" download="evoke_${s.author.replace(/\s/g,'_')}.mp3">⬇ Télécharger</a>`:''}
+      </div>
+    </div>`).join('');
+}
+function adminLogin(){
+  if(document.getElementById('admin-pwd').value===DB.adminPwd){
+    DB.adminLoggedIn=true;document.getElementById('admin-login-card').style.display='none';document.getElementById('admin-panel').style.display='block';
+    renderEL();toast('✦ Accès accordé');
+  }else toast('Mot de passe incorrect');
+}
+function stab(n,btn){
+  document.querySelectorAll('.at').forEach(t=>t.classList.remove('active'));btn.classList.add('active');
+  ['events','create','settings'].forEach(x=>document.getElementById('tab-'+x).style.display=x===n?'block':'none');
+}
+function renderEL(){
+  const list=document.getElementById('event-list');
+  const evs=Object.values(DB.events).sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));
+  if(!evs.length){list.innerHTML='<div class="es"><div class="esi">💍</div><div class="est">Aucun événement — créez-en un !</div></div>';document.getElementById('event-detail').style.display='none';return;}
+  list.innerHTML=evs.map(e=>`
+    <div class="er ${DB.curEv===e.id?'aev':''}" onclick="selEv('${e.id}')">
+      <div class="erl"><div class="ern">${esc(e.couple)}</div><div class="erd">${e.date?fmtD(e.date):'Date non définie'}</div></div>
+      <div class="err">
+        <span class="ecp">${e.credits-e.usedCredits} crédits</span>
+        <button class="edb" onclick="(function(ev){ev.stopPropagation();delEv('${e.id}');})(event)">✕</button>
+      </div>
+    </div>`).join('');
+}
+function selEv(id){DB.curEv=id;renderEL();renderDet(id);}
+function renderDet(id){
+  const ev=DB.events[id];if(!ev)return;
+  const songs=ev.songs||[],used=ev.usedCredits,total=ev.credits,pct=total>0?Math.round(used/total*100):0;
+  const base=window.location.origin;
+  document.getElementById('event-detail').style.display='block';
+  document.getElementById('link-guests').textContent=base+'/mariage/'+id;
+  document.getElementById('link-gallery').textContent=base+'/galerie/'+id+'?token='+ev.token;
+  document.getElementById('d-gen').textContent=used;document.getElementById('d-rem').textContent=total-used;
+  document.getElementById('d-act').textContent=new Set(songs.map(s=>s.author)).size;
+  document.getElementById('d-prog').style.width=pct+'%';document.getElementById('d-lbl').textContent=used+' / '+total+' crédits ('+pct+'%)';
+  const ml=document.getElementById('d-songs');
+  if(!songs.length){ml.innerHTML='<div class="es"><div class="esi">🎵</div><div class="est">Aucune musique pour l\'instant</div></div>';return;}
+  ml.innerHTML=songs.map(s=>`
+    <div class="mr">
+      <div><div class="mt">${esc(s.title)}<span class="mb2">${esc(s.style)}</span></div><div class="mm">${fmt(s.createdAt)} · ${s.voice==='female'?'👩':'👨'}</div></div>
+      <button class="db" onclick="delSong('${id}','${s.id}')">✕</button>
+    </div>`).join('');
+}
+function newEvent(){
+  const p1=document.getElementById('np1').value.trim(),p2=document.getElementById('np2').value.trim();
+  const date=document.getElementById('ndate').value,guests=parseInt(document.getElementById('nguests').value)||80,credits=parseInt(document.getElementById('ncredits').value)||50;
+  if(!p1||!p2){toast('Entrez les deux prénoms');return;}
+  const slug=(p1+'-'+p2).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,'-').replace(/-+/g,'-');
+  const id=slug+'-'+Date.now().toString(36),token=Math.random().toString(36).substring(2)+Math.random().toString(36).substring(2);
+  DB.events[id]={id,couple:p1+' & '+p2,p1,p2,date,guests,credits,usedCredits:0,token,songs:[],createdAt:new Date().toISOString()};
+  saveDB();
+  // Sync crédits dans Supabase pour la vérification serveur
+  fetch('/api/init-credits',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({event_id:id,credits})}).catch(()=>{});
+  ['np1','np2','ndate','nguests','ncredits'].forEach(x=>document.getElementById(x).value='');
+  stab('events',document.getElementById('tb-ev'));renderEL();selEv(id);toast('✦ Événement créé !');
+}
+function delEv(id){
+  if(!confirm('Supprimer cet événement et toutes ses musiques ?'))return;
+  delete DB.events[id];if(DB.curEv===id){DB.curEv=null;document.getElementById('event-detail').style.display='none';}
+  saveDB();renderEL();toast('Événement supprimé');
+}
+function delSong(eid,sid){
+  const ev=DB.events[eid];if(!ev)return;
+  ev.songs=ev.songs.filter(s=>s.id!==sid);if(ev.usedCredits>0)ev.usedCredits--;
+  saveDB();renderDet(eid);toast('Musique supprimée');
+}
+function changePwd(){
+  const p1=document.getElementById('npwd').value,p2=document.getElementById('cpwd').value;
+  if(p1.length<8){toast('Minimum 8 caractères');return;}if(p1!==p2){toast('Les mots de passe ne correspondent pas');return;}
+  DB.adminPwd=p1;saveDB();document.getElementById('npwd').value='';document.getElementById('cpwd').value='';toast('✦ Mot de passe mis à jour');
+}
+function openLink(id){window.open(document.getElementById(id).textContent,'_blank');}
+function copyLink(id){const v=document.getElementById(id).textContent;navigator.clipboard.writeText(v).then(()=>toast('Lien copié !')).catch(()=>toast('Copiez manuellement'));}
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800);}
+function tpwd(id){const el=document.getElementById(id);el.type=el.type==='password'?'text':'password';}
+function fmt(iso){try{return new Date(iso).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});}catch(e){return '';}}
+function fmtD(d){try{return new Date(d+'T00:00:00').toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'});}catch(e){return d;}}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function genDemo(){
+  try{
+    const ctx=new AudioContext(),dur=3,sr=ctx.sampleRate,buf=ctx.createBuffer(1,sr*dur,sr),d=buf.getChannelData(0);
+    for(let i=0;i<d.length;i++){const t=i/sr,e=Math.min(t,dur-t,.5)*2;d[i]=(Math.sin(2*Math.PI*440*t)*.3+Math.sin(2*Math.PI*554.37*t)*.15+Math.sin(2*Math.PI*659.25*t)*.1)*e;}
+    const len=d.length,ab=new ArrayBuffer(44+len*2),v=new DataView(ab),w=(o,s)=>{for(let i=0;i<s.length;i++)v.setUint8(o+i,s.charCodeAt(i));};
+    w(0,'RIFF');v.setUint32(4,36+len*2,true);w(8,'WAVE');w(12,'fmt ');v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,1,true);v.setUint32(24,sr,true);v.setUint32(28,sr*2,true);v.setUint16(32,2,true);v.setUint16(34,16,true);
+    w(36,'data');v.setUint32(40,len*2,true);for(let i=0;i<len;i++){const s2=Math.max(-1,Math.min(1,d[i]));v.setInt16(44+i*2,s2<0?s2*0x8000:s2*0x7FFF,true);}
+    return URL.createObjectURL(new Blob([ab],{type:'audio/wav'}));
+  }catch(e){return '';}
+}
+loadDB();route();
+document.getElementById('admin-pwd').addEventListener('keydown',e=>{if(e.key==='Enter')adminLogin();});
+</script>
+</body>
+</html>
