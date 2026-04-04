@@ -501,8 +501,9 @@ async function generateMusic(){
     // ÉTAPE 1 — Lancer la génération, récupérer task_id
     let task_id=null,cleanN=name;
     const r=await fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:msg,name,style,voice,event_id:DB.guestEv})});
-    if(r.status===403){document.getElementById('loading').classList.remove('active');document.querySelector('.fs').style.display='none';document.querySelector('.hs').style.display='none';document.getElementById('noc-wrap').classList.add('active');document.getElementById('btn-cta').disabled=false;return;}
-    if(r.ok){const d=await r.json();task_id=d.task_id;cleanN=d.name||name;}
+    if(r.status===403){document.getElementById('loading').classList.remove('active');document.querySelector('.fs').style.display='none';document.querySelector('.hs').style.display='none';document.getElementById('noc-wrap').classList.add('active');document.getElementById('btn-cta').disabled=false;if(queueJoined)fetch('/api/queue?queue_id='+queueId,{method:'DELETE'}).catch(()=>{});return;}
+    if(!r.ok){const errD=await r.json().catch(()=>({}));toast('Erreur : '+(errD.error||r.status));rForm();document.getElementById('loading').classList.remove('active');document.getElementById('btn-cta').disabled=false;if(queueJoined)fetch('/api/queue?queue_id='+queueId,{method:'DELETE'}).catch(()=>{});return;}
+    {const d=await r.json();task_id=d.task_id;cleanN=d.name||name;}
 
     let url=null;
     if(task_id){
@@ -522,8 +523,15 @@ async function generateMusic(){
       }
     }
 
-    // Fallback démo si pas d'URL
-    if(!url){await new Promise(res=>setTimeout(res,1000));url=genDemo();}
+    // Pas d'URL après polling → erreur propre, pas de fallback
+    if(!url){
+      toast('La composition a pris trop de temps. Réessaie.');
+      rForm();
+      document.getElementById('loading').classList.remove('active');
+      document.getElementById('btn-cta').disabled=false;
+      if(queueJoined)fetch('/api/queue?queue_id='+queueId,{method:'DELETE'}).catch(()=>{});
+      return;
+    }
 
     // Décrémenter le crédit dès que la musique est générée
   ev.usedCredits++;
@@ -531,6 +539,8 @@ async function generateMusic(){
   document.getElementById('credits-hero').textContent=remAfter;
   document.getElementById('ncred').textContent=remAfter+' crédits';
   saveDB();
+  // Sync usedCredits dans Supabase
+  fetch('/api/event',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...ev,lastGenerated:undefined})}).catch(()=>{});
   ev.lastGenerated={name:cleanN,msg,style,voice,url};
     document.getElementById('result-title').textContent='Mélodie de '+cleanN;
     document.getElementById('result-meta').textContent=style+' · '+(voice==='female'?'Voix féminine':'Voix masculine')+' · 1 min 30';
@@ -549,8 +559,9 @@ async function saveToGallery(){
   if(!ev.songs)ev.songs=[];
   ev.songs.unshift({id:Date.now().toString(),title:'Mélodie de '+name,author:name,message:msg,style,voice,url:finalUrl,createdAt:new Date().toISOString()});
   ev.lastGenerated=null;saveDB();
-  // Sync l'événement mis à jour sur Supabase
-  fetch('/api/event',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(ev)}).catch(()=>{});
+  // Sync l'événement complet (avec nouvelles chansons) vers Supabase
+  const evToSync={...ev};delete evToSync.lastGenerated;
+  fetch('/api/event',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(evToSync)}).catch(()=>{});
   stopAudio();document.getElementById('result-wrap').classList.remove('active');
   document.getElementById('conf-name').textContent=name;
   document.getElementById('conf-wrap').classList.add('active');
