@@ -187,6 +187,10 @@ audio{width:100%;margin-bottom:1.2rem;accent-color:var(--green2);}
 .efi:focus{border-color:var(--dark);}
 .esb{width:100%;padding:.7rem;background:var(--dark);border:none;border-radius:var(--rp);font-family:'Plus Jakarta Sans',sans-serif;font-size:.75rem;font-weight:800;color:white;cursor:pointer;margin-top:4px;transition:opacity .15s;}
 .esb:hover{opacity:.85;}
+.cr-hist{margin-top:.6rem;display:flex;flex-direction:column;gap:4px;}
+.cr-hist-item{display:flex;justify-content:space-between;align-items:center;background:var(--white);border-radius:var(--rp);padding:.4rem .7rem;font-size:.68rem;}
+.cr-hist-add{font-weight:800;color:#1a5c2a;}
+.cr-hist-date{color:var(--text2);}
 .db:hover{background:#ffe0e0;color:#c03030;}
 .ba{width:100%;padding:.8rem;background:var(--dark);border:none;border-radius:var(--rxl);font-family:'Plus Jakarta Sans',sans-serif;font-size:.75rem;font-weight:800;color:white;cursor:pointer;transition:opacity .15s;margin-top:8px;}
 .ba:hover{opacity:.8;}
@@ -350,10 +354,20 @@ audio{width:100%;margin-bottom:1.2rem;accent-color:var(--green2);}
                   <div><div class="efl">Date</div><input class="efi" id="edit-date" type="date"></div>
                   <div><div class="efl">Nb invités</div><input class="efi" id="edit-guests" type="number" min="1"></div>
                 </div>
-                <div class="edit-row full">
-                  <div><div class="efl">Crédits max</div><input class="efi" id="edit-credits" type="number" min="1"></div>
-                </div>
                 <button class="esb" onclick="saveEdit()">✦ Enregistrer les modifications</button>
+              </div>
+            </div>
+          </div>
+          <div class="ab">
+            <div class="abt">Ajouter des crédits</div>
+            <div style="padding:.2rem 0">
+              <div class="efl" style="margin-bottom:.4rem">Total actuel : <span id="d-credits-total" style="font-weight:800;color:var(--dark)">—</span> crédits</div>
+              <div style="display:flex;gap:8px;align-items:center">
+                <input class="efi" id="add-credits-input" type="number" min="1" placeholder="Ex: 10" style="width:100px">
+                <button class="esb" style="width:auto;padding:.5rem 1rem" onclick="addCredits()">+ Ajouter</button>
+              </div>
+              <div class="cr-hist" id="credits-history"></div>
+            </div>
               </div>
             </div>
           </div>
@@ -640,8 +654,16 @@ function renderDet(id){
   document.getElementById('edit-p2').value=ev.p2||'';
   document.getElementById('edit-date').value=ev.date||'';
   document.getElementById('edit-guests').value=ev.guests||'';
-  document.getElementById('edit-credits').value=ev.credits||'';
   document.getElementById('edit-form').style.display='none';
+  // Afficher total crédits et historique
+  const credTotalEl=document.getElementById('d-credits-total');
+  if(credTotalEl)credTotalEl.textContent=ev.credits||0;
+  const hist=document.getElementById('credits-history');
+  if(hist){
+    const log=ev.creditsLog||[];
+    if(!log.length){hist.innerHTML='<div style="font-size:.68rem;color:var(--text2);padding:.3rem 0">Aucun ajout pour l\'instant</div>';}
+    else{hist.innerHTML=log.map(l=>`<div class="cr-hist-item"><span class="cr-hist-add">+${l.amount} crédits</span><span class="cr-hist-date">${fmt(l.date)}</span></div>`).join('');}
+  }
   const ml=document.getElementById('d-songs');
   if(!songs.length){ml.innerHTML='<div class="es"><div class="esi">🎵</div><div class="est">Aucune musique pour l\'instant</div></div>';return;}
   ml.innerHTML=songs.map(s=>`
@@ -649,6 +671,24 @@ function renderDet(id){
       <div><div class="mt">${esc(s.title)}<span class="mb2">${esc(s.style)}</span></div><div class="mm">${fmt(s.createdAt)} · ${s.voice==='female'?'👩':'👨'}</div></div>
       <button class="db" onclick="delSong('${id}','${s.id}')">✕</button>
     </div>`).join('');
+}
+async function addCredits(){
+  const id=DB.curEv;if(!id)return;
+  const ev=DB.events[id];if(!ev)return;
+  const amount=parseInt(document.getElementById('add-credits-input').value);
+  if(!amount||amount<1){toast('Entrez un nombre valide');return;}
+  if(!ev.creditsLog)ev.creditsLog=[];
+  ev.credits=(ev.credits||0)+amount;
+  ev.creditsLog.unshift({amount,date:new Date().toISOString()});
+  saveDB();
+  // Sync Supabase
+  try{
+    await fetch('/api/event',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(ev)});
+    await fetch('/api/init-credits',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({event_id:id,credits:ev.credits})});
+  }catch(e){}
+  document.getElementById('add-credits-input').value='';
+  renderEL();renderDet(id);
+  toast('✦ +'+amount+' crédits ajoutés !');
 }
 function toggleEdit(){
   const f=document.getElementById('edit-form');
@@ -661,15 +701,12 @@ async function saveEdit(){
   const p2=document.getElementById('edit-p2').value.trim();
   const date=document.getElementById('edit-date').value;
   const guests=parseInt(document.getElementById('edit-guests').value)||ev.guests;
-  const credits=parseInt(document.getElementById('edit-credits').value)||ev.credits;
   if(!p1||!p2){toast('Les prénoms sont requis');return;}
-  ev.p1=p1;ev.p2=p2;ev.couple=p1+' & '+p2;ev.date=date;ev.guests=guests;ev.credits=credits;
+  ev.p1=p1;ev.p2=p2;ev.couple=p1+' & '+p2;ev.date=date;ev.guests=guests;
   saveDB();
   // Sync Supabase
   try{
     await fetch('/api/event',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(ev)});
-    // Mettre à jour les crédits dans event_credits aussi
-    await fetch('/api/init-credits',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({event_id:id,credits})});
   }catch(e){}
   document.getElementById('edit-form').style.display='none';
   renderEL();renderDet(id);toast('✦ Événement mis à jour !');
