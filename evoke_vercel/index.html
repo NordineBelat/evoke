@@ -2,14 +2,14 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>EVOKE</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 :root{--bg:#f2f2f7;--white:#fff;--dark:#111118;--text:#111118;--text2:#6b6b80;--text3:#aeaec0;--green:#b8f0c8;--green2:#3ecf6a;--red:#ff6b6b;--border:rgba(0,0,0,0.07);--sh:0 4px 24px rgba(0,0,0,0.07);--sh2:0 12px 40px rgba(0,0,0,0.12);--rmd:24px;--rlg:32px;--rxl:40px;--rp:100px;}
-html{scroll-behavior:smooth;}
-body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased;}
+html{scroll-behavior:smooth;overflow-x:hidden;max-width:100vw;}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;max-width:100vw;-webkit-font-smoothing:antialiased;}
 nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;height:64px;background:rgba(242,242,247,0.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
 .nlogo{display:flex;align-items:center;}
 .nright{display:flex;align-items:center;gap:.5rem;background:var(--white);border-radius:var(--rp);padding:.4rem .9rem;box-shadow:var(--sh);}
@@ -164,6 +164,18 @@ audio{width:100%;margin-bottom:1.2rem;accent-color:var(--green2);}
 .lsend:hover{opacity:.85;}
 .lsend:disabled{opacity:.4;cursor:not-allowed;}
 .email-input-wrap{margin-top:8px;}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;align-items:center;justify-content:center;}
+.modal-overlay.active{display:flex;}
+.modal-box{background:white;border-radius:var(--rxl);padding:2rem;max-width:380px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,.2);}
+.modal-title{font-size:1rem;font-weight:800;color:var(--dark);margin-bottom:.5rem;}
+.modal-sub{font-size:.82rem;color:var(--text2);margin-bottom:1.4rem;line-height:1.5;}
+.modal-actions{display:flex;gap:8px;}
+.modal-cancel{flex:1;padding:.75rem;background:var(--bg);border:none;border-radius:var(--rp);font-family:'Plus Jakarta Sans',sans-serif;font-size:.75rem;font-weight:700;color:var(--text2);cursor:pointer;}
+.modal-confirm{flex:2;padding:.75rem;background:var(--dark);border:none;border-radius:var(--rp);font-family:'Plus Jakarta Sans',sans-serif;font-size:.75rem;font-weight:800;color:white;cursor:pointer;}
+.send-hist{margin-top:.6rem;display:flex;flex-direction:column;gap:4px;}
+.send-hist-item{display:flex;justify-content:space-between;align-items:center;background:var(--bg);border-radius:var(--rp);padding:.4rem .7rem;font-size:.68rem;}
+.send-hist-email{font-weight:700;color:var(--dark);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:180px;}
+.send-hist-date{color:var(--text2);flex-shrink:0;}
 .lop:hover{background:var(--dark);color:white;border-color:var(--dark);}
 .sg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:1rem;}
 .sc{background:var(--bg);border-radius:var(--rmd);padding:1rem .8rem;text-align:center;}
@@ -338,11 +350,8 @@ audio{width:100%;margin-bottom:1.2rem;accent-color:var(--green2);}
               <div class="lr"><span class="ll">Invités</span><span class="lv" id="link-guests"></span><button class="lcp" onclick="copyLink('link-guests')">Copier</button><button class="lop" onclick="openLink('link-guests')">↗</button></div>
               <div class="lr"><span class="ll">Galerie</span><span class="lv" id="link-gallery"></span><button class="lcp" onclick="copyLink('link-gallery')">Copier</button><button class="lop" onclick="openLink('link-gallery')">↗</button></div>
               <div class="email-input-wrap">
-                <div class="lr" style="border:none;padding:.5rem 0 .3rem">
-                  <span class="ll">Email mariés</span>
-                  <input class="lv" type="email" id="invite-email" placeholder="prenom@email.com" style="border:1.5px solid var(--border);outline:none;border-radius:var(--rp);">
-                </div>
                 <button class="lsend" id="btn-send-invite" onclick="sendInvite()">✉️ &nbsp;Envoyer les liens par email</button>
+                <div class="send-hist" id="send-history"></div>
               </div>
             </div>
           </div>
@@ -370,6 +379,9 @@ audio{width:100%;margin-bottom:1.2rem;accent-color:var(--green2);}
                 <div class="edit-row">
                   <div><div class="efl">Date</div><input class="efi" id="edit-date" type="date"></div>
                   <div><div class="efl">Nb invités</div><input class="efi" id="edit-guests" type="number" min="1"></div>
+                </div>
+                <div class="edit-row full">
+                  <div><div class="efl">Email des mariés</div><input class="efi" id="edit-email" type="email" placeholder="contact@email.com"></div>
                 </div>
                 <button class="esb" onclick="saveEdit()">✦ Enregistrer les modifications</button>
               </div>
@@ -403,6 +415,7 @@ audio{width:100%;margin-bottom:1.2rem;accent-color:var(--green2);}
             <div class="fb"><label class="fl">Invités</label><input class="fi" id="nguests" type="number" placeholder="80" min="1"></div>
           </div>
           <div class="fb"><label class="fl">Crédits (= nb max de musiques)</label><input class="fi" id="ncredits" type="number" placeholder="50" min="1"></div>
+          <div class="fb"><label class="fl">Email des mariés</label><input class="fi" id="nemail" type="email" placeholder="contact@email.com"></div>
           <button class="ba" onclick="newEvent()">Créer l'événement →</button>
         </div>
       </div>
@@ -428,6 +441,17 @@ audio{width:100%;margin-bottom:1.2rem;accent-color:var(--green2);}
 <!-- LIEN INVALIDE -->
 <div class="page" id="page-notfound">
   <div class="nf"><div class="nfi">🔒</div><div class="nft">Lien non reconnu</div><div class="nfs">Ce lien est invalide ou a expiré.<br>Contactez l'organisateur.</div></div>
+</div>
+
+<div class="modal-overlay" id="modal-send">
+  <div class="modal-box">
+    <div class="modal-title">Envoyer les liens par email ?</div>
+    <div class="modal-sub" id="modal-send-text"></div>
+    <div class="modal-actions">
+      <button class="modal-cancel" onclick="closeModal()">Annuler</button>
+      <button class="modal-confirm" id="modal-confirm-btn" onclick="confirmSendInvite()">✉️ Envoyer</button>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -681,10 +705,10 @@ function renderDet(id){
   // Couleur selon % utilisé : vert → jaune → orange → rouge
   const rem100=total>0?Math.round((total-used)/total*100):0;
   let barColor;
-  if(rem100>50)barColor='#3ecf6a';        // vert — plus de 50% restant
-  else if(rem100>25)barColor='#f59e0b';   // jaune — 25-50% restant
-  else if(rem100>10)barColor='#f97316';   // orange — 10-25% restant
-  else barColor='#ef4444';                // rouge — moins de 10% restant
+  if(rem100>60)barColor='#3ecf6a';        // vert — plus de 60% restant
+  else if(rem100>35)barColor='#f59e0b';   // jaune — 35-60% restant
+  else if(rem100>15)barColor='#f97316';   // orange — 15-35% restant
+  else barColor='#ef4444';                // rouge — moins de 15% restant
   prog.style.backgroundColor=barColor;
   document.getElementById('d-lbl').textContent=used+' / '+total+' crédits ('+(total-used)+' restants)';
   // Pré-remplir le formulaire d'édition
@@ -693,7 +717,15 @@ function renderDet(id){
   document.getElementById('edit-date').value=ev.date||'';
   document.getElementById('edit-guests').value=ev.guests||'';
   document.getElementById('edit-form').style.display='none';
+  const editEmailEl=document.getElementById('edit-email');if(editEmailEl)editEmailEl.value=ev.email||'';
   // Afficher total crédits et historique
+  // Historique envois email
+  const sendHistEl=document.getElementById('send-history');
+  if(sendHistEl){
+    const slog=ev.sendLog||[];
+    if(!slog.length)sendHistEl.innerHTML='';
+    else sendHistEl.innerHTML=slog.map(l=>`<div class="send-hist-item"><span class="send-hist-email">✉️ ${esc(l.to)}</span><span class="send-hist-date">${fmt(l.date)}</span></div>`).join('');
+  }
   const credTotalEl=document.getElementById('d-credits-total');
   if(credTotalEl)credTotalEl.textContent=ev.credits||0;
   const hist=document.getElementById('credits-history');
@@ -734,11 +766,20 @@ async function downloadAll(){
   btn.disabled=false;btn.innerHTML='⬇ Tout télécharger';
   toast('✦ '+songs.length+' mélodie'+(songs.length>1?'s':'')+' téléchargée'+(songs.length>1?'s':'')+'!');
 }
-async function sendInvite(){
+function sendInvite(){
   const id=DB.curEv;if(!id)return;
   const ev=DB.events[id];if(!ev)return;
-  const to=document.getElementById('invite-email').value.trim();
-  if(!to||!to.includes('@')){toast('Entrez un email valide');return;}
+  const to=ev.email||'';
+  if(!to||!to.includes('@')){toast('Ajoutez l\'email des mariés dans "Modifier l\'événement"');return;}
+  document.getElementById('modal-send-text').textContent='Un email avec les liens sera envoyé à '+to+' ('+ev.couple+').';
+  document.getElementById('modal-send').classList.add('active');
+}
+function closeModal(){document.getElementById('modal-send').classList.remove('active');}
+async function confirmSendInvite(){
+  closeModal();
+  const id=DB.curEv;if(!id)return;
+  const ev=DB.events[id];if(!ev)return;
+  const to=ev.email;
   const base=window.location.hostname.includes('vercel.app')&&!window.location.hostname.includes('evoke-ecru')?'https://evoke-ecru.vercel.app':window.location.origin;
   const guestLink=base+'/mariage/'+id;
   const galleryLink=base+'/galerie/'+id+'?token='+ev.token;
@@ -751,8 +792,15 @@ async function sendInvite(){
       body:JSON.stringify({to,p1:ev.p1,p2:ev.p2,date:ev.date,guestLink,galleryLink})
     });
     const d=await r.json();
-    if(r.ok){toast('✦ Email envoyé à '+to+' !');document.getElementById('invite-email').value='';}
-    else toast('Erreur : '+(d.error||'envoi échoué'));
+    if(r.ok){
+      // Ajouter à l'historique
+      if(!ev.sendLog)ev.sendLog=[];
+      ev.sendLog.unshift({to,date:new Date().toISOString()});
+      saveDB();
+      fetch('/api/event',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(ev)}).catch(()=>{});
+      renderDet(id);
+      toast('✦ Email envoyé à '+to+' !');
+    }else toast('Erreur : '+(d.error||'envoi échoué'));
   }catch(e){toast('Erreur réseau');}
   btn.disabled=false;btn.innerHTML='✉️ &nbsp;Envoyer les liens par email';
 }
@@ -800,8 +848,9 @@ async function saveEdit(){
   const p2=document.getElementById('edit-p2').value.trim();
   const date=document.getElementById('edit-date').value;
   const guests=parseInt(document.getElementById('edit-guests').value)||ev.guests;
+  const email=document.getElementById('edit-email').value.trim();
   if(!p1||!p2){toast('Les prénoms sont requis');return;}
-  ev.p1=p1;ev.p2=p2;ev.couple=p1+' & '+p2;ev.date=date;ev.guests=guests;
+  ev.p1=p1;ev.p2=p2;ev.couple=p1+' & '+p2;ev.date=date;ev.guests=guests;if(email)ev.email=email;
   saveDB();
   // Sync Supabase
   try{
@@ -812,18 +861,18 @@ async function saveEdit(){
 }
 function newEvent(){
   const p1=document.getElementById('np1').value.trim(),p2=document.getElementById('np2').value.trim();
-  const date=document.getElementById('ndate').value,guests=parseInt(document.getElementById('nguests').value)||80,credits=parseInt(document.getElementById('ncredits').value)||50;
+  const date=document.getElementById('ndate').value,guests=parseInt(document.getElementById('nguests').value)||80,credits=parseInt(document.getElementById('ncredits').value)||50,email=document.getElementById('nemail').value.trim();
   if(!p1||!p2){toast('Entrez les deux prénoms');return;}
   const slug=(p1+'-'+p2).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,'-').replace(/-+/g,'-');
   const id=slug+'-'+Date.now().toString(36),token=Math.random().toString(36).substring(2)+Math.random().toString(36).substring(2);
-  const evObj={id,couple:p1+' & '+p2,p1,p2,date,guests,credits,usedCredits:0,token,songs:[],createdAt:new Date().toISOString()};
+  const evObj={id,couple:p1+' & '+p2,p1,p2,date,guests,credits,email,usedCredits:0,token,songs:[],sendLog:[],createdAt:new Date().toISOString()};
   DB.events[id]=evObj;
   saveDB();
   // Sauvegarder dans Supabase pour accès multi-appareils
   fetch('/api/event',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(evObj)}).catch(()=>{});
   // Sync crédits dans Supabase
   fetch('/api/init-credits',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({event_id:id,credits})}).catch(()=>{});
-  ['np1','np2','ndate','nguests','ncredits'].forEach(x=>document.getElementById(x).value='');
+  ['np1','np2','ndate','nguests','ncredits','nemail'].forEach(x=>document.getElementById(x).value='');
   stab('events',document.getElementById('tb-ev'));renderEL();selEv(id);toast('✦ Événement créé !');
 }
 function delEv(id){
