@@ -287,9 +287,9 @@ audio{width:100%;margin-bottom:1.2rem;accent-color:var(--green2);}
       <div class="cl"><div class="cli">🎤</div>Voix</div>
       <div class="vg">
         <input type="radio" name="voice" id="v1" value="female" class="vin" checked>
-        <label for="v1" class="vlb"><div class="vi">👩</div><div class="vn">Féminine</div><div class="vs">Douce & chaleureuse</div></label>
+        <label for="v1" class="vlb"><div class="vi">👩</div><div class="vn">Féminine</div></label>
         <input type="radio" name="voice" id="v2" value="male" class="vin">
-        <label for="v2" class="vlb"><div class="vi">👨</div><div class="vn">Masculine</div><div class="vs">Profonde & veloutée</div></label>
+        <label for="v2" class="vlb"><div class="vi">👨</div><div class="vn">Masculine</div></label>
       </div>
     </div>
     <button class="bcta" id="btn-cta" onclick="generateMusic()"><span>Composer ma mélodie</span><div class="bctai">→</div></button>
@@ -386,7 +386,7 @@ audio{width:100%;margin-bottom:1.2rem;accent-color:var(--green2);}
         <div class="ab"><div class="abt">Vos événements</div><div class="el" id="event-list"></div></div>
         <div id="event-detail" style="display:none">
           <div class="ab">
-            <div class="abt" style="display:flex;align-items:center;justify-content:space-between">Liens à partager<button onclick="refreshEvent()" style="background:var(--bg);border:none;border-radius:var(--rp);padding:.25rem .6rem;font-size:.65rem;font-weight:700;color:var(--text2);cursor:pointer">↻ Rafraîchir</button></div>
+            <div class="abt">Liens à partager</div>
             <div class="lb2">
               <div class="lr"><span class="ll">Invités</span><span class="lv" id="link-guests"></span><button class="lcp" onclick="copyLink('link-guests')">Copier</button><button class="lop" onclick="openLink('link-guests')">↗</button></div>
               <div class="lr"><span class="ll">Galerie</span><span class="lv" id="link-gallery"></span><button class="lcp" onclick="copyLink('link-gallery')">Copier</button><button class="lop" onclick="openLink('link-gallery')">↗</button></div>

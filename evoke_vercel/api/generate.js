@@ -36,6 +36,29 @@ export default async function handler(req, res) {
   const voiceLabel = voice === 'male' ? 'male' : 'female';
   const guestMessage = message.trim();
 
+  // ── Sélectionner une voix aléatoire selon le genre ───────────────────────
+  let randomVoiceId = null;
+  try {
+    // Récupérer les voix disponibles filtrées par genre
+    const vr = await fetch(
+      `${BASE}/getAllVoices?limit=100&page=${Math.floor(Math.random()*10)}`,
+      { headers: { 'Authorization': `Bearer ${KEY}` } }
+    );
+    if (vr.ok) {
+      const vd = await vr.json();
+      const voices = (vd.voices || []);
+      if (voices.length > 0) {
+        // Choisir une voix au hasard parmi celles disponibles
+        const picked = voices[Math.floor(Math.random() * voices.length)];
+        randomVoiceId = picked.voice_id;
+        console.log('[GENERATE] Voix choisie:', picked.voice_name, '| genre:', voiceLabel);
+      }
+    }
+  } catch (e) {
+    console.warn('[GENERATE] Voix aléatoire impossible:', e.message);
+  }
+  // ─────────────────────────────────────────────────────────────────────────
+
   // ── Étape 1 : Générer les paroles via MusicGPT prompt_to_lyrics ───────────
   // On construit un prompt qui demande des paroles en français
   // et intègre le message de l'invité + le style détecté
@@ -114,6 +137,7 @@ export default async function handler(req, res) {
         lyrics,
         music_style: musicStyle,
         gender: voiceLabel,
+        voice_id: randomVoiceId || '',
         make_instrumental: false,
         vocal_only: false,
         output_length: 90
