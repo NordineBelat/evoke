@@ -73,25 +73,25 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
 .ldt{font-size:1.15rem;font-weight:800;color:var(--dark);margin-bottom:.4rem;}
 .lds{font-size:.8rem;color:var(--text2);}
 .queue-info{margin-top:.8rem;background:rgba(255,193,7,.1);border:1px solid rgba(255,193,7,.3);border-radius:var(--rmd);padding:.7rem 1rem;font-size:.78rem;color:#b8860b;font-weight:600;text-align:center;}
-.quiz-wrap{margin-top:1.4rem;text-align:left;background:var(--dark);border-radius:var(--rxl);padding:1.4rem;}
-.quiz-header{font-size:.6rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:.8rem;}
-.quiz-intro{font-size:.82rem;color:rgba(255,255,255,.6);margin-bottom:1rem;line-height:1.5;}
-.quiz-q{font-size:.92rem;font-weight:800;color:white;margin-bottom:.8rem;line-height:1.4;}
+.quiz-wrap{margin-top:1.4rem;text-align:left;background:var(--white);border-radius:var(--rxl);padding:1.4rem;box-shadow:var(--sh);}
+.quiz-header{font-size:.6rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);margin-bottom:.5rem;}
+.quiz-intro{font-size:.85rem;font-weight:700;color:var(--dark);margin-bottom:1rem;line-height:1.5;}
+.quiz-q{font-size:.88rem;font-weight:800;color:var(--dark);margin-bottom:.8rem;line-height:1.4;}
 .quiz-opts{display:flex;flex-direction:column;gap:6px;margin-bottom:.6rem;}
-.quiz-opt{padding:.7rem 1rem;background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.1);border-radius:var(--rmd);font-size:.8rem;font-weight:600;color:rgba(255,255,255,.85);cursor:pointer;transition:all .18s;text-align:left;}
-.quiz-opt:hover{background:rgba(255,255,255,.13);border-color:rgba(255,255,255,.25);}
-.quiz-opt.correct{background:rgba(62,207,106,.15);border-color:#3ecf6a;color:#3ecf6a;}
-.quiz-opt.wrong{background:rgba(239,68,68,.12);border-color:#ef4444;color:#ef4444;}
+.quiz-opt{padding:.7rem 1rem;background:var(--bg);border:1.5px solid var(--border);border-radius:var(--rmd);font-size:.8rem;font-weight:600;color:var(--text);cursor:pointer;transition:all .18s;text-align:left;}
+.quiz-opt:hover{border-color:var(--dark);background:white;}
+.quiz-opt.correct{background:#f0fdf4;border-color:#3ecf6a;color:#166534;}
+.quiz-opt.wrong{background:#fff1f2;border-color:#ef4444;color:#991b1b;}
 .quiz-opt:disabled{cursor:default;}
-.quiz-score-bar{height:3px;background:rgba(255,255,255,.1);border-radius:100px;margin-bottom:.8rem;}
-.quiz-score-fill{height:3px;background:#3ecf6a;border-radius:100px;transition:width .4s ease;}
+.quiz-score-bar{height:4px;background:var(--bg);border-radius:100px;margin-bottom:.8rem;border:1px solid var(--border);}
+.quiz-score-fill{height:4px;background:#3ecf6a;border-radius:100px;transition:width .4s ease;}
 .quiz-nav{display:flex;justify-content:space-between;align-items:center;}
-.quiz-progress{font-size:.65rem;color:rgba(255,255,255,.35);font-weight:700;}
-.quiz-pts{font-size:.65rem;color:rgba(255,255,255,.5);font-weight:700;}
+.quiz-progress{font-size:.65rem;color:var(--text3);font-weight:700;}
+.quiz-pts{font-size:.65rem;color:var(--text2);font-weight:700;}
 .quiz-result{text-align:center;padding:.5rem 0;}
 .quiz-result-emoji{font-size:2rem;margin-bottom:.6rem;}
-.quiz-result-title{font-size:1rem;font-weight:800;color:white;margin-bottom:.4rem;line-height:1.3;}
-.quiz-result-sub{font-size:.78rem;color:rgba(255,255,255,.5);line-height:1.5;}
+.quiz-result-title{font-size:1rem;font-weight:800;color:var(--dark);margin-bottom:.4rem;line-height:1.3;}
+.quiz-result-sub{font-size:.78rem;color:var(--text2);line-height:1.5;}
 .gdl-btn{display:inline-flex;align-items:center;gap:.3rem;background:var(--dark);color:white;border:none;border-radius:var(--rp);padding:.45rem 1rem;font-size:.68rem;font-weight:700;cursor:pointer;transition:opacity .15s;}
 .gdl-btn:hover{opacity:.8;}
 .gdl-btn:disabled{opacity:.4;cursor:not-allowed;}
@@ -301,8 +301,8 @@ audio{width:100%;margin-bottom:1.2rem;accent-color:var(--green2);}
       <p class="lds">Votre mélodie prend vie — environ 30 secondes</p>
       <div class="queue-info" id="queue-info" style="display:none"></div>
       <div class="quiz-wrap" id="quiz-wrap" style="display:none">
-        <div class="quiz-header">🎯 &nbsp;Testez vos connaissances</div>
-        <div class="quiz-intro">Pendant que votre mélodie se compose… vous les connaissez vraiment bien ?</div>
+        <div class="quiz-header">⏳ &nbsp;En attendant votre mélodie</div>
+        <div class="quiz-intro">Il est temps de voir si vous méritez vraiment d'être présent à cet événement 😏</div>
         <div class="quiz-score-bar"><div class="quiz-score-fill" id="quiz-score-fill" style="width:0%"></div></div>
         <div id="quiz-question-wrap">
           <div class="quiz-q" id="quiz-q"></div>
