@@ -701,9 +701,9 @@ function renderDet(id){
   document.getElementById('d-gen').textContent=used;document.getElementById('d-rem').textContent=total-used;
   document.getElementById('d-act').textContent=songs.length;
   const prog=document.getElementById('d-prog');
-  prog.style.width=pct+'%';
-  // Couleur selon % utilisé : vert → jaune → orange → rouge
+  // Jauge = % restant (pleine = vert, vide = rouge)
   const rem100=total>0?Math.round((total-used)/total*100):0;
+  prog.style.width=rem100+'%';
   let barColor;
   if(rem100>60)barColor='#3ecf6a';        // vert — plus de 60% restant
   else if(rem100>35)barColor='#f59e0b';   // jaune — 35-60% restant
