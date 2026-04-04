@@ -44,7 +44,7 @@ export default async function handler(req, res) {
         <div style="font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#9ca3af;margin-bottom:12px;">Comment ça marche</div>
         <div style="display:flex;flex-direction:column;gap:10px;">
           <div style="font-size:13px;color:#374151;">✍️ &nbsp;L'invité écrit un message personnel pour vous</div>
-          <div style="font-size:13px;color:#374151;">🎵 &nbsp;L'IA compose une mélodie unique en quelques secondes</div>
+          <div style="font-size:13px;color:#374151;">🎵 &nbsp;Une mélodie unique est composée en quelques secondes</div>
           <div style="font-size:13px;color:#374151;">💌 &nbsp;La chanson est envoyée directement dans votre galerie</div>
         </div>
       </div>
@@ -55,16 +55,14 @@ export default async function handler(req, res) {
         <a href="${guestLink}" style="display:block;background:#111118;color:white;text-decoration:none;border-radius:10px;padding:14px 20px;font-size:13px;font-weight:700;text-align:center;">
           🎵 &nbsp;Composer une mélodie
         </a>
-        <div style="font-size:11px;color:#9ca3af;margin-top:6px;text-align:center;">${guestLink}</div>
       </div>
 
       <!-- Lien galerie -->
       <div style="margin-bottom:32px;">
         <div style="font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#9ca3af;margin-bottom:8px;">Votre galerie privée</div>
-        <a href="${galleryLink}" style="display:block;background:#f0fdf4;border:1.5px solid #3ecf6a;color:#166534;text-decoration:none;border-radius:10px;padding:14px 20px;font-size:13px;font-weight:700;text-align:center;">
+        <a href="${galleryLink}" style="display:block;background:#3ecf6a;color:white;text-decoration:none;border-radius:10px;padding:14px 20px;font-size:13px;font-weight:700;text-align:center;">
           🎧 &nbsp;Accéder à la galerie
         </a>
-        <div style="font-size:11px;color:#9ca3af;margin-top:6px;text-align:center;">Retrouvez toutes les mélodies de vos invités</div>
       </div>
 
       <p style="font-size:13px;color:#6b7280;line-height:1.6;margin:0;">
