@@ -433,13 +433,14 @@ async function route(){
   const gm=path.match(/\/galerie\/([^\/]+)/);
   if(gm){
     const id=gm[1],tok=params.get('token');
-    let ev=DB.events[id];
-    if(!ev){
-      try{
-        const r=await fetch('/api/event?id='+encodeURIComponent(id));
-        if(r.ok){ev=await r.json();DB.events[id]=ev;saveDB();}
-      }catch(e){}
-    }
+    // Toujours recharger depuis Supabase pour avoir les chansons à jour
+    let ev=null;
+    try{
+      const r=await fetch('/api/event?id='+encodeURIComponent(id));
+      if(r.ok){ev=await r.json();DB.events[id]=ev;saveDB();}
+    }catch(e){}
+    // Fallback localStorage si Supabase inaccessible
+    if(!ev)ev=DB.events[id];
     if(!ev||ev.token!==tok){sp('notfound');return;}
     DB.galEv=id;initGal(ev);sp('gallery');return;
   }
@@ -556,12 +557,16 @@ async function saveToGallery(){
   const ev=DB.events[DB.guestEv];if(!ev||!ev.lastGenerated)return;
   const{name,msg,style,voice,url}=ev.lastGenerated;let finalUrl=url;
   try{const r=await fetch('/api/upload',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({audioUrl:url,author:name,style})});if(r.ok){const d=await r.json();finalUrl=d.publicUrl||url;}}catch(e){}
-  if(!ev.songs)ev.songs=[];
-  ev.songs.unshift({id:Date.now().toString(),title:'Mélodie de '+name,author:name,message:msg,style,voice,url:finalUrl,createdAt:new Date().toISOString()});
+  if(!ev.songs||!Array.isArray(ev.songs))ev.songs=[];
+  const newSong={id:Date.now().toString(),title:'Mélodie de '+name,author:name,message:msg,style,voice,url:finalUrl,createdAt:new Date().toISOString()};
+  ev.songs.unshift(newSong);
   ev.lastGenerated=null;saveDB();
   // Sync l'événement complet (avec nouvelles chansons) vers Supabase
-  const evToSync={...ev};delete evToSync.lastGenerated;
-  fetch('/api/event',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(evToSync)}).catch(()=>{});
+  const evToSync={...ev};
+  delete evToSync.lastGenerated;
+  fetch('/api/event',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(evToSync)})
+    .then(r=>{if(!r.ok)r.text().then(t=>console.error('[GALLERY] Sync failed:',t));})
+    .catch(e=>console.error('[GALLERY] Sync error:',e.message));
   stopAudio();document.getElementById('result-wrap').classList.remove('active');
   document.getElementById('conf-name').textContent=name;
   document.getElementById('conf-wrap').classList.add('active');
