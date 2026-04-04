@@ -328,9 +328,9 @@ audio{width:100%;margin-bottom:1.2rem;accent-color:var(--green2);}
           <div class="ab">
             <div class="abt">Statistiques</div>
             <div class="sg">
-              <div class="sc"><span class="sn" id="d-gen">0</span><span class="sl">Créées</span></div>
+              <div class="sc"><span class="sn" id="d-gen">0</span><span class="sl">Générées</span></div>
               <div class="sc"><span class="sn" id="d-rem">—</span><span class="sl">Restants</span></div>
-              <div class="sc"><span class="sn" id="d-act">0</span><span class="sl">Actifs</span></div>
+              <div class="sc"><span class="sn" id="d-act">0</span><span class="sl">En galerie</span></div>
             </div>
             <div class="pb"><div class="pf" id="d-prog" style="width:0%"></div></div>
             <div class="pl" id="d-lbl"></div>
@@ -357,7 +357,7 @@ audio{width:100%;margin-bottom:1.2rem;accent-color:var(--green2);}
               </div>
             </div>
           </div>
-          <div class="ab"><div class="abt">Musiques générées</div><div id="d-songs"></div></div>
+          <div class="ab"><div class="abt">En galerie</div><div id="d-songs"></div></div>
         </div>
       </div>
       <div id="tab-create" style="display:none">
@@ -633,7 +633,7 @@ function renderDet(id){
   document.getElementById('link-guests').textContent=base+'/mariage/'+id;
   document.getElementById('link-gallery').textContent=base+'/galerie/'+id+'?token='+ev.token;
   document.getElementById('d-gen').textContent=used;document.getElementById('d-rem').textContent=total-used;
-  document.getElementById('d-act').textContent=new Set(songs.map(s=>s.author)).size;
+  document.getElementById('d-act').textContent=songs.length;
   document.getElementById('d-prog').style.width=pct+'%';document.getElementById('d-lbl').textContent=used+' / '+total+' crédits ('+pct+'%)';
   // Pré-remplir le formulaire d'édition
   document.getElementById('edit-p1').value=ev.p1||'';
