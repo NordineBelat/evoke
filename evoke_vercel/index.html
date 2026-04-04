@@ -73,6 +73,19 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
 .ldt{font-size:1.15rem;font-weight:800;color:var(--dark);margin-bottom:.4rem;}
 .lds{font-size:.8rem;color:var(--text2);}
 .queue-info{margin-top:.8rem;background:rgba(255,193,7,.1);border:1px solid rgba(255,193,7,.3);border-radius:var(--rmd);padding:.7rem 1rem;font-size:.78rem;color:#b8860b;font-weight:600;text-align:center;}
+.quiz-wrap{margin-top:1.5rem;text-align:left;}
+.quiz-q{font-size:.88rem;font-weight:800;color:var(--dark);margin-bottom:.6rem;line-height:1.4;}
+.quiz-opts{display:flex;flex-direction:column;gap:6px;margin-bottom:.5rem;}
+.quiz-opt{padding:.65rem 1rem;background:var(--bg);border:2px solid var(--border);border-radius:var(--rmd);font-size:.8rem;font-weight:600;color:var(--text);cursor:pointer;transition:all .15s;text-align:left;}
+.quiz-opt:hover{border-color:var(--dark);}
+.quiz-opt.correct{background:#f0fdf4;border-color:#3ecf6a;color:#166534;}
+.quiz-opt.wrong{background:#fff1f2;border-color:#ef4444;color:#991b1b;}
+.quiz-score{font-size:.78rem;color:var(--text2);text-align:center;margin-top:.5rem;}
+.quiz-nav{display:flex;justify-content:space-between;align-items:center;margin-top:.8rem;}
+.quiz-progress{font-size:.7rem;color:var(--text3);font-weight:700;}
+.gdl-btn{display:inline-flex;align-items:center;gap:.3rem;background:var(--dark);color:white;border:none;border-radius:var(--rp);padding:.45rem 1rem;font-size:.68rem;font-weight:700;cursor:pointer;transition:opacity .15s;}
+.gdl-btn:hover{opacity:.8;}
+.gdl-btn:disabled{opacity:.4;cursor:not-allowed;}
 .res{display:none;padding:0 1.5rem 1rem;max-width:520px;margin:0 auto;animation:ci .4s ease both;}
 .res.active{display:block;}
 .resc{background:var(--dark);border-radius:var(--rxl);padding:1.8rem;position:relative;overflow:hidden;}
@@ -224,6 +237,7 @@ audio{width:100%;margin-bottom:1.2rem;accent-color:var(--green2);}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 @media(max-width:380px){.rbs,.f2c{grid-template-columns:1fr;}.nright{display:none!important;}}
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 </head>
 <body>
 <div class="toast" id="toast"></div>
@@ -277,6 +291,14 @@ audio{width:100%;margin-bottom:1.2rem;accent-color:var(--green2);}
       <p class="ldt">Composition en cours…</p>
       <p class="lds">Votre mélodie prend vie — environ 30 secondes</p>
       <div class="queue-info" id="queue-info" style="display:none"></div>
+      <div class="quiz-wrap" id="quiz-wrap" style="display:none">
+        <div class="quiz-q" id="quiz-q"></div>
+        <div class="quiz-opts" id="quiz-opts"></div>
+        <div class="quiz-nav">
+          <span class="quiz-progress" id="quiz-progress"></span>
+          <span class="quiz-score" id="quiz-score"></span>
+        </div>
+      </div>
     </div>
   </div>
   <div class="res" id="result-wrap">
@@ -383,6 +405,13 @@ audio{width:100%;margin-bottom:1.2rem;accent-color:var(--green2);}
                 <div class="edit-row full">
                   <div><div class="efl">Email des mariés</div><input class="efi" id="edit-email" type="email" placeholder="contact@email.com"></div>
                 </div>
+                <div class="edit-row full">
+                  <div>
+                    <div class="efl" style="margin-bottom:.5rem">Quiz <span style="font-weight:400;color:var(--text2)">(pendant la génération)</span></div>
+                    <div id="quiz-fields-edit"></div>
+                    <button type="button" onclick="addQuizField('edit')" style="background:var(--white);border:1px solid var(--border);border-radius:var(--rp);padding:.4rem .9rem;font-size:.72rem;font-weight:700;color:var(--text2);cursor:pointer;margin-top:4px">+ Ajouter une question</button>
+                  </div>
+                </div>
                 <button class="esb" onclick="saveEdit()">✦ Enregistrer les modifications</button>
               </div>
             </div>
@@ -416,6 +445,10 @@ audio{width:100%;margin-bottom:1.2rem;accent-color:var(--green2);}
           </div>
           <div class="fb"><label class="fl">Crédits (= nb max de musiques)</label><input class="fi" id="ncredits" type="number" placeholder="50" min="1"></div>
           <div class="fb"><label class="fl">Email des mariés</label><input class="fi" id="nemail" type="email" placeholder="contact@email.com"></div>
+          <div class="fb"><label class="fl" style="margin-bottom:.5rem">Quiz pendant la génération <span style="font-weight:400;color:var(--text2)">(optionnel — 5 questions sur les mariés)</span></label>
+            <div id="quiz-fields-create"></div>
+            <button type="button" onclick="addQuizField('create')" style="background:var(--bg);border:1px solid var(--border);border-radius:var(--rp);padding:.4rem .9rem;font-size:.72rem;font-weight:700;color:var(--text2);cursor:pointer;margin-top:4px">+ Ajouter une question</button>
+          </div>
           <button class="ba" onclick="newEvent()">Créer l'événement →</button>
         </div>
       </div>
@@ -574,6 +607,7 @@ async function generateMusic(){
     if(task_id){
       // ÉTAPE 2 — Polling côté frontend : premier appel après 2s puis toutes les 4s
       document.querySelector('.lds').textContent='Votre mélodie est en cours de composition — cela peut prendre jusqu\'à 2 minutes…';
+      startQuiz();
       const maxAttempts=45;
       for(let i=0;i<maxAttempts;i++){
         await new Promise(res=>setTimeout(res,i===0?2000:4000));
@@ -656,7 +690,7 @@ function initGal(ev){
       ${s.url?`<audio controls src="${s.url}" style="width:100%;margin-bottom:.8rem;accent-color:#3ecf6a"></audio>`:''}
       <div class="gf">
         <div class="gvp">${s.voice==='female'?'👩':'👨'} 90s</div>
-        ${s.url?`<a class="gdl" href="${s.url}" download="evoke_${s.author.replace(/\s/g,'_')}.mp3">⬇ Télécharger</a>`:''}
+        ${s.url?`<button class="gdl-btn" onclick="downloadSong('${s.url}','${s.author.replace(/'/g,"\\'")}',${i})">⬇ Télécharger</button>`:''}
       </div>
     </div>`).join('');
 }
@@ -718,6 +752,9 @@ function renderDet(id){
   document.getElementById('edit-guests').value=ev.guests||'';
   document.getElementById('edit-form').style.display='none';
   const editEmailEl=document.getElementById('edit-email');if(editEmailEl)editEmailEl.value=ev.email||'';
+  // Pré-remplir quiz
+  const qfe=document.getElementById('quiz-fields-edit');
+  if(qfe){qfe.innerHTML='';(ev.quiz||[]).forEach((q,i)=>addQuizField('edit',q));}
   // Afficher total crédits et historique
   // Historique envois email
   const sendHistEl=document.getElementById('send-history');
@@ -804,6 +841,139 @@ async function confirmSendInvite(){
   }catch(e){toast('Erreur réseau');}
   btn.disabled=false;btn.innerHTML='✉️ &nbsp;Envoyer les liens par email';
 }
+// ── Téléchargement individuel via fetch+blob ──────────────────────────────
+async function downloadSong(url, author, idx){
+  const btn=event.target;
+  btn.disabled=true;btn.textContent='⏳';
+  try{
+    const resp=await fetch(url);
+    const blob=await resp.blob();
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    const safeName=(author||'invité').replace(/[^a-zA-ZÀ-ÿ0-9]/g,'_');
+    a.download='Evoke_'+safeName+'_'+(idx+1)+'.mp3';
+    document.body.appendChild(a);a.click();document.body.removeChild(a);
+    URL.revokeObjectURL(a.href);
+    btn.textContent='✓';
+    setTimeout(()=>{btn.disabled=false;btn.textContent='⬇ Télécharger';},2000);
+  }catch(e){
+    btn.disabled=false;btn.textContent='⬇ Télécharger';
+    toast('Erreur téléchargement');
+  }
+}
+
+// ── Tout télécharger en ZIP ───────────────────────────────────────────────
+async function downloadAll(){
+  const ev=DB.events[DB.galEv];if(!ev)return;
+  const songs=(ev.songs||[]).filter(s=>s.url);
+  if(!songs.length){toast('Aucune mélodie à télécharger');return;}
+  const btn=document.getElementById('btn-dl-all');
+  btn.disabled=true;btn.textContent='⏳ Préparation…';
+  try{
+    const zip=new JSZip();
+    const dateStr=ev.date?new Date(ev.date).toLocaleDateString('fr-FR').replace(/\//g,'-'):'';
+    const folderName='Evoke — Mariage de '+ev.couple+(dateStr?' du '+dateStr:'');
+    const folder=zip.folder(folderName);
+    for(let i=0;i<songs.length;i++){
+      const s=songs[i];
+      btn.textContent='⏳ '+(i+1)+'/'+songs.length+'…';
+      try{
+        const resp=await fetch(s.url);
+        const blob=await resp.blob();
+        const safeName=(s.author||'invité').replace(/[^a-zA-ZÀ-ÿ0-9]/g,'_');
+        folder.file('Track_'+String(i+1).padStart(2,'0')+'_'+safeName+'.mp3',blob);
+      }catch(e){console.warn('Failed:',s.title);}
+    }
+    const zipBlob=await zip.generateAsync({type:'blob'});
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(zipBlob);
+    a.download=folderName+'.zip';
+    document.body.appendChild(a);a.click();document.body.removeChild(a);
+    URL.revokeObjectURL(a.href);
+    toast('✦ ZIP téléchargé !');
+  }catch(e){toast('Erreur ZIP');}
+  btn.disabled=false;btn.innerHTML='⬇ Tout télécharger';
+}
+
+// ── Gestion du quiz ───────────────────────────────────────────────────────
+let quizState={questions:[],current:0,score:0,answered:false};
+
+function addQuizField(ctx, existing){
+  const container=document.getElementById('quiz-fields-'+ctx);
+  if(!container)return;
+  const idx=container.children.length;
+  if(idx>=5){toast('Maximum 5 questions');return;}
+  const q=existing||{q:'',a:'',wrong:['','']};
+  const div=document.createElement('div');
+  div.style.cssText='background:var(--bg);border-radius:var(--rmd);padding:.8rem;margin-bottom:6px;';
+  div.innerHTML=`
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem">
+      <span style="font-size:.65rem;font-weight:800;color:var(--text3);text-transform:uppercase;letter-spacing:.1em">Question ${idx+1}</span>
+      <button onclick="this.parentElement.parentElement.remove()" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:.8rem">✕</button>
+    </div>
+    <input class="efi" placeholder="La question" value="${esc(q.q)}" style="margin-bottom:4px" data-role="q">
+    <input class="efi" placeholder="✓ Bonne réponse" value="${esc(q.a)}" style="margin-bottom:4px;border-color:#3ecf6a" data-role="a">
+    <input class="efi" placeholder="Mauvaise réponse 1" value="${esc(q.wrong[0]||'')}" style="margin-bottom:4px" data-role="w0">
+    <input class="efi" placeholder="Mauvaise réponse 2" value="${esc(q.wrong[1]||'')}" data-role="w1">
+  `;
+  container.appendChild(div);
+}
+
+function getQuizFields(ctx){
+  const container=document.getElementById('quiz-fields-'+ctx);
+  if(!container)return[];
+  return Array.from(container.children).map(div=>{
+    const inputs=div.querySelectorAll('input');
+    const get=role=>div.querySelector('[data-role="'+role+'"]')?.value.trim()||'';
+    return{q:get('q'),a:get('a'),wrong:[get('w0'),get('w1')]};
+  }).filter(q=>q.q&&q.a);
+}
+
+function startQuiz(){
+  const ev=DB.events[DB.guestEv];
+  const questions=(ev&&ev.quiz||[]).filter(q=>q.q&&q.a);
+  if(!questions.length){document.getElementById('quiz-wrap').style.display='none';return;}
+  // Mélanger les questions
+  const shuffled=[...questions].sort(()=>Math.random()-.5);
+  quizState={questions:shuffled,current:0,score:0,answered:false};
+  document.getElementById('quiz-wrap').style.display='block';
+  showQuizQuestion();
+}
+
+function showQuizQuestion(){
+  const {questions,current,score}=quizState;
+  if(current>=questions.length){
+    document.getElementById('quiz-q').textContent='Quiz terminé ! 🎉';
+    document.getElementById('quiz-opts').innerHTML='';
+    document.getElementById('quiz-score').textContent=score+'/'+questions.length+' bonnes réponses';
+    document.getElementById('quiz-progress').textContent='';
+    return;
+  }
+  const q=questions[current];
+  document.getElementById('quiz-q').textContent='Question '+(current+1)+' : '+q.q;
+  document.getElementById('quiz-progress').textContent=(current+1)+' / '+questions.length;
+  document.getElementById('quiz-score').textContent=score+' bonne'+(score>1?'s':'');
+  // Mélanger les options
+  const opts=[{text:q.a,correct:true},...(q.wrong||[]).filter(w=>w).map(w=>({text:w,correct:false}))].sort(()=>Math.random()-.5);
+  const optsEl=document.getElementById('quiz-opts');
+  optsEl.innerHTML=opts.map((o,i)=>`<button class="quiz-opt" onclick="answerQuiz(${i},${o.correct})">${o.text}</button>`).join('');
+  quizState.answered=false;
+}
+
+function answerQuiz(idx,correct){
+  if(quizState.answered)return;
+  quizState.answered=true;
+  const btns=document.querySelectorAll('.quiz-opt');
+  btns[idx].classList.add(correct?'correct':'wrong');
+  if(correct)quizState.score++;
+  document.getElementById('quiz-score').textContent=quizState.score+' bonne'+(quizState.score>1?'s':'');
+  // Passer à la question suivante après 1.5s
+  setTimeout(()=>{
+    quizState.current++;
+    showQuizQuestion();
+  },1500);
+}
+
 function adminLogout(){
   DB.adminLoggedIn=false;saveDB();
   document.getElementById('admin-login-card').style.display='block';
@@ -850,7 +1020,7 @@ async function saveEdit(){
   const guests=parseInt(document.getElementById('edit-guests').value)||ev.guests;
   const email=document.getElementById('edit-email').value.trim();
   if(!p1||!p2){toast('Les prénoms sont requis');return;}
-  ev.p1=p1;ev.p2=p2;ev.couple=p1+' & '+p2;ev.date=date;ev.guests=guests;if(email)ev.email=email;
+  ev.p1=p1;ev.p2=p2;ev.couple=p1+' & '+p2;ev.date=date;ev.guests=guests;if(email)ev.email=email;const quizEdit=getQuizFields('edit');if(quizEdit.length)ev.quiz=quizEdit;
   saveDB();
   // Sync Supabase
   try{
@@ -861,18 +1031,18 @@ async function saveEdit(){
 }
 function newEvent(){
   const p1=document.getElementById('np1').value.trim(),p2=document.getElementById('np2').value.trim();
-  const date=document.getElementById('ndate').value,guests=parseInt(document.getElementById('nguests').value)||80,credits=parseInt(document.getElementById('ncredits').value)||50,email=document.getElementById('nemail').value.trim();
+  const date=document.getElementById('ndate').value,guests=parseInt(document.getElementById('nguests').value)||80,credits=parseInt(document.getElementById('ncredits').value)||50,email=document.getElementById('nemail').value.trim(),quiz=getQuizFields('create');
   if(!p1||!p2){toast('Entrez les deux prénoms');return;}
   const slug=(p1+'-'+p2).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,'-').replace(/-+/g,'-');
   const id=slug+'-'+Date.now().toString(36),token=Math.random().toString(36).substring(2)+Math.random().toString(36).substring(2);
-  const evObj={id,couple:p1+' & '+p2,p1,p2,date,guests,credits,email,usedCredits:0,token,songs:[],sendLog:[],createdAt:new Date().toISOString()};
+  const evObj={id,couple:p1+' & '+p2,p1,p2,date,guests,credits,email,quiz,usedCredits:0,token,songs:[],sendLog:[],createdAt:new Date().toISOString()};
   DB.events[id]=evObj;
   saveDB();
   // Sauvegarder dans Supabase pour accès multi-appareils
   fetch('/api/event',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(evObj)}).catch(()=>{});
   // Sync crédits dans Supabase
   fetch('/api/init-credits',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({event_id:id,credits})}).catch(()=>{});
-  ['np1','np2','ndate','nguests','ncredits','nemail'].forEach(x=>document.getElementById(x).value='');
+  ['np1','np2','ndate','nguests','ncredits','nemail'].forEach(x=>document.getElementById(x).value='');document.getElementById('quiz-fields-create').innerHTML='';
   stab('events',document.getElementById('tb-ev'));renderEL();selEv(id);toast('✦ Événement créé !');
 }
 function delEv(id){
