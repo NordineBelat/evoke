@@ -122,6 +122,9 @@ audio{width:100%;margin-bottom:1.2rem;accent-color:var(--green2);}
 .gvp{display:flex;align-items:center;gap:.4rem;background:var(--bg);border-radius:var(--rp);padding:.3rem .7rem;font-size:.65rem;font-weight:700;color:var(--text2);}
 .gdl{display:inline-flex;align-items:center;gap:.35rem;background:var(--dark);color:white;border-radius:var(--rp);padding:.45rem 1rem;font-size:.68rem;font-weight:700;text-decoration:none;transition:opacity .15s;}
 .gdl:hover{opacity:.8;}
+.gdl-all{display:inline-flex;align-items:center;gap:.4rem;background:var(--dark);color:white;border-radius:var(--rp);padding:.5rem 1.1rem;font-size:.72rem;font-weight:700;border:none;cursor:pointer;transition:opacity .15s;}
+.gdl-all:hover{opacity:.8;}
+.gdl-all:disabled{opacity:.4;cursor:not-allowed;}
 .ge{grid-column:1/-1;text-align:center;padding:4rem 2rem;background:var(--white);border-radius:var(--rxl);}
 .gei{font-size:2.5rem;margin-bottom:.8rem;opacity:.3;}
 .get{font-size:.95rem;font-weight:600;color:var(--text2);}
@@ -157,13 +160,17 @@ audio{width:100%;margin-bottom:1.2rem;accent-color:var(--green2);}
 .lcp{background:var(--dark);color:white;border:none;border-radius:var(--rp);padding:.4rem .8rem;font-size:.62rem;font-weight:700;cursor:pointer;flex-shrink:0;transition:opacity .15s;}
 .lcp:hover{opacity:.8;}
 .lop{background:transparent;color:var(--dark);border:1.5px solid var(--border);border-radius:var(--rp);padding:.4rem .65rem;font-size:.75rem;font-weight:700;cursor:pointer;flex-shrink:0;transition:all .15s;}
+.lsend{width:100%;padding:.75rem;background:linear-gradient(135deg,#111118,#2d2d3a);border:none;border-radius:var(--rp);font-family:'Plus Jakarta Sans',sans-serif;font-size:.75rem;font-weight:800;color:white;cursor:pointer;transition:opacity .15s;display:flex;align-items:center;justify-content:center;gap:.5rem;margin-top:8px;}
+.lsend:hover{opacity:.85;}
+.lsend:disabled{opacity:.4;cursor:not-allowed;}
+.email-input-wrap{margin-top:8px;}
 .lop:hover{background:var(--dark);color:white;border-color:var(--dark);}
 .sg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:1rem;}
 .sc{background:var(--bg);border-radius:var(--rmd);padding:1rem .8rem;text-align:center;}
 .sn{font-size:1.6rem;font-weight:800;color:var(--dark);display:block;line-height:1;}
 .sl{font-size:.6rem;font-weight:600;color:var(--text2);margin-top:3px;}
-.pb{height:6px;background:var(--bg);border-radius:100px;margin:.8rem 0 .3rem;border:1px solid var(--border);}
-.pf{height:6px;background:var(--dark);border-radius:100px;transition:width .5s ease;}
+.pb{height:10px;background:var(--bg);border-radius:100px;margin:.8rem 0 .3rem;border:1px solid var(--border);overflow:hidden;}
+.pf{height:10px;border-radius:100px;transition:width .6s ease, background-color .6s ease;}
 .pl{font-size:.68rem;color:var(--text2);}
 .f2c{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;}
 .fb{display:flex;flex-direction:column;gap:5px;margin-bottom:8px;}
@@ -295,7 +302,10 @@ audio{width:100%;margin-bottom:1.2rem;accent-color:var(--green2);}
   <div class="gt">
     <div class="ghc">
       <div><div class="ght" id="gal-title">La <em>Galerie</em></div></div>
-      <div class="ghct" id="gal-count">0 mélodie</div>
+      <div style="display:flex;align-items:center;gap:.5rem">
+        <div class="ghct" id="gal-count">0 mélodie</div>
+        <button class="gdl-all" id="btn-dl-all" onclick="downloadAll()" style="display:none">⬇ Tout télécharger</button>
+      </div>
     </div>
   </div>
   <div class="gg" id="gal-grid"></div>
@@ -323,10 +333,17 @@ audio{width:100%;margin-bottom:1.2rem;accent-color:var(--green2);}
         <div class="ab"><div class="abt">Vos événements</div><div class="el" id="event-list"></div></div>
         <div id="event-detail" style="display:none">
           <div class="ab">
-            <div class="abt">Liens à partager</div>
+            <div class="abt" style="display:flex;align-items:center;justify-content:space-between">Liens à partager<button onclick="refreshEvent()" style="background:var(--bg);border:none;border-radius:var(--rp);padding:.25rem .6rem;font-size:.65rem;font-weight:700;color:var(--text2);cursor:pointer">↻ Rafraîchir</button></div>
             <div class="lb2">
               <div class="lr"><span class="ll">Invités</span><span class="lv" id="link-guests"></span><button class="lcp" onclick="copyLink('link-guests')">Copier</button><button class="lop" onclick="openLink('link-guests')">↗</button></div>
               <div class="lr"><span class="ll">Galerie</span><span class="lv" id="link-gallery"></span><button class="lcp" onclick="copyLink('link-gallery')">Copier</button><button class="lop" onclick="openLink('link-gallery')">↗</button></div>
+              <div class="email-input-wrap">
+                <div class="lr" style="border:none;padding:.5rem 0 .3rem">
+                  <span class="ll">Email mariés</span>
+                  <input class="lv" type="email" id="invite-email" placeholder="prenom@email.com" style="border:1.5px solid var(--border);outline:none;border-radius:var(--rp);">
+                </div>
+                <button class="lsend" id="btn-send-invite" onclick="sendInvite()">✉️ &nbsp;Envoyer les liens par email</button>
+              </div>
             </div>
           </div>
           <div class="ab">
@@ -415,7 +432,7 @@ audio{width:100%;margin-bottom:1.2rem;accent-color:var(--green2);}
 
 <script>
 const DB={adminPwd:'admin123',events:{},adminLoggedIn:false,curEv:null,guestEv:null,galEv:null};
-function loadDB(){try{const s=localStorage.getItem('evoke_v3');if(s){const p=JSON.parse(s);DB.adminPwd=p.adminPwd||'admin123';DB.events=p.events||{};}}catch(e){}}
+function loadDB(){try{const s=localStorage.getItem('evoke_v3');if(s){const p=JSON.parse(s);DB.adminPwd=p.adminPwd||'admin123';DB.events=p.events||{};DB.adminLoggedIn=p.adminLoggedIn||false;DB.adminLoginAt=p.adminLoginAt||0;}}catch(e){}}
 async function syncEventsFromSupabase(){
   try{
     const r=await fetch('/api/events');
@@ -426,21 +443,21 @@ async function syncEventsFromSupabase(){
     saveDB();
   }catch(e){console.warn('Sync Supabase failed:',e);}
 }
-function saveDB(){localStorage.setItem('evoke_v3',JSON.stringify({adminPwd:DB.adminPwd,events:DB.events}));}
+function saveDB(){localStorage.setItem('evoke_v3',JSON.stringify({adminPwd:DB.adminPwd,events:DB.events,adminLoggedIn:DB.adminLoggedIn,adminLoginAt:DB.adminLoginAt||0}));}
 function sp(n){stopAudio();document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-'+n).classList.add('active');}
 async function route(){
   const path=window.location.pathname,params=new URLSearchParams(window.location.search);
   const mm=path.match(/\/mariage\/([^\/]+)/);
   if(mm){
     const id=mm[1];
-    // Chercher d'abord dans localStorage, sinon fetch Supabase
-    let ev=DB.events[id];
-    if(!ev){
-      try{
-        const r=await fetch('/api/event?id='+encodeURIComponent(id));
-        if(r.ok){ev=await r.json();DB.events[id]=ev;saveDB();}
-      }catch(e){}
-    }
+    // Toujours recharger depuis Supabase pour avoir les crédits à jour
+    let ev=null;
+    try{
+      const r=await fetch('/api/event?id='+encodeURIComponent(id));
+      if(r.ok){ev=await r.json();DB.events[id]=ev;saveDB();}
+    }catch(e){}
+    // Fallback localStorage si Supabase inaccessible
+    if(!ev)ev=DB.events[id];
     if(!ev){sp('notfound');return;}
     DB.guestEv=id;initGuest(ev);sp('guest');return;
   }
@@ -459,6 +476,15 @@ async function route(){
     DB.galEv=id;initGal(ev);sp('gallery');return;
   }
   sp('admin');
+  // Restaurer la session si déjà connecté et < 24h
+  const sessionAge=Date.now()-(DB.adminLoginAt||0);
+  if(DB.adminLoggedIn && sessionAge < 24*60*60*1000){
+    document.getElementById('admin-login-card').style.display='none';
+    document.getElementById('admin-panel').style.display='block';
+    syncEventsFromSupabase().then(()=>renderEL());
+  } else if(DB.adminLoggedIn && sessionAge >= 24*60*60*1000){
+    DB.adminLoggedIn=false;saveDB();
+  }
 }
 function initGuest(ev){
   const rem=ev.credits-ev.usedCredits;
@@ -592,6 +618,8 @@ function initGal(ev){
   const songs=ev.songs||[];
   document.getElementById('gal-title').innerHTML='Galerie de <em>'+esc(ev.couple)+'</em>';
   document.getElementById('gal-count').textContent=songs.length+' mélodie'+(songs.length>1?'s':'');
+  const btnDlAll=document.getElementById('btn-dl-all');
+  if(btnDlAll)btnDlAll.style.display=songs.length>0?'inline-flex':'none';
   document.title='EVOKE — Galerie '+ev.couple;
   const g=document.getElementById('gal-grid');
   if(!songs.length){g.innerHTML='<div class="ge"><div class="gei">🎵</div><p class="get">Aucune mélodie pour l\'instant…</p></div>';return;}
@@ -610,7 +638,7 @@ function initGal(ev){
 }
 function adminLogin(){
   if(document.getElementById('admin-pwd').value===DB.adminPwd){
-    DB.adminLoggedIn=true;document.getElementById('admin-login-card').style.display='none';document.getElementById('admin-panel').style.display='block';
+    DB.adminLoggedIn=true;DB.adminLoginAt=Date.now();saveDB();document.getElementById('admin-login-card').style.display='none';document.getElementById('admin-panel').style.display='block';
     syncEventsFromSupabase().then(()=>{renderEL();});toast('✦ Accès accordé');
   }else toast('Mot de passe incorrect');
 }
@@ -648,7 +676,17 @@ function renderDet(id){
   document.getElementById('link-gallery').textContent=base+'/galerie/'+id+'?token='+ev.token;
   document.getElementById('d-gen').textContent=used;document.getElementById('d-rem').textContent=total-used;
   document.getElementById('d-act').textContent=songs.length;
-  document.getElementById('d-prog').style.width=pct+'%';document.getElementById('d-lbl').textContent=used+' / '+total+' crédits ('+pct+'%)';
+  const prog=document.getElementById('d-prog');
+  prog.style.width=pct+'%';
+  // Couleur selon % utilisé : vert → jaune → orange → rouge
+  const rem100=total>0?Math.round((total-used)/total*100):0;
+  let barColor;
+  if(rem100>50)barColor='#3ecf6a';        // vert — plus de 50% restant
+  else if(rem100>25)barColor='#f59e0b';   // jaune — 25-50% restant
+  else if(rem100>10)barColor='#f97316';   // orange — 10-25% restant
+  else barColor='#ef4444';                // rouge — moins de 10% restant
+  prog.style.backgroundColor=barColor;
+  document.getElementById('d-lbl').textContent=used+' / '+total+' crédits ('+(total-used)+' restants)';
   // Pré-remplir le formulaire d'édition
   document.getElementById('edit-p1').value=ev.p1||'';
   document.getElementById('edit-p2').value=ev.p2||'';
@@ -671,6 +709,67 @@ function renderDet(id){
       <div><div class="mt">${esc(s.title)}<span class="mb2">${esc(s.style)}</span></div><div class="mm">${fmt(s.createdAt)} · ${s.voice==='female'?'👩':'👨'}</div></div>
       <button class="db" onclick="delSong('${id}','${s.id}')">✕</button>
     </div>`).join('');
+}
+async function downloadAll(){
+  const ev=DB.events[DB.galEv];if(!ev)return;
+  const songs=(ev.songs||[]).filter(s=>s.url);
+  if(!songs.length){toast('Aucune mélodie à télécharger');return;}
+  const btn=document.getElementById('btn-dl-all');
+  btn.disabled=true;btn.textContent='⏳ Téléchargement…';
+  // Télécharger une par une avec un petit délai pour ne pas bloquer le navigateur
+  for(let i=0;i<songs.length;i++){
+    const s=songs[i];
+    try{
+      const resp=await fetch(s.url);
+      const blob=await resp.blob();
+      const a=document.createElement('a');
+      a.href=URL.createObjectURL(blob);
+      a.download='evoke_'+(s.author||'invité').replace(/\s/g,'_')+'_'+(i+1)+'.mp3';
+      document.body.appendChild(a);a.click();document.body.removeChild(a);
+      URL.revokeObjectURL(a.href);
+      // Petit délai entre chaque téléchargement
+      if(i<songs.length-1)await new Promise(r=>setTimeout(r,800));
+    }catch(e){console.warn('Download failed for',s.title);}
+  }
+  btn.disabled=false;btn.innerHTML='⬇ Tout télécharger';
+  toast('✦ '+songs.length+' mélodie'+(songs.length>1?'s':'')+' téléchargée'+(songs.length>1?'s':'')+'!');
+}
+async function sendInvite(){
+  const id=DB.curEv;if(!id)return;
+  const ev=DB.events[id];if(!ev)return;
+  const to=document.getElementById('invite-email').value.trim();
+  if(!to||!to.includes('@')){toast('Entrez un email valide');return;}
+  const base=window.location.hostname.includes('vercel.app')&&!window.location.hostname.includes('evoke-ecru')?'https://evoke-ecru.vercel.app':window.location.origin;
+  const guestLink=base+'/mariage/'+id;
+  const galleryLink=base+'/galerie/'+id+'?token='+ev.token;
+  const btn=document.getElementById('btn-send-invite');
+  btn.disabled=true;btn.innerHTML='⏳ &nbsp;Envoi en cours…';
+  try{
+    const r=await fetch('/api/send-invite',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({to,p1:ev.p1,p2:ev.p2,date:ev.date,guestLink,galleryLink})
+    });
+    const d=await r.json();
+    if(r.ok){toast('✦ Email envoyé à '+to+' !');document.getElementById('invite-email').value='';}
+    else toast('Erreur : '+(d.error||'envoi échoué'));
+  }catch(e){toast('Erreur réseau');}
+  btn.disabled=false;btn.innerHTML='✉️ &nbsp;Envoyer les liens par email';
+}
+function adminLogout(){
+  DB.adminLoggedIn=false;saveDB();
+  document.getElementById('admin-login-card').style.display='block';
+  document.getElementById('admin-panel').style.display='none';
+  document.getElementById('admin-pwd').value='';
+  toast('Déconnecté');
+}
+async function refreshEvent(){
+  const id=DB.curEv;if(!id)return;
+  try{
+    const r=await fetch('/api/event?id='+encodeURIComponent(id));
+    if(r.ok){const ev=await r.json();DB.events[id]=ev;saveDB();renderEL();renderDet(id);toast('✦ Données mises à jour');}
+    else toast('Erreur lors du rafraîchissement');
+  }catch(e){toast('Erreur réseau');}
 }
 async function addCredits(){
   const id=DB.curEv;if(!id)return;
@@ -747,7 +846,7 @@ function openLink(id){window.open(document.getElementById(id).textContent,'_blan
 function copyLink(id){const v=document.getElementById(id).textContent;navigator.clipboard.writeText(v).then(()=>toast('Lien copié !')).catch(()=>toast('Copiez manuellement'));}
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800);}
 function tpwd(id){const el=document.getElementById(id);el.type=el.type==='password'?'text':'password';}
-function fmt(iso){try{return new Date(iso).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});}catch(e){return '';}}
+function fmt(iso){try{return new Date(iso).toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});}catch(e){return '';}}
 function fmtD(d){try{return new Date(d+'T00:00:00').toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'});}catch(e){return d;}}
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function genDemo(){
