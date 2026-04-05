@@ -101,8 +101,15 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
 .quiz-result{text-align:center;padding:.8rem 0;animation:quizIn .5s cubic-bezier(.34,1.56,.64,1) both;}
 .quiz-result-emoji{font-size:2.5rem;margin-bottom:.7rem;animation:bounce .6s cubic-bezier(.34,1.56,.64,1) both;}
 @keyframes bounce{from{transform:scale(0);}to{transform:scale(1);}}
+@keyframes quizOut{from{opacity:1;transform:scale(1);}to{opacity:0;transform:scale(.95);}}
 .quiz-result-title{font-size:1rem;font-weight:800;color:white;margin-bottom:.5rem;line-height:1.3;}
 .quiz-result-sub{font-size:.78rem;color:rgba(255,255,255,.45);line-height:1.6;}
+.quiz-intro-emoji{font-size:2.8rem;margin:.4rem 0 .8rem;animation:bounce 1s cubic-bezier(.34,1.56,.64,1) both .3s;}
+.quiz-intro-title{font-size:.95rem;font-weight:800;color:white;line-height:1.4;margin-bottom:.5rem;}
+.quiz-intro-sub{font-size:.8rem;color:rgba(255,255,255,.5);margin-bottom:1.3rem;line-height:1.5;}
+.quiz-start-btn{width:100%;padding:.9rem;background:linear-gradient(135deg,#3ecf6a,#22c55e);border:none;border-radius:var(--rmd);font-family:'Plus Jakarta Sans',sans-serif;font-size:.85rem;font-weight:800;color:white;cursor:pointer;transition:all .2s cubic-bezier(.34,1.56,.64,1);box-shadow:0 8px 24px rgba(62,207,106,.3);}
+.quiz-start-btn:hover{transform:scale(1.02);box-shadow:0 12px 32px rgba(62,207,106,.4);}
+.quiz-start-btn:active{transform:scale(.98);}
 .gdl-btn{display:inline-flex;align-items:center;gap:.3rem;background:var(--dark);color:white;border:none;border-radius:var(--rp);padding:.45rem 1rem;font-size:.68rem;font-weight:700;cursor:pointer;transition:opacity .15s;}
 .gdl-btn:hover{opacity:.8;}
 .gdl-btn:disabled{opacity:.4;cursor:not-allowed;}
@@ -332,21 +339,29 @@ audio{width:100%;margin-bottom:1.2rem;accent-color:var(--green2);}
       <p class="lds">Votre mélodie prend vie — environ 30 secondes</p>
       <div class="queue-info" id="queue-info" style="display:none"></div>
       <div class="quiz-wrap" id="quiz-wrap" style="display:none">
-        <div class="quiz-header">⏳ &nbsp;En attendant votre mélodie</div>
-        <div class="quiz-intro">Il est temps de voir si vous méritez vraiment d'être présent à cet événement 😏</div>
-        <div class="quiz-prog-bar"><div class="quiz-prog-fill" id="quiz-score-fill" style="width:0%"></div></div>
-        <div id="quiz-question-wrap">
+        <!-- Écran d'intro -->
+        <div id="quiz-intro-screen">
+          <div class="quiz-header">⏳ &nbsp;En attendant votre mélodie</div>
+          <div class="quiz-intro-emoji" id="quiz-intro-emoji">🎯</div>
+          <div class="quiz-intro-title">Il est temps de voir si vous méritez vraiment votre place ici…</div>
+          <div class="quiz-intro-sub">Quelques questions sur les mariés vous attendent 😏</div>
+          <button class="quiz-start-btn" onclick="launchQuiz()">On commence le test ! →</button>
+        </div>
+        <!-- Questions -->
+        <div id="quiz-question-screen" style="display:none">
+          <div class="quiz-prog-bar"><div class="quiz-prog-fill" id="quiz-score-fill" style="width:0%"></div></div>
           <div class="quiz-q" id="quiz-q"></div>
           <div class="quiz-opts" id="quiz-opts"></div>
+          <div class="quiz-nav">
+            <span class="quiz-progress" id="quiz-progress"></span>
+            <span class="quiz-pts" id="quiz-score"></span>
+          </div>
         </div>
+        <!-- Résultat -->
         <div id="quiz-result-wrap" class="quiz-result" style="display:none">
           <div class="quiz-result-emoji" id="quiz-result-emoji"></div>
           <div class="quiz-result-title" id="quiz-result-title"></div>
           <div class="quiz-result-sub" id="quiz-result-sub"></div>
-        </div>
-        <div class="quiz-nav">
-          <span class="quiz-progress" id="quiz-progress"></span>
-          <span class="quiz-pts" id="quiz-score"></span>
         </div>
       </div>
     </div>
@@ -628,6 +643,8 @@ async function generateMusic(){
   document.getElementById('btn-cta').disabled=true;
   document.querySelector('.fs').style.display='none';document.querySelector('.hs').style.display='none';
   document.getElementById('loading').classList.add('active');document.getElementById('result-wrap').classList.remove('active');
+  // Quiz apparaît 3s après le clic
+  setTimeout(()=>startQuiz(), 3000);
 
   // ── File d'attente ────────────────────────────────────────────────────────
   const queueId=Date.now().toString(36)+Math.random().toString(36).substring(2);
@@ -673,7 +690,7 @@ async function generateMusic(){
     if(task_id){
       // ÉTAPE 2 — Polling côté frontend : premier appel après 2s puis toutes les 4s
       document.querySelector('.lds').textContent='';
-      setTimeout(()=>startQuiz(), 2000);
+
       const maxAttempts=45;
       for(let i=0;i<maxAttempts;i++){
         await new Promise(res=>setTimeout(res,i===0?2000:4000));
@@ -999,17 +1016,33 @@ function getQuizFields(ctx){
 function startQuiz(){
   const questions=window._evQuiz||[];
   if(!questions.length){document.getElementById('quiz-wrap').style.display='none';return;}
-  // Mélanger les questions
   const shuffled=[...questions].sort(()=>Math.random()-.5);
   quizState={questions:shuffled,current:0,score:0,answered:false};
+  // Montrer d'abord l'écran d'intro
   document.getElementById('quiz-wrap').style.display='block';
-  showQuizQuestion();
+  document.getElementById('quiz-intro-screen').style.display='block';
+  document.getElementById('quiz-question-screen').style.display='none';
+  document.getElementById('quiz-result-wrap').style.display='none';
+  // Animer l'emoji d'intro
+  const emojis=['🎯','🤔','😏','🧐','🎪'];
+  document.getElementById('quiz-intro-emoji').textContent=emojis[Math.floor(Math.random()*emojis.length)];
+}
+function launchQuiz(){
+  // Transition de l'intro vers les questions
+  const intro=document.getElementById('quiz-intro-screen');
+  intro.style.animation='quizOut .3s ease forwards';
+  setTimeout(()=>{
+    intro.style.display='none';
+    intro.style.animation='';
+    document.getElementById('quiz-question-screen').style.display='block';
+    showQuizQuestion();
+  },300);
 }
 
 function showQuizQuestion(){
   const {questions,current,score}=quizState;
   if(current>=questions.length){
-    document.getElementById('quiz-question-wrap').style.display='none';
+    document.getElementById('quiz-question-screen').style.display='none';
     document.getElementById('quiz-result-wrap').style.display='block';
     document.getElementById('quiz-progress').textContent='';
     document.getElementById('quiz-score').textContent='';
@@ -1025,7 +1058,7 @@ function showQuizQuestion(){
     document.getElementById('quiz-score-fill').style.width='100%';
     return;
   }
-  document.getElementById('quiz-question-wrap').style.display='block';
+  document.getElementById('quiz-question-screen').style.display='block';
   document.getElementById('quiz-result-wrap').style.display='none';
   const q=questions[current];
   document.getElementById('quiz-q').textContent=q.q;
