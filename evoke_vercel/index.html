@@ -8,29 +8,19 @@
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 :root{--bg:#f2f2f7;--white:#fff;--dark:#111118;--text:#111118;--text2:#6b6b80;--text3:#aeaec0;--green:#b8f0c8;--green2:#3ecf6a;--red:#ff6b6b;--border:rgba(0,0,0,0.07);--sh:0 4px 24px rgba(0,0,0,0.07);--sh2:0 12px 40px rgba(0,0,0,0.12);--rmd:24px;--rlg:32px;--rxl:40px;--rp:100px;}
-body.dark{
-  --bg:#0e0e14;
-  --white:#1a1a26;
-  --dark:#f0f0f5;
-  --text:#f0f0f5;
-  --text2:#9090a8;
-  --text3:#55556e;
-  --border:rgba(255,255,255,0.09);
-  --sh:0 4px 24px rgba(0,0,0,0.4);
-  --sh2:0 12px 40px rgba(0,0,0,0.55);
-}
+
 html{scroll-behavior:smooth;overflow-x:hidden;max-width:100vw;}
 body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;max-width:100vw;-webkit-font-smoothing:antialiased;}
 nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;height:64px;background:rgba(242,242,247,0.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
-body.dark nav{background:rgba(17,17,24,0.95);border-bottom-color:rgba(255,255,255,0.07);}
-body.dark .nright{background:var(--white);}
-body.dark .ncred{color:var(--dark);}
+
+
+
 .nlogo{display:flex;align-items:center;}
 .nright{display:flex;align-items:center;gap:.5rem;background:var(--white);border-radius:var(--rp);padding:.4rem .9rem;box-shadow:var(--sh);}
 .ndot{width:8px;height:8px;border-radius:50%;background:var(--green2);}
 .ncred{font-size:.72rem;font-weight:700;color:var(--dark);}
-.theme-toggle{width:32px;height:32px;border-radius:50%;background:var(--bg);border:1.5px solid var(--border);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.9rem;transition:all .2s;flex-shrink:0;}
-.theme-toggle:hover{background:var(--border);}
+
+
 .page{display:none;padding-top:64px;min-height:100vh;}
 .page.active{display:block;}
 /* HERO */
@@ -286,39 +276,39 @@ audio{width:100%;margin-bottom:1.2rem;accent-color:var(--green2);}
 @media(max-width:380px){.rbs,.f2c{grid-template-columns:1fr;}.nright{display:none!important;}}
 
 /* dark nav */
-body.dark .nright{background:rgba(255,255,255,.08);}
-body.dark .ncred{color:var(--text);}
+
+
 /* dark: style chips — visibles sur fond sombre */
-body.dark .style-chip+label{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.12);color:var(--text);}
-body.dark .style-chip:checked+label{background:var(--green2);color:#0e0e14;border-color:var(--green2);}
+
+
 /* dark: chips style musical classiques (.clb) */
-body.dark .clb{background:rgba(255,255,255,.07);color:var(--text2);}
-body.dark .cin:checked+.clb{background:var(--green2);color:#0e0e14;}
+
+
 /* dark: voice selector */
-body.dark .vlb{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.1);}
-body.dark .vn{color:var(--text);}
-body.dark .vs{color:var(--text2);}
-body.dark .vin:checked+.vlb{background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.35);}
-body.dark .vin:checked+.vlb .vn{color:var(--text);}
-body.dark .vin:checked+.vlb .vi{background:rgba(255,255,255,.1);}
+
+
+
+
+
+
 /* dark: bouton CTA lisible */
-body.dark .bcta{background:var(--green2);color:#0e0e14;box-shadow:0 8px 24px rgba(62,207,106,.25);}
-body.dark .bcta:hover{opacity:.9;}
-body.dark .bctai{background:rgba(0,0,0,.15);}
+
+
+
 /* dark: waveform */
-body.dark .ldc{background:var(--white);}
-body.dark .wb{background:rgba(255,255,255,.7);}
-body.dark .ldt{color:var(--text);}
-body.dark .lds{color:var(--text2);}
+
+
+
+
 /* dark: quiz fond — bleu très désaturé, discret */
-body.dark .quiz-wrap{background:linear-gradient(135deg,#1c1c2e 0%,#1a1e30 100%);box-shadow:0 20px 60px rgba(0,0,0,.5);}
+
 /* dark: bouton télécharger individuel */
-body.dark .gdl-btn{color:var(--text2);border-color:rgba(255,255,255,.15);background:rgba(255,255,255,.05);}
-body.dark .gdl-btn:hover{color:var(--text);background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.25);}
+
+
 /* dark: textarea et inputs */
-body.dark .fta,body.dark .fin{background:rgba(255,255,255,.06);color:var(--text);}
-body.dark .fta::placeholder,body.dark .fin::placeholder{color:var(--text3);}
-body.dark .fta:focus,body.dark .fin:focus{box-shadow:0 0 0 2.5px rgba(255,255,255,.15);}
+
+
+
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 </head>
@@ -336,10 +326,7 @@ body.dark .fta:focus,body.dark .fin:focus{box-shadow:0 0 0 2.5px rgba(255,255,25
       </g>
     </svg>
   </div>
-  <div style="display:flex;align-items:center;gap:.5rem">
-    <button class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" title="Thème sombre/clair">☀️</button>
-    <div class="nright" id="nright" style="display:none"><div class="ndot"></div><span class="ncred" id="ncred"></span></div>
-  </div>
+  <div class="nright" id="nright" style="display:none"><div class="ndot"></div><span class="ncred" id="ncred"></span></div>
 </nav>
 
 <!-- INVITÉS -->
@@ -620,12 +607,7 @@ body.dark .fta:focus,body.dark .fin:focus{box-shadow:0 0 0 2.5px rgba(255,255,25
 
 <script>
 const DB={adminPwd:'admin123',events:{},adminLoggedIn:false,curEv:null,guestEv:null,galEv:null};
-function loadDB(){try{const s=localStorage.getItem('evoke_v3');if(s){const p=JSON.parse(s);DB.adminPwd=p.adminPwd||'admin123';DB.events=p.events||{};DB.adminLoggedIn=p.adminLoggedIn||false;DB.adminLoginAt=p.adminLoginAt||0;DB.darkMode=p.darkMode||false;}}catch(e){}}
-function toggleTheme(){DB.darkMode=!DB.darkMode;applyTheme();saveDB();}
-function applyTheme(){
-  if(DB.darkMode){document.body.classList.add('dark');document.getElementById('theme-toggle').textContent='🌙';}
-  else{document.body.classList.remove('dark');document.getElementById('theme-toggle').textContent='☀️';}
-}
+function loadDB(){try{const s=localStorage.getItem('evoke_v3');if(s){const p=JSON.parse(s);DB.adminPwd=p.adminPwd||'admin123';DB.events=p.events||{};DB.adminLoggedIn=p.adminLoggedIn||false;DB.adminLoginAt=p.adminLoginAt||0;}}catch(e){}}
 async function syncEventsFromSupabase(){
   try{
     const r=await fetch('/api/events');
@@ -1275,7 +1257,7 @@ function genDemo(){
     return URL.createObjectURL(new Blob([ab],{type:'audio/wav'}));
   }catch(e){return '';}
 }
-loadDB();applyTheme();route();
+loadDB();route();
 document.getElementById('admin-pwd').addEventListener('keydown',e=>{if(e.key==='Enter')adminLogin();});
 </script>
 </body>
