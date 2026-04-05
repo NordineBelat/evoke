@@ -111,8 +111,8 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
 .quiz-start-btn{width:100%;padding:.9rem;background:linear-gradient(135deg,#3ecf6a,#22c55e);border:none;border-radius:var(--rmd);font-family:'Plus Jakarta Sans',sans-serif;font-size:.85rem;font-weight:800;color:white;cursor:pointer;transition:all .2s cubic-bezier(.34,1.56,.64,1);box-shadow:0 8px 24px rgba(62,207,106,.3);}
 .quiz-start-btn:hover{transform:scale(1.02);box-shadow:0 12px 32px rgba(62,207,106,.4);}
 .quiz-start-btn:active{transform:scale(.98);}
-.gdl-btn{display:inline-flex;align-items:center;gap:.3rem;background:var(--dark);color:white;border:none;border-radius:var(--rp);padding:.45rem 1rem;font-size:.68rem;font-weight:700;cursor:pointer;transition:opacity .15s;}
-.gdl-btn:hover{opacity:.8;}
+.gdl-btn{display:inline-flex;align-items:center;gap:.35rem;background:transparent;color:var(--dark);border:1.5px solid var(--border);border-radius:var(--rp);padding:.45rem 1rem;font-size:.68rem;font-weight:700;cursor:pointer;transition:all .18s;}
+.gdl-btn:hover{background:var(--bg);border-color:rgba(17,17,24,.2);}
 .gdl-btn:disabled{opacity:.4;cursor:not-allowed;}
 .res{display:none;padding:0 1.5rem 1rem;max-width:520px;margin:0 auto;animation:ci .4s ease both;}
 .res.active{display:block;}
@@ -146,12 +146,14 @@ audio{width:100%;margin-bottom:1.2rem;accent-color:var(--green2);}
 .bgr{padding:.75rem;background:var(--green2);border:none;border-radius:var(--rxl);font-family:'Plus Jakarta Sans',sans-serif;font-size:.72rem;font-weight:800;color:white;cursor:pointer;transition:opacity .18s;}
 .bgr:hover{opacity:.85;}
 /* GALERIE */
-.gt{padding:2rem 1.5rem 1rem;max-width:680px;margin:0 auto;}
-.ghc{background:var(--dark);border-radius:var(--rxl);padding:1.8rem;margin-bottom:1rem;display:flex;align-items:flex-end;justify-content:space-between;}
+.gt{padding:1.5rem 1rem 1rem;max-width:680px;margin:0 auto;}
+.ghc{background:var(--dark);border-radius:var(--rxl);padding:1.6rem 1.4rem;margin-bottom:1rem;display:flex;flex-direction:column;gap:.9rem;}
+.ghc-top{display:flex;align-items:flex-start;justify-content:space-between;gap:.5rem;}
+.ghc-bottom{display:flex;align-items:center;justify-content:space-between;gap:.5rem;}
 .ght{font-size:1.4rem;font-weight:800;color:white;line-height:1.2;}
 .ght em{font-style:normal;color:var(--green2);}
 .ghct{background:rgba(255,255,255,.1);border-radius:var(--rp);padding:.4rem .9rem;font-size:.78rem;font-weight:800;color:white;white-space:nowrap;}
-.gg{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px;padding:0 1.5rem 5rem;max-width:680px;margin:0 auto;}
+.gg{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px;padding:0 1rem 5rem;max-width:680px;margin:0 auto;}
 .gca{background:var(--white);border-radius:var(--rxl);padding:1.4rem;box-shadow:var(--sh);animation:ci .4s ease both;}
 .gct{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:.7rem;}
 .gcn{font-size:.6rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--text3);}
@@ -337,7 +339,7 @@ audio{width:100%;margin-bottom:1.2rem;accent-color:var(--green2);}
     <div class="ldc">
       <div class="wr"><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div></div>
       <p class="ldt">Composition en cours…</p>
-      <p class="lds">Votre mélodie prend vie — environ 30 secondes</p>
+      <p class="lds"></p>
       <div class="queue-info" id="queue-info" style="display:none"></div>
       <div class="quiz-wrap" id="quiz-wrap" style="display:none">
         <!-- Écran d'intro -->
@@ -402,9 +404,11 @@ audio{width:100%;margin-bottom:1.2rem;accent-color:var(--green2);}
 <div class="page" id="page-gallery">
   <div class="gt">
     <div class="ghc">
-      <div><div class="ght" id="gal-title">La <em>Galerie</em></div></div>
-      <div style="display:flex;align-items:center;gap:.5rem">
+      <div class="ghc-top">
+        <div class="ght" id="gal-title">La <em>Galerie</em></div>
         <div class="ghct" id="gal-count">0 mélodie</div>
+      </div>
+      <div class="ghc-bottom">
         <button class="gdl-all" id="btn-dl-all" onclick="downloadAll()" style="display:none">⬇ Tout télécharger</button>
       </div>
     </div>
@@ -696,12 +700,12 @@ async function generateMusic(){
     if(r.status===403){document.getElementById('loading').classList.remove('active');document.querySelector('.fs').style.display='none';document.querySelector('.hs').style.display='none';document.getElementById('noc-wrap').classList.add('active');document.getElementById('btn-cta').disabled=false;if(queueJoined)fetch('/api/queue?queue_id='+queueId,{method:'DELETE'}).catch(()=>{});return;}
     if(!r.ok){const errD=await r.json().catch(()=>({}));toast('Erreur : '+(errD.error||r.status));rForm();document.getElementById('loading').classList.remove('active');document.getElementById('btn-cta').disabled=false;if(queueJoined)fetch('/api/queue?queue_id='+queueId,{method:'DELETE'}).catch(()=>{});return;}
     {const d=await r.json();task_id=d.task_id;cleanN=d.name||name;}
+    // Message qui s'affiche dès le début et reste jusqu'à la fin
+    document.querySelector('.lds').textContent='Votre mélodie prend vie…';
 
     let url=null;
     if(task_id){
       // ÉTAPE 2 — Polling côté frontend : premier appel après 2s puis toutes les 4s
-      document.querySelector('.lds').textContent='';
-
       const maxAttempts=45;
       for(let i=0;i<maxAttempts;i++){
         await new Promise(res=>setTimeout(res,i===0?2000:4000));
@@ -775,7 +779,7 @@ function initGal(ev){
       <div class="gcm">"${esc(s.message.substring(0,100))}${s.message.length>100?'…':''}"</div>
       ${s.url?`<audio controls src="${s.url}" style="width:100%;margin-bottom:.8rem;accent-color:#3ecf6a"></audio>`:''}
       <div class="gf">
-        <div class="gvp">${s.voice==='female'?'👩':'👨'} 90s</div>
+        <div class="gvp">${s.voice==='female'?'👩 Voix féminine':'👨 Voix masculine'}</div>
         ${s.url?`<button class="gdl-btn" onclick="downloadSong('${s.url}','${s.author.replace(/'/g,"\\'")}',${i})">⬇ Télécharger</button>`:''}
       </div>
     </div>`).join('');
