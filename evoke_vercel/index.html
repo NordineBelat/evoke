@@ -8,11 +8,26 @@
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 :root{--bg:#f2f2f7;--white:#fff;--dark:#111118;--text:#111118;--text2:#6b6b80;--text3:#aeaec0;--green:#b8f0c8;--green2:#3ecf6a;--red:#ff6b6b;--border:rgba(0,0,0,0.07);--sh:0 4px 24px rgba(0,0,0,0.07);--sh2:0 12px 40px rgba(0,0,0,0.12);--rmd:24px;--rlg:32px;--rxl:40px;--rp:100px;}
-body.dark{--bg:#0e0e14;--white:#1a1a24;--dark:#f2f2f7;--text:#f2f2f7;--text2:#9999b0;--text3:#55556a;--border:rgba(255,255,255,0.08);--sh:0 4px 24px rgba(0,0,0,0.35);--sh2:0 12px 40px rgba(0,0,0,0.5);}
+body.dark{
+  --bg:#111118;
+  --white:#f2f2f7;
+  --dark:#111118;
+  --text:#111118;
+  --text2:#6b6b80;
+  --text3:#aeaec0;
+  --green:#b8f0c8;
+  --green2:#3ecf6a;
+  --red:#ff6b6b;
+  --border:rgba(0,0,0,0.07);
+  --sh:0 4px 24px rgba(0,0,0,0.18);
+  --sh2:0 12px 40px rgba(0,0,0,0.22);
+}
 html{scroll-behavior:smooth;overflow-x:hidden;max-width:100vw;}
 body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;max-width:100vw;-webkit-font-smoothing:antialiased;}
 nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;height:64px;background:rgba(242,242,247,0.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
-body.dark nav{background:rgba(14,14,20,0.9);}
+body.dark nav{background:rgba(17,17,24,0.95);border-bottom-color:rgba(255,255,255,0.07);}
+body.dark .nright{background:var(--white);}
+body.dark .ncred{color:var(--dark);}
 .nlogo{display:flex;align-items:center;}
 .nright{display:flex;align-items:center;gap:.5rem;background:var(--white);border-radius:var(--rp);padding:.4rem .9rem;box-shadow:var(--sh);}
 .ndot{width:8px;height:8px;border-radius:50%;background:var(--green2);}
@@ -273,19 +288,28 @@ audio{width:100%;margin-bottom:1.2rem;accent-color:var(--green2);}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 @media(max-width:380px){.rbs,.f2c{grid-template-columns:1fr;}.nright{display:none!important;}}
 
-body.dark .hc{background:#1e1e2e;}
-body.dark .gdl-btn{color:var(--text2);border-color:var(--border);}
-body.dark .gdl-btn:hover{color:var(--text);background:rgba(255,255,255,.06);}
-body.dark .ghc{background:#1e1e2e;}
-body.dark .resc{background:#1e1e2e;}
-body.dark .confc{background:#1e1e2e;}
-body.dark .nocc{background:#1e1e2e;}
-body.dark .quiz-wrap{background:linear-gradient(135deg,#1a1a2e 0%,#16213e 100%);}
-body.dark .ah{background:#1e1e2e;}
-body.dark .hc h1{color:white;}
-body.dark .hc p{color:rgba(255,255,255,.55);}
-body.dark .sp{background:rgba(255,255,255,.08);}
-body.dark .spn,.dark .spl{color:rgba(255,255,255,.7);}
+/* dark: quiz fond neutre sans bleu */
+body.dark .quiz-wrap{background:#1a1a24;box-shadow:0 20px 60px rgba(0,0,0,.5);}
+/* dark: bouton CTA devient blanc avec texte sombre */
+body.dark .bcta{background:var(--white);color:var(--dark);box-shadow:0 8px 24px rgba(0,0,0,.2);}
+body.dark .bcta:hover{background:#e8e8ed;}
+body.dark .bctai{background:rgba(17,17,24,.1);}
+/* dark: style chips */
+body.dark .style-chip+label{background:var(--white);border-color:var(--border);color:var(--text);}
+body.dark .style-chip:checked+label{background:var(--dark);color:white;border-color:var(--dark);}
+/* dark: voice selector */
+body.dark .vlb{background:var(--white);border-color:transparent;}
+body.dark .vin:checked+.vlb{background:var(--dark);border-color:var(--dark);}
+body.dark .vin:checked+.vlb .vn,.vin:checked+.vlb .vs{color:white;}
+body.dark .vin:checked+.vlb .vi{background:rgba(255,255,255,.12);}
+/* dark: waveform et loading card */
+body.dark .wb{background:var(--white);}
+body.dark .ldc{background:var(--white);}
+body.dark .ldt{color:var(--dark);}
+body.dark .lds{color:var(--text2);}
+/* dark: bouton télécharger individuel */
+body.dark .gdl-btn{color:var(--text2);border-color:var(--border);background:var(--white);}
+body.dark .gdl-btn:hover{color:var(--text);background:#e8e8ed;}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 </head>
