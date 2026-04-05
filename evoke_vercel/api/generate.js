@@ -105,7 +105,31 @@ export default async function handler(req, res) {
     'pop':               `A romantic pop wedding song, ${voiceLabel} voice, catchy and emotional, modern production, heartfelt, 90 seconds.`,
     'romantic pop':      `A romantic pop wedding song, ${voiceLabel} voice, emotional piano ballad, heartfelt and celebratory, 90 seconds.`,
   };
-  const prompt = stylePrompts[musicStyle] || `A beautiful ${musicStyle} wedding song, ${voiceLabel} voice, emotional and celebratory, 90 seconds.`;
+  // Variations vocales adaptées à chaque style musical
+  const styleVariations = {
+    'blues':             ['raspy and soulful','gritty and raw','deep and mournful','warm and earthy'],
+    'jazz':              ['smooth and velvety','breathy and intimate','rich and swinging','cool and laid-back'],
+    'hip-hop':           ['rhythmic and punchy','confident and sharp','laid-back and cool','energetic and crisp'],
+    'rap':               ['fast and rhythmic','punchy and articulate','smooth and flowing','intense and passionate'],
+    'reggae':            ['relaxed and laid-back','warm and sunny','groovy and joyful','smooth and positive'],
+    'rock':              ['powerful and raw','gritty and passionate','strong and anthemic','intense and energetic'],
+    'gospel':            ['powerful and uplifting','pure and soaring','warm and joyful','rich and spiritual'],
+    'soul r&b':          ['smooth and passionate','warm and soulful','rich and emotional','velvety and intimate'],
+    'orchestral classical':['pure and soaring','warm and majestic','delicate and precise','rich and dramatic'],
+    'country':           ['warm and twangy','heartfelt and sincere','bright and clear','gentle and storytelling'],
+    'acoustic folk':     ['gentle and intimate','warm and storytelling','soft and earnest','tender and natural'],
+    'electronic pop':    ['bright and clear','smooth and modern','light and dreamy','crisp and emotive'],
+    'lo-fi':             ['soft and whispery','warm and hazy','gentle and nostalgic','mellow and intimate'],
+    'french chanson':    ['poetic and expressive','warm and theatrical','intimate and romantic','rich and emotive'],
+    'afrobeat':          ['energetic and bright','groovy and joyful','powerful and rhythmic','warm and celebratory'],
+    'pop':               ['bright and emotive','smooth and passionate','warm and heartfelt','clear and powerful'],
+    'romantic pop':      ['soft and breathy','warm and intimate','tender and passionate','pure and emotional'],
+  };
+  const variations = styleVariations[musicStyle] || ['warm and heartfelt','smooth and emotional','tender and intimate','rich and passionate'];
+  const randomVocal = variations[Math.floor(Math.random() * variations.length)];
+
+  const basePrompt = stylePrompts[musicStyle] || `A beautiful ${musicStyle} wedding song, ${voiceLabel} voice, emotional and celebratory, 90 seconds.`;
+  const prompt = basePrompt.replace('90 seconds.', `90 seconds. Vocal delivery: ${randomVocal}.`);
 
   try {
     const r = await fetch(`${BASE}/MusicAI`, {
