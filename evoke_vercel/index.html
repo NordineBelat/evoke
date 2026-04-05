@@ -493,10 +493,9 @@ audio{width:100%;margin-bottom:1.2rem;accent-color:var(--green2);}
           </div>
           <div class="ab">
             <div class="abt">Statistiques</div>
-            <div class="sg">
+            <div class="sg" style="grid-template-columns:repeat(2,1fr)">
               <div class="sc"><span class="sn" id="d-gen">0</span><span class="sl">Générées</span></div>
               <div class="sc"><span class="sn" id="d-rem">—</span><span class="sl">Restants</span></div>
-              <div class="sc" id="d-act-card" style="cursor:pointer" onclick="openGalleryLink()" title="Voir la galerie"><span class="sn" id="d-act">0</span><span class="sl">En galerie ↗</span></div>
             </div>
             <div class="pb"><div class="pf" id="d-prog" style="width:0%"></div></div>
             <div class="pl" id="d-lbl"></div>
@@ -573,15 +572,16 @@ audio{width:100%;margin-bottom:1.2rem;accent-color:var(--green2);}
       <div id="tab-settings" style="display:none">
         <div class="ab">
           <div class="abt">Changer le mot de passe</div>
+          <div class="fb"><label class="fl">Mot de passe actuel</label><div class="pw"><input class="fi" type="password" id="opwd" placeholder="Votre mot de passe actuel" style="padding-right:2.4rem"><button class="pb2" onclick="tpwd('opwd')">👁</button></div></div>
           <div class="fb"><label class="fl">Nouveau mot de passe</label><div class="pw"><input class="fi" type="password" id="npwd" placeholder="Minimum 8 caractères" style="padding-right:2.4rem"><button class="pb2" onclick="tpwd('npwd')">👁</button></div></div>
-          <div class="fb"><label class="fl">Confirmer</label><div class="pw"><input class="fi" type="password" id="cpwd" placeholder="Répétez" style="padding-right:2.4rem"><button class="pb2" onclick="tpwd('cpwd')">👁</button></div></div>
+          <div class="fb"><label class="fl">Confirmer</label><div class="pw"><input class="fi" type="password" id="cpwd" placeholder="Répétez le nouveau" style="padding-right:2.4rem"><button class="pb2" onclick="tpwd('cpwd')">👁</button></div></div>
           <button class="ba" onclick="changePwd()">Mettre à jour</button>
         </div>
         <div class="ab">
           <div class="abt">Connexion API</div>
           <div style="background:var(--bg);border-radius:var(--rmd);padding:1rem;font-size:.82rem;color:var(--text2);line-height:1.6">
-            🔒 Les clés API sont dans les variables d'environnement Netlify — jamais visibles ici.<br><br>
-            Pour les modifier : <strong style="color:var(--dark)">app.netlify.com</strong> → votre site → <strong style="color:var(--dark)">Site configuration → Environment variables</strong>.
+            🔒 Les clés API sont dans les variables d'environnement Vercel — jamais visibles ici.<br><br>
+            Pour les modifier : <strong style="color:var(--dark)">vercel.com</strong> → votre projet → <strong style="color:var(--dark)">Settings → Environment Variables</strong>.
           </div>
         </div>
       </div>
@@ -1236,9 +1236,13 @@ function delSong(eid,sid){
   renderDet(eid);toast('Musique supprimée');
 }
 function changePwd(){
-  const p1=document.getElementById('npwd').value,p2=document.getElementById('cpwd').value;
-  if(p1.length<8){toast('Minimum 8 caractères');return;}if(p1!==p2){toast('Les mots de passe ne correspondent pas');return;}
-  DB.adminPwd=p1;saveDB();document.getElementById('npwd').value='';document.getElementById('cpwd').value='';toast('✦ Mot de passe mis à jour');
+  const old=document.getElementById('opwd').value,p1=document.getElementById('npwd').value,p2=document.getElementById('cpwd').value;
+  if(old!==DB.adminPwd){toast('Mot de passe actuel incorrect');return;}
+  if(p1.length<8){toast('Minimum 8 caractères');return;}
+  if(p1!==p2){toast('Les mots de passe ne correspondent pas');return;}
+  DB.adminPwd=p1;saveDB();
+  document.getElementById('opwd').value='';document.getElementById('npwd').value='';document.getElementById('cpwd').value='';
+  toast('✦ Mot de passe mis à jour');
 }
 function openLink(id){window.open(document.getElementById(id).textContent,'_blank');}
 function copyLink(id){const v=document.getElementById(id).textContent;navigator.clipboard.writeText(v).then(()=>toast('Lien copié !')).catch(()=>toast('Copiez manuellement'));}
