@@ -47,6 +47,11 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
 .clb{display:inline-block;padding:.5rem 1.1rem;background:var(--bg);border:none;border-radius:var(--rp);font-family:'Plus Jakarta Sans',sans-serif;font-size:.76rem;font-weight:600;color:var(--text2);cursor:pointer;transition:all .18s;}
 .clb:hover{background:rgba(17,17,24,.07);}
 .cin:checked+.clb{background:var(--dark);color:white;}
+.style-chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:.6rem;}
+.style-chip{display:none;}
+.style-chip+label{padding:.5rem 1rem;background:var(--bg);border:1.5px solid var(--border);border-radius:var(--rp);font-size:.75rem;font-weight:700;color:var(--text2);cursor:pointer;transition:all .18s;user-select:none;}
+.style-chip+label:hover{border-color:var(--dark);color:var(--dark);}
+.style-chip:checked+label{background:var(--dark);color:white;border-color:var(--dark);}
 .vg{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
 .vin{display:none;}
 .vlb{display:block;background:var(--bg);border-radius:var(--rmd);padding:1.1rem;cursor:pointer;transition:all .18s;border:2px solid transparent;}
@@ -278,9 +283,29 @@ audio{width:100%;margin-bottom:1.2rem;accent-color:var(--green2);}
   </div>
   <div class="fs">
     <div class="fc">
-      <div class="cl"><div class="cli">✍️</div>Votre message &amp; style souhaité</div>
-      <textarea class="fta" id="input-message" placeholder="Écrivez votre message et précisez le style souhaité… ex: Je vous souhaite tout le bonheur du monde, style jazz romantique"></textarea>
+      <div class="cl"><div class="cli">✍️</div>Votre message</div>
+      <textarea class="fta" id="input-message" placeholder="Écrivez votre message pour les mariés…"></textarea>
       <input class="fin" id="input-name" type="text" placeholder="Votre prénom ou « La famille Martin »">
+    </div>
+    <div class="fc">
+      <div class="cl"><div class="cli">🎵</div>Style musical <span style="color:#ef4444;font-size:.7rem;margin-left:4px">obligatoire</span></div>
+      <div class="style-chips">
+        <input type="radio" name="music_style" id="ms1" value="Pop romantique" class="style-chip"><label for="ms1">Pop romantique</label>
+        <input type="radio" name="music_style" id="ms2" value="Jazz" class="style-chip"><label for="ms2">Jazz</label>
+        <input type="radio" name="music_style" id="ms3" value="Blues" class="style-chip"><label for="ms3">Blues</label>
+        <input type="radio" name="music_style" id="ms4" value="Soul & R&B" class="style-chip"><label for="ms4">Soul & R&B</label>
+        <input type="radio" name="music_style" id="ms7" value="Gospel" class="style-chip"><label for="ms7">Gospel</label>
+        <input type="radio" name="music_style" id="ms8" value="Rap" class="style-chip"><label for="ms8">Rap</label>
+        <input type="radio" name="music_style" id="ms8b" value="Hip-hop" class="style-chip"><label for="ms8b">Hip-hop</label>
+        <input type="radio" name="music_style" id="ms9" value="Reggae" class="style-chip"><label for="ms9">Reggae</label>
+        <input type="radio" name="music_style" id="ms10" value="Rock acoustique" class="style-chip"><label for="ms10">Rock acoustique</label>
+        <input type="radio" name="music_style" id="ms11" value="Électro doux" class="style-chip"><label for="ms11">Électro doux</label>
+        <input type="radio" name="music_style" id="ms12" value="Variété française" class="style-chip"><label for="ms12">Variété française</label>
+        <input type="radio" name="music_style" id="ms13" value="Classique orchestral" class="style-chip"><label for="ms13">Classique</label>
+        <input type="radio" name="music_style" id="ms14" value="Afrobeat" class="style-chip"><label for="ms14">Afrobeat</label>
+        <input type="radio" name="music_style" id="ms15" value="Country" class="style-chip"><label for="ms15">Country</label>
+        <input type="radio" name="music_style" id="ms16" value="Lo-fi chill" class="style-chip"><label for="ms16">Lo-fi chill</label>
+      </div>
     </div>
 
     <div class="fc">
@@ -563,6 +588,8 @@ async function route(){
   }
 }
 function initGuest(ev){
+  // Stocker le quiz globalement pour y accéder pendant la génération
+  window._evQuiz = (ev.quiz||[]).filter(q=>q.q&&q.a);
   const rem=ev.credits-ev.usedCredits;
   document.getElementById('couple-display').textContent=ev.couple;
   document.getElementById('credits-hero').textContent=rem;
@@ -574,9 +601,16 @@ function initGuest(ev){
 async function generateMusic(){
   const ev=DB.events[DB.guestEv];if(!ev)return;
   const msg=document.getElementById('input-message').value.trim(),name=document.getElementById('input-name').value.trim()||'Un invité';
-  const style='',voice=document.querySelector('input[name="voice"]:checked')?.value||'female';
+  const styleChip=document.querySelector('input[name="music_style"]:checked');
+  const voice=document.querySelector('input[name="voice"]:checked')?.value||'female';
   if(!msg){toast('Écrivez votre message d\'abord');return;}
   if(msg.length>500){toast('Message trop long (500 caractères max)');return;}
+  if(!styleChip){toast('Choisissez un style musical');return;}
+  const styleVal=styleChip.value;
+  // Concaténer le style au message — transparent pour l'invité
+  const endsWithPunct=/[.!?…]$/.test(msg);
+  const fullMsg=msg+(endsWithPunct?'':'. ')+'. Dans un style '+styleVal;
+  const style=styleVal;
   if(ev.credits-ev.usedCredits<=0){document.querySelector('.fs').style.display='none';document.querySelector('.hs').style.display='none';document.getElementById('noc-wrap').classList.add('active');return;}
   document.getElementById('btn-cta').disabled=true;
   document.querySelector('.fs').style.display='none';document.querySelector('.hs').style.display='none';
@@ -617,7 +651,7 @@ async function generateMusic(){
   try{
     // ÉTAPE 1 — Lancer la génération, récupérer task_id
     let task_id=null,cleanN=name;
-    const r=await fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:msg,name,style,voice,event_id:DB.guestEv})});
+    const r=await fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:fullMsg,name,style,voice,event_id:DB.guestEv})});
     if(r.status===403){document.getElementById('loading').classList.remove('active');document.querySelector('.fs').style.display='none';document.querySelector('.hs').style.display='none';document.getElementById('noc-wrap').classList.add('active');document.getElementById('btn-cta').disabled=false;if(queueJoined)fetch('/api/queue?queue_id='+queueId,{method:'DELETE'}).catch(()=>{});return;}
     if(!r.ok){const errD=await r.json().catch(()=>({}));toast('Erreur : '+(errD.error||r.status));rForm();document.getElementById('loading').classList.remove('active');document.getElementById('btn-cta').disabled=false;if(queueJoined)fetch('/api/queue?queue_id='+queueId,{method:'DELETE'}).catch(()=>{});return;}
     {const d=await r.json();task_id=d.task_id;cleanN=d.name||name;}
@@ -949,8 +983,7 @@ function getQuizFields(ctx){
 }
 
 function startQuiz(){
-  const ev=DB.events[DB.guestEv];
-  const questions=(ev&&ev.quiz||[]).filter(q=>q.q&&q.a);
+  const questions=window._evQuiz||[];
   if(!questions.length){document.getElementById('quiz-wrap').style.display='none';return;}
   // Mélanger les questions
   const shuffled=[...questions].sort(()=>Math.random()-.5);
