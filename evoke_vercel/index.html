@@ -78,7 +78,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
 .ldt{font-size:1.15rem;font-weight:800;color:var(--dark);margin-bottom:.4rem;}
 .lds{font-size:.8rem;color:var(--text2);}
 .queue-info{margin-top:.8rem;background:rgba(255,193,7,.1);border:1px solid rgba(255,193,7,.3);border-radius:var(--rmd);padding:.7rem 1rem;font-size:.78rem;color:#b8860b;font-weight:600;text-align:center;}
-.quiz-wrap{margin-top:2rem;text-align:left;background:linear-gradient(135deg,#111118 0%,#1e1e2e 100%);border-radius:var(--rxl);padding:1.6rem;box-shadow:0 20px 60px rgba(17,17,24,.35);animation:quizIn .5s cubic-bezier(.34,1.56,.64,1) both;}
+.quiz-wrap{margin-top:2rem;text-align:center;background:linear-gradient(135deg,#111118 0%,#1e1e2e 100%);border-radius:var(--rxl);padding:1.6rem;box-shadow:0 20px 60px rgba(17,17,24,.35);animation:quizIn .5s cubic-bezier(.34,1.56,.64,1) both;}
 @keyframes quizIn{from{opacity:0;transform:translateY(20px) scale(.96);}to{opacity:1;transform:translateY(0) scale(1);}}
 .quiz-header{font-size:.58rem;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:.6rem;}
 .quiz-intro{font-size:.9rem;font-weight:800;color:white;margin-bottom:1.2rem;line-height:1.5;}
@@ -87,7 +87,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
 .quiz-q{font-size:.95rem;font-weight:800;color:white;margin-bottom:1rem;line-height:1.45;animation:fadeUp .3s ease both;}
 @keyframes fadeUp{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
 .quiz-opts{display:flex;flex-direction:column;gap:8px;margin-bottom:.8rem;}
-.quiz-opt{padding:.8rem 1.1rem;background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.1);border-radius:var(--rmd);font-size:.82rem;font-weight:700;color:rgba(255,255,255,.8);cursor:pointer;transition:all .2s cubic-bezier(.34,1.56,.64,1);text-align:left;animation:fadeUp .3s ease both;}
+.quiz-opts{text-align:left;}.quiz-opt{padding:.8rem 1.1rem;background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.1);border-radius:var(--rmd);font-size:.82rem;font-weight:700;color:rgba(255,255,255,.8);cursor:pointer;transition:all .2s cubic-bezier(.34,1.56,.64,1);text-align:left;animation:fadeUp .3s ease both;}
 .quiz-opt:nth-child(1){animation-delay:.05s;}
 .quiz-opt:nth-child(2){animation-delay:.1s;}
 .quiz-opt:nth-child(3){animation-delay:.15s;}
@@ -104,6 +104,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
 @keyframes quizOut{from{opacity:1;transform:scale(1);}to{opacity:0;transform:scale(.95);}}
 .quiz-result-title{font-size:1rem;font-weight:800;color:white;margin-bottom:.5rem;line-height:1.3;}
 .quiz-result-sub{font-size:.78rem;color:rgba(255,255,255,.45);line-height:1.6;}
+.quiz-patience{margin-top:1.2rem;padding:.85rem 1.1rem;background:rgba(62,207,106,.1);border:1px solid rgba(62,207,106,.25);border-radius:var(--rmd);font-size:.8rem;font-weight:700;color:rgba(62,207,106,.9);line-height:1.5;animation:fadeUp .4s ease both;display:none;}
 .quiz-intro-emoji{font-size:2.8rem;margin:.4rem 0 .8rem;animation:bounce 1s cubic-bezier(.34,1.56,.64,1) both .3s;}
 .quiz-intro-title{font-size:.95rem;font-weight:800;color:white;line-height:1.4;margin-bottom:.5rem;}
 .quiz-intro-sub{font-size:.8rem;color:rgba(255,255,255,.5);margin-bottom:1.3rem;line-height:1.5;}
@@ -362,6 +363,7 @@ audio{width:100%;margin-bottom:1.2rem;accent-color:var(--green2);}
           <div class="quiz-result-emoji" id="quiz-result-emoji"></div>
           <div class="quiz-result-title" id="quiz-result-title"></div>
           <div class="quiz-result-sub" id="quiz-result-sub"></div>
+          <div class="quiz-patience" id="quiz-patience">⏳ &nbsp;Encore un peu de patience… ta musique arrive !</div>
         </div>
       </div>
     </div>
@@ -1023,6 +1025,7 @@ function startQuiz(){
   document.getElementById('quiz-intro-screen').style.display='block';
   document.getElementById('quiz-question-screen').style.display='none';
   document.getElementById('quiz-result-wrap').style.display='none';
+  var p=document.getElementById('quiz-patience');if(p){p.style.display='none';}
   // Animer l'emoji d'intro
   const emojis=['🎯','🤔','😏','🧐','🎪'];
   document.getElementById('quiz-intro-emoji').textContent=emojis[Math.floor(Math.random()*emojis.length)];
@@ -1056,6 +1059,11 @@ function showQuizQuestion(){
     document.getElementById('quiz-result-title').textContent=title;
     document.getElementById('quiz-result-sub').textContent=sub;
     document.getElementById('quiz-score-fill').style.width='100%';
+    // Afficher le message de patience après 4 secondes
+    setTimeout(function(){
+      var p=document.getElementById('quiz-patience');
+      if(p){p.style.display='block';}
+    }, 6000);
     return;
   }
   document.getElementById('quiz-question-screen').style.display='block';
