@@ -733,7 +733,7 @@ async function generateMusic(){
   document.getElementById('btn-cta').disabled=false;
 }
 function stopAudio(){const a=document.getElementById('result-audio');a.pause();a.currentTime=0;a.src='';}
-function rForm(){stopAudio();document.querySelector('.fs').style.display='';document.querySelector('.hs').style.display='';}
+function rForm(){stopAudio();document.querySelector('.fs').style.display='';document.querySelector('.hs').style.display='';document.getElementById('quiz-wrap').style.display='none';document.getElementById('quiz-score-fill').style.width='0%';}
 async function saveToGallery(){
   const ev=DB.events[DB.guestEv];if(!ev||!ev.lastGenerated)return;
   const{name,msg,style,voice,url}=ev.lastGenerated;let finalUrl=url;
