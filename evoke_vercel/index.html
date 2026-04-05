@@ -290,7 +290,7 @@ audio{width:100%;margin-bottom:1.2rem;accent-color:var(--green2);}
   <div class="fs">
     <div class="fc">
       <div class="cl"><div class="cli">✍️</div>Votre message</div>
-      <textarea class="fta" id="input-message" placeholder="Écrivez votre message pour les mariés…"></textarea>
+      <textarea class="fta" id="input-message" placeholder="Un vœu, une anecdote, un souvenir… écrivez ce qui vous vient du cœur ✨"></textarea>
       <input class="fin" id="input-name" type="text" placeholder="Votre prénom ou « La famille Martin »">
     </div>
     <div class="fc">
@@ -432,7 +432,7 @@ audio{width:100%;margin-bottom:1.2rem;accent-color:var(--green2);}
             <div class="sg">
               <div class="sc"><span class="sn" id="d-gen">0</span><span class="sl">Générées</span></div>
               <div class="sc"><span class="sn" id="d-rem">—</span><span class="sl">Restants</span></div>
-              <div class="sc"><span class="sn" id="d-act">0</span><span class="sl">En galerie</span></div>
+              <div class="sc" id="d-act-card" style="cursor:pointer" onclick="openGalleryLink()" title="Voir la galerie"><span class="sn" id="d-act">0</span><span class="sl">En galerie ↗</span></div>
             </div>
             <div class="pb"><div class="pf" id="d-prog" style="width:0%"></div></div>
             <div class="pl" id="d-lbl"></div>
@@ -451,6 +451,10 @@ audio{width:100%;margin-bottom:1.2rem;accent-color:var(--green2);}
                 <div class="edit-row">
                   <div><div class="efl">Date</div><input class="efi" id="edit-date" type="date"></div>
                   <div><div class="efl">Nb invités</div><input class="efi" id="edit-guests" type="number" min="1"></div>
+                </div>
+                <div class="edit-row">
+                  <div><div class="efl">Crédits de départ</div><input class="efi" id="edit-credits-base" type="number" min="1" placeholder="Ex: 50"></div>
+                  <div style="display:flex;align-items:flex-end;padding-bottom:2px"><div style="font-size:.7rem;color:var(--text2);line-height:1.4;">Modifie le total initial.<br>Utilise "Ajouter des crédits" pour en rajouter.</div></div>
                 </div>
                 <div class="edit-row full">
                   <div><div class="efl">Email des mariés</div><input class="efi" id="edit-email" type="email" placeholder="contact@email.com"></div>
@@ -546,6 +550,9 @@ async function syncEventsFromSupabase(){
     if(!r.ok)return;
     const evs=await r.json();
     if(!Array.isArray(evs))return;
+    // Remplacer entièrement les événements locaux par ceux de Supabase
+    // Ainsi les suppressions faites sur un autre appareil sont propagées
+    DB.events={};
     evs.forEach(ev=>{DB.events[ev.id]=ev;});
     saveDB();
   }catch(e){console.warn('Sync Supabase failed:',e);}
@@ -665,8 +672,8 @@ async function generateMusic(){
     let url=null;
     if(task_id){
       // ÉTAPE 2 — Polling côté frontend : premier appel après 2s puis toutes les 4s
-      document.querySelector('.lds').textContent='Votre mélodie est en cours de composition — cela peut prendre jusqu\'à 2 minutes…';
-      startQuiz();
+      document.querySelector('.lds').textContent='';
+      setTimeout(()=>startQuiz(), 2000);
       const maxAttempts=45;
       for(let i=0;i<maxAttempts;i++){
         await new Promise(res=>setTimeout(res,i===0?2000:4000));
@@ -811,6 +818,7 @@ function renderDet(id){
   document.getElementById('edit-guests').value=ev.guests||'';
   document.getElementById('edit-form').style.display='none';
   const editEmailEl=document.getElementById('edit-email');if(editEmailEl)editEmailEl.value=ev.email||'';
+  const editCredEl=document.getElementById('edit-credits-base');if(editCredEl)editCredEl.value=ev.credits||'';
   // Pré-remplir quiz
   const qfe=document.getElementById('quiz-fields-edit');
   if(qfe){qfe.innerHTML='';(ev.quiz||[]).forEach((q,i)=>addQuizField('edit',q));}
@@ -1014,7 +1022,7 @@ function showQuizQuestion(){
     document.getElementById('quiz-result-emoji').textContent=emoji;
     document.getElementById('quiz-result-title').textContent=title;
     document.getElementById('quiz-result-sub').textContent=sub;
-    document.getElementById('quiz-score-fill').style.width=pct+'%';
+    document.getElementById('quiz-score-fill').style.width='100%';
     return;
   }
   document.getElementById('quiz-question-wrap').style.display='block';
@@ -1023,8 +1031,8 @@ function showQuizQuestion(){
   document.getElementById('quiz-q').textContent=q.q;
   document.getElementById('quiz-progress').textContent='Question '+(current+1)+' / '+questions.length;
   document.getElementById('quiz-score').textContent=score+' ✓';
-  const scorePct=questions.length>0?Math.round(score/questions.length*100):0;
-  document.getElementById('quiz-score-fill').style.width=scorePct+'%';
+  const progPct=questions.length>0?Math.round(current/questions.length*100):0;
+  document.getElementById('quiz-score-fill').style.width=progPct+'%';
   const opts=[{text:q.a,correct:true},...(q.wrong||[]).filter(w=>w).map(w=>({text:w,correct:false}))].sort(()=>Math.random()-.5);
   const optsEl=document.getElementById('quiz-opts');
   optsEl.innerHTML=opts.map((o,i)=>`<button class="quiz-opt" onclick="answerQuiz(${i},${o.correct})">${o.text}</button>`).join('');
@@ -1038,8 +1046,9 @@ function answerQuiz(idx,correct){
   btns.forEach(b=>{b.disabled=true;});
   btns[idx].classList.add(correct?'correct':'wrong');
   if(correct)quizState.score++;
-  const pct=Math.round(quizState.score/quizState.questions.length*100);
-  document.getElementById('quiz-score-fill').style.width=pct+'%';
+  // Jauge = progression (questions répondues / total)
+  const progPct=Math.round((quizState.current+1)/quizState.questions.length*100);
+  document.getElementById('quiz-score-fill').style.width=progPct+'%';
   document.getElementById('quiz-score').textContent=quizState.score+' ✓';
   setTimeout(()=>{quizState.current++;showQuizQuestion();},1400);
 }
@@ -1077,6 +1086,12 @@ async function addCredits(){
   renderEL();renderDet(id);
   toast('✦ +'+amount+' crédits ajoutés !');
 }
+function openGalleryLink(){
+  const id=DB.curEv;if(!id)return;
+  const ev=DB.events[id];if(!ev)return;
+  const base=window.location.hostname.includes('vercel.app')&&!window.location.hostname.includes('evoke-ecru')?'https://evoke-ecru.vercel.app':window.location.origin;
+  window.open(base+'/galerie/'+id+'?token='+ev.token,'_blank');
+}
 function toggleEdit(){
   const f=document.getElementById('edit-form');
   f.style.display=f.style.display==='none'?'block':'none';
@@ -1089,12 +1104,17 @@ async function saveEdit(){
   const date=document.getElementById('edit-date').value;
   const guests=parseInt(document.getElementById('edit-guests').value)||ev.guests;
   const email=document.getElementById('edit-email').value.trim();
+  const creditsBase=parseInt(document.getElementById('edit-credits-base').value);
   if(!p1||!p2){toast('Les prénoms sont requis');return;}
-  ev.p1=p1;ev.p2=p2;ev.couple=p1+' & '+p2;ev.date=date;ev.guests=guests;if(email)ev.email=email;const quizEdit=getQuizFields('edit');if(quizEdit.length)ev.quiz=quizEdit;
+  ev.p1=p1;ev.p2=p2;ev.couple=p1+' & '+p2;ev.date=date;ev.guests=guests;
+  if(email)ev.email=email;
+  if(creditsBase&&creditsBase>0)ev.credits=creditsBase;
+  const quizEdit=getQuizFields('edit');if(quizEdit.length)ev.quiz=quizEdit;
   saveDB();
   // Sync Supabase
   try{
     await fetch('/api/event',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(ev)});
+    if(creditsBase&&creditsBase>0)await fetch('/api/init-credits',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({event_id:id,credits:creditsBase})});
   }catch(e){}
   document.getElementById('edit-form').style.display='none';
   renderEL();renderDet(id);toast('✦ Événement mis à jour !');
@@ -1124,7 +1144,9 @@ function delEv(id){
 function delSong(eid,sid){
   const ev=DB.events[eid];if(!ev)return;
   ev.songs=ev.songs.filter(s=>s.id!==sid);if(ev.usedCredits>0)ev.usedCredits--;
-  saveDB();renderDet(eid);toast('Musique supprimée');
+  saveDB();
+  fetch('/api/event',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(ev)}).catch(()=>{});
+  renderDet(eid);toast('Musique supprimée');
 }
 function changePwd(){
   const p1=document.getElementById('npwd').value,p2=document.getElementById('cpwd').value;
