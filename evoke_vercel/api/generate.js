@@ -85,51 +85,140 @@ export default async function handler(req, res) {
   // ─────────────────────────────────────────────────────────────────────────
 
   // ── Étape 2 : Générer la musique avec les paroles ─────────────────────────
-  // Prompt adapté au style pour orienter MusicGPT correctement
-  const stylePrompts = {
-    'blues':             `A soulful blues wedding song, ${voiceLabel} voice, slow and emotional, heartfelt guitar, deep feeling, 90 seconds.`,
-    'jazz':              `An intimate jazz wedding song, ${voiceLabel} voice, romantic piano and double bass, warm and sophisticated, 90 seconds.`,
-    'hip-hop':           `A hip-hop wedding song, ${voiceLabel} voice, modern beats, rhythmic flow, punchy and celebratory, 90 seconds.`,
-    'reggae':            `A reggae wedding song, ${voiceLabel} voice, upbeat positive vibes, jamaican rhythm, joyful and warm, 90 seconds.`,
-    'rock':              `An acoustic rock wedding song, ${voiceLabel} voice, powerful guitar, anthemic and emotional, 90 seconds.`,
-    'gospel':            `A gospel wedding song, ${voiceLabel} voice, uplifting choir energy, joyful and spiritual, 90 seconds.`,
-    'soul r&b':          `A soul and r&b wedding song, ${voiceLabel} voice, smooth groove, emotional and romantic, 90 seconds.`,
-    'orchestral classical': `A cinematic orchestral wedding song, ${voiceLabel} voice, grand strings and piano, majestic and emotional, 90 seconds.`,
-    'country':           `A country wedding song, ${voiceLabel} voice, acoustic guitar, heartfelt and warm, southern charm, 90 seconds.`,
-    'bossa nova':        `A bossa nova wedding song, ${voiceLabel} voice, soft brazilian guitar, intimate and romantic, 90 seconds.`,
-    'acoustic folk':     `An acoustic folk wedding song, ${voiceLabel} voice, fingerpicking guitar, storytelling, warm and tender, 90 seconds.`,
-    'electronic pop':    `An electronic pop wedding song, ${voiceLabel} voice, dreamy synths, modern and romantic, gentle beats, 90 seconds.`,
-    'lo-fi':             `A lo-fi wedding song, ${voiceLabel} voice, soft warm beats, nostalgic and tender, chill and emotional, 90 seconds.`,
-    'french chanson':    `A french chanson wedding song, ${voiceLabel} voice, poetic and romantic, accordion and piano, heartfelt, 90 seconds.`,
-    'afrobeat':          `An afrobeat wedding song, ${voiceLabel} voice, west african rhythms, upbeat and joyful, celebratory energy, 90 seconds.`,
-    'pop':               `A romantic pop wedding song, ${voiceLabel} voice, catchy and emotional, modern production, heartfelt, 90 seconds.`,
-    'romantic pop':      `A romantic pop wedding song, ${voiceLabel} voice, emotional piano ballad, heartfelt and celebratory, 90 seconds.`,
-  };
-  // Variations vocales adaptées à chaque style musical
-  const styleVariations = {
-    'blues':             ['raspy and soulful','gritty and raw','deep and mournful','warm and earthy'],
-    'jazz':              ['smooth and velvety','breathy and intimate','rich and swinging','cool and laid-back'],
-    'hip-hop':           ['rhythmic and punchy','confident and sharp','laid-back and cool','energetic and crisp'],
-    'rap':               ['fast and rhythmic','punchy and articulate','smooth and flowing','intense and passionate'],
-    'reggae':            ['relaxed and laid-back','warm and sunny','groovy and joyful','smooth and positive'],
-    'rock':              ['powerful and raw','gritty and passionate','strong and anthemic','intense and energetic'],
-    'gospel':            ['powerful and uplifting','pure and soaring','warm and joyful','rich and spiritual'],
-    'soul r&b':          ['smooth and passionate','warm and soulful','rich and emotional','velvety and intimate'],
-    'orchestral classical':['pure and soaring','warm and majestic','delicate and precise','rich and dramatic'],
-    'country':           ['warm and twangy','heartfelt and sincere','bright and clear','gentle and storytelling'],
-    'acoustic folk':     ['gentle and intimate','warm and storytelling','soft and earnest','tender and natural'],
-    'electronic pop':    ['bright and clear','smooth and modern','light and dreamy','crisp and emotive'],
-    'lo-fi':             ['soft and whispery','warm and hazy','gentle and nostalgic','mellow and intimate'],
-    'french chanson':    ['poetic and expressive','warm and theatrical','intimate and romantic','rich and emotive'],
-    'afrobeat':          ['energetic and bright','groovy and joyful','powerful and rhythmic','warm and celebratory'],
-    'pop':               ['bright and emotive','smooth and passionate','warm and heartfelt','clear and powerful'],
-    'romantic pop':      ['soft and breathy','warm and intimate','tender and passionate','pure and emotional'],
-  };
-  const variations = styleVariations[musicStyle] || ['warm and heartfelt','smooth and emotional','tender and intimate','rich and passionate'];
-  const randomVocal = variations[Math.floor(Math.random() * variations.length)];
+  // Chaque style a plusieurs variantes complètement différentes (prod, tempo, instruments, effets vocaux)
+  // On pioche aléatoirement pour maximiser la diversité entre chaque génération
 
-  const basePrompt = stylePrompts[musicStyle] || `A beautiful ${musicStyle} wedding song, ${voiceLabel} voice, emotional and celebratory, 90 seconds.`;
-  const prompt = basePrompt.replace('90 seconds.', `90 seconds. Vocal delivery: ${randomVocal}.`);
+  const styleVariants = {
+    'hip-hop': [
+      `Hardcore hip-hop wedding song, ${voiceLabel} voice, aggressive 808 bass, hard-hitting trap drums, dark cinematic strings, gritty and raw energy, punchy rhymes, 90 seconds.`,
+      `Lyrical technical hip-hop wedding song, ${voiceLabel} voice, complex multi-syllable flow, jazzy boom-bap production, live bass guitar, intricate wordplay, sophisticated and clever, 90 seconds.`,
+      `Autotune melodic rap wedding song, ${voiceLabel} voice, heavy autotune effect, emotional trap melodies, lush synth pads, emo rap atmosphere, 808 slides, dreamy and heartfelt, 90 seconds.`,
+      `Old school hip-hop wedding song, ${voiceLabel} voice, vintage boom-bap beats, vinyl crackle, classic east coast production, soulful samples, laid-back groove, nostalgic, 90 seconds.`,
+      `Drill style wedding song, ${voiceLabel} voice, dark sliding 808s, hi-hat rolls, ominous piano, menacing instrumental, heavy bass drops, intense urban energy, 90 seconds.`,
+      `West coast hip-hop wedding song, ${voiceLabel} voice, g-funk synths, funky bass line, smooth laid-back flow, California vibes, classic west coast production, 90 seconds.`,
+    ],
+    'blues': [
+      `Delta blues wedding song, ${voiceLabel} voice, raw acoustic slide guitar, dusty and emotional, sparse minimal production, deep soulful feeling, storytelling, 90 seconds.`,
+      `Chicago electric blues wedding song, ${voiceLabel} voice, distorted electric guitar, driving rhythm section, harmonica, gritty urban sound, powerful and passionate, 90 seconds.`,
+      `Slow jazz blues wedding song, ${voiceLabel} voice, mellow piano chords, double bass, brushed drums, smoky intimate atmosphere, melancholic and romantic, 90 seconds.`,
+      `Blues rock wedding song, ${voiceLabel} voice, heavy electric guitar riffs, driving drumkit, raw energy mixed with emotion, powerful anthemic feeling, 90 seconds.`,
+      `Soul blues wedding song, ${voiceLabel} voice, gospel-influenced melodies, organ, expressive vocal runs, deep emotional resonance, rich soulful production, 90 seconds.`,
+    ],
+    'jazz': [
+      `Bebop jazz wedding song, ${voiceLabel} voice, fast complex chord changes, virtuoso piano, upright bass walking lines, swinging brushed drums, sophisticated and energetic, 90 seconds.`,
+      `Smooth jazz wedding song, ${voiceLabel} voice, silky saxophone, electric piano, soft groove, contemporary jazz production, warm and sensual, perfect for slow dancing, 90 seconds.`,
+      `Bossa nova jazz wedding song, ${voiceLabel} voice, nylon string guitar, subtle percussion, Brazilian jazz harmonies, intimate whisper, gentle and romantic, 90 seconds.`,
+      `Big band jazz wedding song, ${voiceLabel} voice, full brass section, saxophones, trumpets, trombones, swinging big band arrangement, celebratory and joyful, 90 seconds.`,
+      `Noir jazz wedding song, ${voiceLabel} voice, moody piano, muted trumpet, late night atmosphere, cinematic and mysterious, deeply romantic, 90 seconds.`,
+    ],
+    'rock': [
+      `Indie rock wedding song, ${voiceLabel} voice, jangly guitar arpeggios, driving bass, energetic drums, anthemic chorus, warm and sincere, stadium-ready emotional, 90 seconds.`,
+      `Hard rock wedding song, ${voiceLabel} voice, powerful electric guitar riffs, heavy drumming, distorted bass, raw powerful energy, passionate and loud, 90 seconds.`,
+      `Acoustic rock wedding song, ${voiceLabel} voice, fingerpicked and strummed acoustic guitar, emotional dynamics, intimate verses, explosive chorus, heartfelt, 90 seconds.`,
+      `Progressive rock wedding song, ${voiceLabel} voice, complex time signatures, layered guitars, dramatic build-ups, epic instrumental passages, cinematic and grand, 90 seconds.`,
+      `Shoegaze wedding song, ${voiceLabel} voice, walls of distorted guitar reverb, dreamy ethereal atmosphere, hazy melodies, blissful noise, romantic and hypnotic, 90 seconds.`,
+      `Post-rock wedding instrumental, no vocals, sweeping guitar layers, gradual epic build from quiet to massive, drums crashing in, deeply emotional cinematic journey, 90 seconds.`,
+    ],
+    'soul r&b': [
+      `Classic soul wedding song, ${voiceLabel} voice, vintage organ, horn section, gospel-inspired backing vocals, rich warm production, James Brown meets Marvin Gaye, emotional, 90 seconds.`,
+      `Contemporary R&B wedding song, ${voiceLabel} voice, modern production, lush synths, tight programmed drums, falsetto runs, smooth and sensual, radio-ready, 90 seconds.`,
+      `Neo soul wedding song, ${voiceLabel} voice, live instrumentation, warm electric piano, organic grooves, jazzy chords, introspective and deep, sophisticated, 90 seconds.`,
+      `Funk soul wedding song, ${voiceLabel} voice, tight funky bass line, wah guitar, horns, groove-heavy production, danceable and joyful, celebratory energy, 90 seconds.`,
+      `Quiet storm R&B wedding song, ${voiceLabel} voice, slow smooth production, lush strings, soft synthesizers, intimate and sensual, perfect for slow dancing, 90 seconds.`,
+    ],
+    'electronic pop': [
+      `Synthwave wedding song, ${voiceLabel} voice, 80s retro synthesizers, pulsing arpeggios, gated reverb drums, neon-lit nostalgic atmosphere, romantic and cinematic, 90 seconds.`,
+      `Future bass wedding song, ${voiceLabel} voice, lush chord stabs, wobbly synth drops, emotional build-ups, festival-ready production, euphoric and uplifting, 90 seconds.`,
+      `Deep house wedding song, ${voiceLabel} voice, hypnotic 4-on-the-floor kick, warm bassline, soulful vocal chops, late night dance floor energy, smooth and groovy, 90 seconds.`,
+      `Ambient electronic wedding song, ${voiceLabel} voice, floating ethereal synth pads, gentle beats, dreamy atmosphere, cinematic and expansive, peaceful and emotional, 90 seconds.`,
+      `Electropop wedding song, ${voiceLabel} voice, punchy synth bass, catchy electronic hooks, bright crisp production, danceable and fun, modern pop energy, 90 seconds.`,
+      `Drum and bass wedding song, ${voiceLabel} voice, fast breakbeat drums, deep rolling bass, liquid smooth melodies, intense and energetic, high-energy celebration, 90 seconds.`,
+    ],
+    'reggae': [
+      `Roots reggae wedding song, ${voiceLabel} voice, classic one-drop rhythm, deep bass, vintage organ, spiritual and conscious lyrics feel, authentic Jamaican sound, 90 seconds.`,
+      `Dancehall wedding song, ${voiceLabel} voice, digital riddim, fast-paced energetic flow, Caribbean party atmosphere, punchy bass, high energy celebration, 90 seconds.`,
+      `Lover's rock reggae wedding song, ${voiceLabel} voice, romantic smooth reggae, soft guitar, tender melodies, intimate and sweet, perfect for slow dancing, 90 seconds.`,
+      `Reggaeton wedding song, ${voiceLabel} voice, dembow rhythm, urban Latin vibes, modern production, punchy 808s, party energy mixed with romance, 90 seconds.`,
+      `Ska wedding song, ${voiceLabel} voice, upbeat brass horns, offbeat guitar, walking bass, joyful energetic rhythm, fun and celebratory, vintage Caribbean sound, 90 seconds.`,
+    ],
+    'pop': [
+      `Indie pop wedding song, ${voiceLabel} voice, delicate guitar, warm synths, intimate lo-fi production, heartfelt and genuine, soft emotional melodies, 90 seconds.`,
+      `Electropop wedding song, ${voiceLabel} voice, pulsing synth bass, bright hooks, modern crisp production, catchy chorus, danceable celebration energy, 90 seconds.`,
+      `Power pop wedding song, ${voiceLabel} voice, big guitars, anthemic chorus, driving drums, uplifting and euphoric, stadium ready emotional peak, 90 seconds.`,
+      `Cinematic pop wedding song, ${voiceLabel} voice, orchestral strings meets modern production, epic build-up, soaring chorus, deeply emotional and grand, 90 seconds.`,
+      `Dream pop wedding song, ${voiceLabel} voice, reverb-soaked guitars, hazy ethereal synths, hypnotic melodies, romantic and otherworldly, slow and blissful, 90 seconds.`,
+    ],
+    'romantic pop': [
+      `Piano ballad wedding song, ${voiceLabel} voice, solo piano intro, emotional chord progression, strings swell in chorus, intimate and deeply moving, 90 seconds.`,
+      `Cinematic romantic pop wedding song, ${voiceLabel} voice, orchestral strings, modern beats, sweeping production, epic emotional journey, movie soundtrack feeling, 90 seconds.`,
+      `Acoustic pop wedding song, ${voiceLabel} voice, nylon string guitar, soft percussion, breathy intimate vocals, heartfelt and tender, stripped back, 90 seconds.`,
+      `80s power ballad wedding song, ${voiceLabel} voice, dramatic synths, reverb-drenched production, emotional guitar solo, anthemic and romantic, nostalgic feeling, 90 seconds.`,
+      `Contemporary pop ballad wedding song, ${voiceLabel} voice, modern production, trap-influenced soft drums, lush synth pads, emotional and fresh, 90 seconds.`,
+    ],
+    'gospel': [
+      `Traditional gospel wedding song, ${voiceLabel} voice, full choir backing, powerful organ, hand claps, joyful and spiritual, call and response, church energy, 90 seconds.`,
+      `Contemporary gospel wedding song, ${voiceLabel} voice, modern production, live band, electric guitar, uplifting message, emotional and celebratory, 90 seconds.`,
+      `Praise worship gospel wedding song, ${voiceLabel} voice, intimate acoustic piano, soaring melodies, deeply moving and spiritual, tears of joy atmosphere, 90 seconds.`,
+      `Gospel soul fusion wedding song, ${voiceLabel} voice, funk-influenced rhythm section, horn section, expressive vocal runs, joyful and danceable, 90 seconds.`,
+    ],
+    'orchestral classical': [
+      `Romantic orchestral wedding song, ${voiceLabel} voice, lush string quartet, oboe solo, sweeping crescendos, classical Romantic era style, deeply moving, 90 seconds.`,
+      `Cinematic orchestral wedding instrumental, no vocals, full symphony orchestra, epic brass, dramatic timpani, heroic and emotional, film score quality, 90 seconds.`,
+      `Chamber music wedding song, ${voiceLabel} voice, intimate string trio, harpsichord, delicate and refined, Baroque-influenced, elegant and graceful, 90 seconds.`,
+      `Neoclassical piano wedding song, ${voiceLabel} voice, modern classical piano, minimal production, haunting melodies, emotional and contemplative, Ludovico Einaudi style, 90 seconds.`,
+      `Opera-influenced wedding song, ${voiceLabel} voice, dramatic operatic passages, full orchestra, powerful and grand, deeply emotional European classical tradition, 90 seconds.`,
+    ],
+    'country': [
+      `Classic country wedding song, ${voiceLabel} voice, twangy acoustic guitar, pedal steel, fiddle, classic Nashville sound, heartfelt storytelling, warm and sincere, 90 seconds.`,
+      `Country pop wedding song, ${voiceLabel} voice, modern production, catchy hooks, polished sound, uplifting and radio-ready, contemporary Nashville crossover, 90 seconds.`,
+      `Bluegrass wedding song, ${voiceLabel} voice, rapid banjo picking, mandolin, upright bass, high lonesome sound, energetic and joyful, Appalachian tradition, 90 seconds.`,
+      `Outlaw country wedding song, ${voiceLabel} voice, gritty guitar, raw production, rebellious spirit, raw and authentic, dusty road atmosphere, deep and honest, 90 seconds.`,
+      `Country blues wedding song, ${voiceLabel} voice, slide guitar, earthy and raw, delta meets Nashville, soulful and nostalgic, deeply emotional, 90 seconds.`,
+    ],
+    'bossa nova': [
+      `Classic bossa nova wedding song, ${voiceLabel} voice, nylon guitar, delicate syncopated rhythm, intimate breathy vocals, Rio de Janeiro atmosphere, elegant, 90 seconds.`,
+      `Jazz bossa nova wedding song, ${voiceLabel} voice, piano trio, walking bass, soft brushed drums, sophisticated harmonies, Joao Gilberto meets Bill Evans, 90 seconds.`,
+      `Modern bossa nova wedding song, ${voiceLabel} voice, electronic touches, contemporary production, bossa groove with modern flair, fresh and romantic, 90 seconds.`,
+      `Samba wedding song, ${voiceLabel} voice, percussive rhythm section, Brazilian energy, joyful and festive, lively drums, celebratory tropical feeling, 90 seconds.`,
+    ],
+    'acoustic folk': [
+      `American folk wedding song, ${voiceLabel} voice, fingerpicked acoustic guitar, storytelling lyrics, intimate and raw, campfire atmosphere, honest and heartfelt, 90 seconds.`,
+      `Celtic folk wedding song, ${voiceLabel} voice, fiddle, tin whistle, bodhran drum, Irish or Scottish atmosphere, spirited and emotional, traditional and timeless, 90 seconds.`,
+      `Singer-songwriter wedding song, ${voiceLabel} voice, solo acoustic guitar, confessional intimate style, minimalist production, deeply personal, 90 seconds.`,
+      `Americana wedding song, ${voiceLabel} voice, lap steel guitar, gentle banjo, rustic warm production, American heartland atmosphere, nostalgic and sincere, 90 seconds.`,
+      `Nordic folk wedding song, ${voiceLabel} voice, nyckelharpa or violin, atmospheric and mystical, Scandinavian folk tradition, haunting melodies, ethereal, 90 seconds.`,
+    ],
+    'lo-fi': [
+      `Rainy day lo-fi wedding song, ${voiceLabel} voice, rain sounds, vinyl crackle, warm cassette tape texture, mellow piano, nostalgic and cozy, slow and intimate, 90 seconds.`,
+      `Lo-fi hip-hop wedding song, ${voiceLabel} voice, chopped vocal samples, dusty boom-bap drums, warm bass, jazzy chords, chill study beats energy, relaxed, 90 seconds.`,
+      `Bedroom pop wedding song, ${voiceLabel} voice, DIY aesthetic, layered guitars, home recording warmth, tender and genuine, indie lo-fi production, 90 seconds.`,
+      `Vaporwave wedding song, ${voiceLabel} voice, slowed down samples, dreamy retro synths, nostalgic 80s aesthetic, hazy and surreal, slowcore melodies, 90 seconds.`,
+    ],
+    'french chanson': [
+      `Classic chanson française wedding song, ${voiceLabel} voice, accordion, acoustic guitar, Edith Piaf inspired, poetic and passionate, cabaret atmosphere, 90 seconds.`,
+      `Nouvelle chanson wedding song, ${voiceLabel} voice, modern production mixed with chanson tradition, Stromae inspired, fresh and emotional, contemporary French sound, 90 seconds.`,
+      `Chanson variété wedding song, ${voiceLabel} voice, lush orchestral strings, classic French pop production, elegant and romantic, timeless Parisian feeling, 90 seconds.`,
+      `Chanson acoustic wedding song, ${voiceLabel} voice, solo guitar, intimate and poetic, stripped back, deeply personal, Brel or Brassens tradition, 90 seconds.`,
+    ],
+    'afrobeat': [
+      `Afrobeats wedding song, ${voiceLabel} voice, modern Nigerian sound, Afropop production, danceable grooves, celebratory, Burna Boy inspired, joyful, 90 seconds.`,
+      `Classic Fela Kuti afrobeat wedding song, ${voiceLabel} voice, full horn section, polyrhythmic drums, funk bass, African percussion, powerful and political energy, 90 seconds.`,
+      `Afro-fusion wedding song, ${voiceLabel} voice, blend of afrobeat and R&B, smooth production, contemporary African sound, emotional and danceable, 90 seconds.`,
+      `Highlife wedding song, ${voiceLabel} voice, joyful Ghanaian highlife, guitar melodies, brass, celebratory West African tradition, warm and festive, 90 seconds.`,
+      `Amapiano wedding song, ${voiceLabel} voice, South African log drum bass, piano house groove, gentle and hypnotic, log drum synth, joyful and smooth, 90 seconds.`,
+    ],
+  };
+
+  // Sélection aléatoire d'une variante du style choisi
+  const variants = styleVariants[musicStyle] || [
+    `A beautiful ${musicStyle} wedding song, ${voiceLabel} voice, emotional and celebratory, rich instrumentation, heartfelt, 90 seconds.`,
+    `An intimate ${musicStyle} wedding song, ${voiceLabel} voice, stripped back and tender, acoustic feel, deeply personal, 90 seconds.`,
+    `An upbeat ${musicStyle} wedding song, ${voiceLabel} voice, joyful and danceable, live instruments, celebratory energy, 90 seconds.`,
+  ];
+  const prompt = variants[Math.floor(Math.random() * variants.length)];
+
+  // music_style est juste un hint pour MusicGPT — le prompt détaillé prime
+  const musicStyleHint = musicStyle.replace('orchestral classical','classical').replace('acoustic folk','folk').replace('electronic pop','electronic').replace('french chanson','pop').replace('soul r&b','soul').replace('romantic pop','pop');
 
   try {
     const r = await fetch(`${BASE}/MusicAI`, {
@@ -138,7 +227,7 @@ export default async function handler(req, res) {
       body: JSON.stringify({
         prompt,
         lyrics,
-        music_style: musicStyle,
+        music_style: musicStyleHint,
         gender: voiceLabel,
         make_instrumental: false,
         vocal_only: false,

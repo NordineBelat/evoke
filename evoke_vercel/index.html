@@ -642,11 +642,20 @@ async function generateMusic(){
   const fullMsg=msg+(endsWithPunct?'':'. ')+'. Dans un style '+styleVal;
   const style=styleVal;
   if(ev.credits-ev.usedCredits<=0){document.querySelector('.fs').style.display='none';document.querySelector('.hs').style.display='none';document.getElementById('noc-wrap').classList.add('active');return;}
+  // ── Débit immédiat du crédit au clic ─────────────────────────────────────
+  ev.usedCredits++;
+  const remAfter=ev.credits-ev.usedCredits;
+  document.getElementById('credits-hero').textContent=remAfter;
+  document.getElementById('ncred').textContent=remAfter+' crédits';
+  saveDB();
+  // Sync immédiat dans Supabase
+  fetch('/api/event',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...ev,lastGenerated:undefined})}).catch(()=>{});
+  // ─────────────────────────────────────────────────────────────────────────
   document.getElementById('btn-cta').disabled=true;
   document.querySelector('.fs').style.display='none';document.querySelector('.hs').style.display='none';
   document.getElementById('loading').classList.add('active');document.getElementById('result-wrap').classList.remove('active');
-  // Quiz apparaît 3s après le clic
-  setTimeout(()=>startQuiz(), 3000);
+  // Quiz apparaît 1s après le clic
+  setTimeout(()=>startQuiz(), 1000);
 
   // ── File d'attente ────────────────────────────────────────────────────────
   const queueId=Date.now().toString(36)+Math.random().toString(36).substring(2);
@@ -717,14 +726,6 @@ async function generateMusic(){
       return;
     }
 
-    // Décrémenter le crédit dès que la musique est générée
-  ev.usedCredits++;
-  const remAfter=ev.credits-ev.usedCredits;
-  document.getElementById('credits-hero').textContent=remAfter;
-  document.getElementById('ncred').textContent=remAfter+' crédits';
-  saveDB();
-  // Sync usedCredits dans Supabase
-  fetch('/api/event',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...ev,lastGenerated:undefined})}).catch(()=>{});
   ev.lastGenerated={name:cleanN,msg,style,voice,url};
     document.getElementById('result-title').textContent='Mélodie de '+cleanN;
     document.getElementById('result-meta').textContent=style+' · '+(voice==='female'?'Voix féminine':'Voix masculine')+' · 1 min 30';
@@ -1059,11 +1060,9 @@ function showQuizQuestion(){
     document.getElementById('quiz-result-title').textContent=title;
     document.getElementById('quiz-result-sub').textContent=sub;
     document.getElementById('quiz-score-fill').style.width='100%';
-    // Afficher le message de patience après 4 secondes
-    setTimeout(function(){
-      var p=document.getElementById('quiz-patience');
-      if(p){p.style.display='block';}
-    }, 6000);
+    // Afficher le message de patience en même temps que la conclusion
+    var p=document.getElementById('quiz-patience');
+    if(p){p.style.display='block';}
     return;
   }
   document.getElementById('quiz-question-screen').style.display='block';
