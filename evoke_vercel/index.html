@@ -1014,13 +1014,7 @@ function showDangerModal(title,sub,onConfirm){
   document.getElementById('modal-danger').classList.add('active');
 }
 function closeDangerModal(){document.getElementById('modal-danger').classList.remove('active');}
-);
-  const msgs=['😬 On repassera…','🙂 Pas mal !','😊 Bien !','😍 Super !','🏆 Parfait !'];
-  var rc=document.getElementById('quiz-rating-confirm');
-  if(rc)rc.textContent=msgs[val-1];
-  // Stocker la note dans la chanson si disponible
-  if(window._lastSongRef)window._lastSongRef.quizRating=val;
-}
+
 async function confirmSendInvite(){
   closeModal();
   const id=DB.curEv;if(!id)return;
