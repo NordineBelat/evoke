@@ -111,6 +111,12 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
 .quiz-result-title{font-size:1rem;font-weight:800;color:white;margin-bottom:.5rem;line-height:1.3;}
 .quiz-result-sub{font-size:.78rem;color:rgba(255,255,255,.45);line-height:1.6;}
 .quiz-patience{margin-top:1.2rem;padding:.85rem 1.1rem;background:rgba(62,207,106,.1);border:1px solid rgba(62,207,106,.25);border-radius:var(--rmd);font-size:.8rem;font-weight:700;color:rgba(62,207,106,.9);line-height:1.5;animation:fadeUp .4s ease both;display:none;}
+.quiz-rating{margin-top:1.2rem;animation:fadeUp .4s ease both;}
+.quiz-rating-label{font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:.5rem;}
+.quiz-stars{display:flex;justify-content:center;gap:.3rem;}
+.quiz-star{font-size:1.6rem;line-height:1;filter:grayscale(1) opacity(.25);}
+.quiz-star.active{filter:none;}
+.quiz-score-num{margin-top:.5rem;font-size:.8rem;font-weight:800;color:rgba(255,255,255,.6);}
 .quiz-intro-emoji{font-size:2.8rem;margin:.4rem 0 .8rem;animation:bounce 1s cubic-bezier(.34,1.56,.64,1) both .3s;}
 .quiz-intro-title{font-size:.95rem;font-weight:800;color:white;line-height:1.4;margin-bottom:.5rem;}
 .quiz-intro-sub{font-size:.8rem;color:rgba(255,255,255,.5);margin-bottom:1.3rem;line-height:1.5;}
@@ -309,6 +315,31 @@ audio{width:100%;margin-bottom:1.2rem;accent-color:var(--green2);}
 
 
 
+
+/* FOOTER LÉGAL */
+.legal-footer{background:#f8f8fb;border-top:1px solid var(--border);padding:2.5rem 1.5rem 3rem;margin-top:2rem;}
+.legal-footer-inner{max-width:680px;margin:0 auto;}
+.legal-footer-logo{font-size:.9rem;font-weight:800;color:var(--dark);letter-spacing:-.02em;margin-bottom:.3rem;}
+.legal-footer-tagline{font-size:.68rem;color:var(--text3);margin-bottom:1.5rem;}
+.legal-links{display:flex;flex-wrap:wrap;gap:.5rem .4rem;margin-bottom:1.5rem;}
+.legal-link{font-size:.68rem;font-weight:700;color:var(--text2);background:var(--white);border:1px solid var(--border);border-radius:var(--rp);padding:.3rem .75rem;cursor:pointer;transition:all .15s;text-decoration:none;}
+.legal-link:hover{color:var(--dark);border-color:var(--dark);}
+.legal-copy{font-size:.62rem;color:var(--text3);line-height:1.6;}
+
+/* MODAL LÉGAL */
+.legal-modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:600;align-items:flex-end;justify-content:center;}
+.legal-modal-overlay.active{display:flex;}
+.legal-modal-box{background:white;border-radius:var(--rxl) var(--rxl) 0 0;width:100%;max-width:680px;max-height:85vh;display:flex;flex-direction:column;box-shadow:0 -8px 40px rgba(0,0,0,.2);}
+.legal-modal-header{display:flex;align-items:center;justify-content:space-between;padding:1.2rem 1.5rem;border-bottom:1px solid var(--border);flex-shrink:0;}
+.legal-modal-title{font-size:.95rem;font-weight:800;color:var(--dark);}
+.legal-modal-close{width:32px;height:32px;border-radius:50%;background:var(--bg);border:none;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text2);}
+.legal-modal-body{overflow-y:auto;padding:1.5rem;flex:1;}
+.legal-modal-body h2{font-size:.82rem;font-weight:800;color:var(--dark);margin:1.2rem 0 .4rem;letter-spacing:.02em;text-transform:uppercase;}
+.legal-modal-body h2:first-child{margin-top:0;}
+.legal-modal-body p{font-size:.78rem;color:var(--text2);line-height:1.7;margin-bottom:.6rem;}
+.legal-modal-body strong{color:var(--dark);font-weight:700;}
+.legal-modal-body ul{padding-left:1.1rem;margin-bottom:.6rem;}
+.legal-modal-body ul li{font-size:.78rem;color:var(--text2);line-height:1.7;margin-bottom:.2rem;}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 </head>
@@ -408,6 +439,17 @@ audio{width:100%;margin-bottom:1.2rem;accent-color:var(--green2);}
           <div class="quiz-result-emoji" id="quiz-result-emoji"></div>
           <div class="quiz-result-title" id="quiz-result-title"></div>
           <div class="quiz-result-sub" id="quiz-result-sub"></div>
+          <div class="quiz-rating" id="quiz-rating" style="display:none">
+            <div class="quiz-rating-label">Ton score</div>
+            <div class="quiz-stars" id="quiz-stars">
+              <span class="quiz-star" id="qs1">⭐</span>
+              <span class="quiz-star" id="qs2">⭐</span>
+              <span class="quiz-star" id="qs3">⭐</span>
+              <span class="quiz-star" id="qs4">⭐</span>
+              <span class="quiz-star" id="qs5">⭐</span>
+            </div>
+            <div class="quiz-score-num" id="quiz-score-num"></div>
+          </div>
           <div class="quiz-patience" id="quiz-patience">⏳ &nbsp;Encore un peu de patience… ta musique arrive !</div>
         </div>
       </div>
@@ -547,7 +589,13 @@ audio{width:100%;margin-bottom:1.2rem;accent-color:var(--green2);}
               </div>
             </div>
           </div>
-          <div class="ab"><div class="abt">En galerie</div><div id="d-songs"></div></div>
+          <div class="ab">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.8rem">
+              <div class="abt" style="margin-bottom:0">En galerie</div>
+              <button class="esb" style="background:#e53e3e;width:auto;padding:.4rem .9rem;font-size:.65rem" onclick="delAllSongs()">Tout supprimer</button>
+            </div>
+            <div id="d-songs"></div>
+          </div>
         </div>
       </div>
       <div id="tab-create" style="display:none">
@@ -602,6 +650,17 @@ audio{width:100%;margin-bottom:1.2rem;accent-color:var(--green2);}
     <div class="modal-actions">
       <button class="modal-cancel" onclick="closeModal()">Annuler</button>
       <button class="modal-confirm" id="modal-confirm-btn" onclick="confirmSendInvite()">✉️ Envoyer</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-danger">
+  <div class="modal-box">
+    <div class="modal-title" id="modal-danger-title">Confirmer la suppression</div>
+    <div class="modal-sub" id="modal-danger-sub"></div>
+    <div class="modal-actions">
+      <button class="modal-cancel" onclick="closeDangerModal()">Annuler</button>
+      <button class="modal-confirm" id="modal-danger-btn" style="background:#e53e3e">Supprimer définitivement</button>
     </div>
   </div>
 </div>
@@ -665,7 +724,7 @@ async function route(){
     DB.adminLoggedIn=false;saveDB();
   }
 }
-function initGuest(ev){
+function initGuest(ev){showLegalFooter();
   // Stocker le quiz globalement pour y accéder pendant la génération
   window._evQuiz = (ev.quiz||[]).filter(q=>q.q&&q.a);
   const rem=ev.credits-ev.usedCredits;
@@ -806,7 +865,7 @@ async function saveToGallery(){
 }
 function newComposition(){document.getElementById('conf-wrap').classList.remove('active');rForm();document.getElementById('btn-cta').disabled=false;if(DB.guestEv&&DB.events[DB.guestEv])DB.events[DB.guestEv].lastGenerated=null;}
 function regenerate(){document.getElementById('result-wrap').classList.remove('active');rForm();document.getElementById('btn-cta').disabled=false;if(DB.guestEv&&DB.events[DB.guestEv])DB.events[DB.guestEv].lastGenerated=null;}
-function initGal(ev){
+function initGal(ev){showLegalFooter();
   const songs=ev.songs||[];
   document.getElementById('gal-title').innerHTML='Galerie de <em>'+esc(ev.couple)+'</em>';
   document.getElementById('gal-count').textContent=songs.length+' mélodie'+(songs.length>1?'s':'');
@@ -947,6 +1006,21 @@ function sendInvite(){
   document.getElementById('modal-send').classList.add('active');
 }
 function closeModal(){document.getElementById('modal-send').classList.remove('active');}
+function showDangerModal(title,sub,onConfirm){
+  document.getElementById('modal-danger-title').textContent=title;
+  document.getElementById('modal-danger-sub').textContent=sub;
+  const btn=document.getElementById('modal-danger-btn');
+  btn.onclick=function(){closeDangerModal();onConfirm();};
+  document.getElementById('modal-danger').classList.add('active');
+}
+function closeDangerModal(){document.getElementById('modal-danger').classList.remove('active');}
+);
+  const msgs=['😬 On repassera…','🙂 Pas mal !','😊 Bien !','😍 Super !','🏆 Parfait !'];
+  var rc=document.getElementById('quiz-rating-confirm');
+  if(rc)rc.textContent=msgs[val-1];
+  // Stocker la note dans la chanson si disponible
+  if(window._lastSongRef)window._lastSongRef.quizRating=val;
+}
 async function confirmSendInvite(){
   closeModal();
   const id=DB.curEv;if(!id)return;
@@ -1075,6 +1149,9 @@ function startQuiz(){
   document.getElementById('quiz-question-screen').style.display='none';
   document.getElementById('quiz-result-wrap').style.display='none';
   var p=document.getElementById('quiz-patience');if(p){p.style.display='none';}
+  document.querySelectorAll('.quiz-star').forEach(s=>s.classList.remove('active'));
+  var qr=document.getElementById('quiz-rating');if(qr)qr.style.display='none';
+  var sn=document.getElementById('quiz-score-num');if(sn)sn.textContent='';
   // Animer l'emoji d'intro
   const emojis=['🎯','🤔','😏','🧐','🎪'];
   document.getElementById('quiz-intro-emoji').textContent=emojis[Math.floor(Math.random()*emojis.length)];
@@ -1108,6 +1185,11 @@ function showQuizQuestion(){
     document.getElementById('quiz-result-title').textContent=title;
     document.getElementById('quiz-result-sub').textContent=sub;
     document.getElementById('quiz-score-fill').style.width='100%';
+    // Afficher la note sur 5 calculée depuis le score
+    var starsOut=Math.max(1,Math.round(score/total*5));
+    for(var i=1;i<=5;i++){var s=document.getElementById('qs'+i);if(s)s.classList.toggle('active',i<=starsOut);}
+    var sn=document.getElementById('quiz-score-num');if(sn)sn.textContent=starsOut+' / 5';
+    var qr=document.getElementById('quiz-rating');if(qr)qr.style.display='block';
     // Afficher le message de patience en même temps que la conclusion
     var p=document.getElementById('quiz-patience');
     if(p){p.style.display='block';}
@@ -1224,17 +1306,54 @@ function newEvent(){
   stab('events',document.getElementById('tb-ev'));renderEL();selEv(id);toast('✦ Événement créé !');
 }
 function delEv(id){
-  if(!confirm('Supprimer cet événement et toutes ses musiques ?'))return;
+  const evToDel=DB.events[id];if(!evToDel)return;
+  showDangerModal(
+    'Supprimer cet événement ?',
+    'L\'événement « '+evToDel.couple+' » et toutes ses musiques seront définitivement supprimés. Cette action est irréversible.',
+    function(){_doDelEv(id);}
+  );
+  return;}
+function _doDelEv(id){
   fetch('/api/event?id='+encodeURIComponent(id),{method:'DELETE'}).catch(()=>{});
   delete DB.events[id];if(DB.curEv===id){DB.curEv=null;document.getElementById('event-detail').style.display='none';}
   saveDB();renderEL();toast('Événement supprimé');
 }
 function delSong(eid,sid){
   const ev=DB.events[eid];if(!ev)return;
-  ev.songs=ev.songs.filter(s=>s.id!==sid);if(ev.usedCredits>0)ev.usedCredits--;
-  saveDB();
-  fetch('/api/event',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(ev)}).catch(()=>{});
-  renderDet(eid);toast('Musique supprimée');
+  const song=ev.songs.find(s=>s.id===sid);
+  showDangerModal(
+    'Supprimer cette musique ?',
+    '« '+(song?song.title:'cette musique')+' » sera définitivement supprimée. Cette action est irréversible.',
+    function(){
+      ev.songs=ev.songs.filter(s=>s.id!==sid);if(ev.usedCredits>0)ev.usedCredits--;
+      saveDB();
+      fetch('/api/event',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(ev)}).catch(()=>{});
+      if(song&&song.url&&song.url.includes('supabase')){
+        fetch('/api/delete-file',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:song.url})}).catch(()=>{});
+      }
+      renderDet(eid);toast('Musique supprimée');
+    }
+  );
+}
+function delAllSongs(){
+  const id=DB.curEv;const ev=DB.events[id];if(!ev)return;
+  const count=(ev.songs||[]).length;
+  if(!count){toast('Aucune musique à supprimer');return;}
+  showDangerModal(
+    'Supprimer toutes les musiques ?',
+    count+' musique'+(count>1?'s':'')+' sera'+(count>1?'nt':'')+' définitivement supprimée'+(count>1?'s':'')+'. Cette action est irréversible.',
+    async function(){
+      const songs=[...(ev.songs||[])];
+      ev.songs=[];ev.usedCredits=0;
+      saveDB();
+      fetch('/api/event',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(ev)}).catch(()=>{});
+      // Supprimer tous les fichiers Supabase en parallèle
+      await Promise.allSettled(songs.filter(s=>s.url&&s.url.includes('supabase')).map(s=>
+        fetch('/api/delete-file',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:s.url})})
+      ));
+      renderDet(id);toast(count+' musique'+(count>1?'s':'')+' supprimée'+(count>1?'s':''));
+    }
+  );
 }
 function changePwd(){
   const old=document.getElementById('opwd').value,p1=document.getElementById('npwd').value,p2=document.getElementById('cpwd').value;
@@ -1262,8 +1381,313 @@ function genDemo(){
     return URL.createObjectURL(new Blob([ab],{type:'audio/wav'}));
   }catch(e){return '';}
 }
+
+const LEGAL_CONTENT = {
+  cgv: {
+    title: 'Conditions Générales de Vente',
+    body: `
+<p style="font-size:.72rem;color:#888;margin-bottom:1rem">Version en vigueur au 1er janvier 2025 — Conformes aux dispositions du Code de la consommation, du Code civil, de la loi n°2004-575 du 21 juin 2004 pour la confiance dans l'économie numérique (LCEN), du Règlement (UE) 2016/679 (RGPD) et de la loi n°78-17 du 6 janvier 1978 modifiée (loi Informatique et Libertés).</p>
+
+<h2>Article 1 — Identification du Prestataire et champ d'application</h2>
+<p><strong>1.1</strong> Les présentes Conditions Générales de Vente et d'Utilisation (ci-après « CGV ») sont conclues entre :</p>
+<ul>
+  <li><strong>[NOM SOCIÉTÉ À COMPLÉTER]</strong>, [FORME JURIDIQUE] au capital de [MONTANT] euros, immatriculée au RCS de [VILLE] sous le numéro [SIRET], dont le siège social est situé [ADRESSE COMPLÈTE], représentée par [NOM DU REPRÉSENTANT LÉGAL] en qualité de [TITRE], ci-après « le Prestataire » ;</li>
+  <li>Toute personne physique ou morale utilisant le Service, ci-après « l'Utilisateur » ou « l'Organisateur » selon le contexte.</li>
+</ul>
+<p><strong>1.2</strong> Le Service EVOKE est une application web de génération musicale assistée par intelligence artificielle, accessible à l'adresse [URL DU SERVICE]. Toute utilisation du Service, même partielle, implique l'acceptation pleine, entière et sans réserve des présentes CGV, qui prévalent sur tout autre document.</p>
+<p><strong>1.3</strong> Conformément à l'article L.111-1 du Code de la consommation, le Prestataire communique les présentes CGV à tout Utilisateur qui en fait la demande. En cas de contradiction entre les CGV et tout autre document contractuel, les CGV prévaudront.</p>
+<p><strong>⚠️ Conséquence du non-respect :</strong> Toute utilisation du Service après refus explicite des présentes CGV est constitutive d'un accès frauduleux au sens de l'article 323-1 du Code pénal, passible d'une peine pouvant aller jusqu'à 2 ans d'emprisonnement et 60 000 € d'amende.</p>
+
+<h2>Article 2 — Description du Service</h2>
+<p><strong>2.1</strong> EVOKE est une application web permettant la génération de contenus musicaux personnalisés à partir de prompts textuels, via des API d'intelligence artificielle tierces. Le Service comprend :</p>
+<ul>
+  <li>La génération de morceaux musicaux originaux à partir de descriptions textuelles ;</li>
+  <li>Le stockage temporaire des fichiers audio générés ;</li>
+  <li>La mise à disposition d'une galerie privée sécurisée pour l'Organisateur ;</li>
+  <li>L'envoi de communications par email à l'Organisateur ;</li>
+  <li>Un système de gestion de crédits par événement.</li>
+</ul>
+<p><strong>2.2 Connexion Internet obligatoire.</strong> Le Service nécessite impérativement une connexion Internet active, stable et suffisamment rapide. En l'absence de connexion ou en cas de connexion insuffisante, l'accès au Service et la génération musicale sont techniquement impossibles. Le Prestataire ne saurait être tenu responsable de toute impossibilité d'accès liée à une défaillance du réseau, de l'opérateur ou du dispositif de l'Utilisateur.</p>
+<p><strong>⚠️ Conséquence :</strong> Aucune compensation, indemnité ou remboursement ne pourra être réclamé au Prestataire en raison d'une impossibilité d'accès au Service due à un défaut de connexion Internet imputable à l'Utilisateur ou à son opérateur.</p>
+
+<h2>Article 3 — Conditions d'accès et prérequis techniques</h2>
+<p><strong>3.1</strong> L'accès au Service est conditionné à :</p>
+<ul>
+  <li>Une connexion Internet fonctionnelle (haut débit recommandé, minimum 5 Mbps) ;</li>
+  <li>Un navigateur web moderne et à jour (Chrome v90+, Safari v14+, Firefox v88+, Edge v90+) ;</li>
+  <li>L'activation de JavaScript dans le navigateur ;</li>
+  <li>Un dispositif compatible (ordinateur, tablette ou smartphone).</li>
+</ul>
+<p><strong>3.2 Délai de génération variable.</strong> Le temps de génération musicale est variable et dépend de facteurs indépendants de la volonté du Prestataire, notamment : la qualité et le débit de la connexion Internet de l'Utilisateur, la charge des serveurs d'intelligence artificielle tiers, et la complexité du prompt soumis. Ce délai, indicativement compris entre 30 secondes et plusieurs minutes, ne constitue en aucun cas un engagement contractuel du Prestataire.</p>
+<p><strong>⚠️ Conséquence :</strong> Aucun remboursement, compensation ou crédit ne pourra être exigé du Prestataire en raison d'un délai de génération jugé excessif par l'Utilisateur, dès lors que ce délai résulte de facteurs techniques extérieurs au contrôle du Prestataire.</p>
+
+<h2>Article 4 — Formation du contrat et acceptation des CGV</h2>
+<p><strong>4.1</strong> Conformément aux articles 1113 et suivants du Code civil, le contrat entre le Prestataire et l'Utilisateur est formé dès lors que l'Utilisateur accède au Service et en fait usage, ce qui vaut acceptation pleine et entière des présentes CGV.</p>
+<p><strong>4.2</strong> L'Organisateur, en déployant le Service auprès de ses invités, garantit avoir informé ces derniers des présentes CGV et des conditions d'utilisation du Service. Il se porte fort du respect des présentes CGV par ses invités au sens de l'article 1204 du Code civil.</p>
+<p><strong>⚠️ Conséquence du non-respect :</strong> En cas de manquement d'un invité aux présentes CGV, l'Organisateur pourra voir sa responsabilité contractuelle engagée vis-à-vis du Prestataire, sans préjudice de la responsabilité propre de l'invité auteur du manquement.</p>
+
+<h2>Article 5 — Droits d'utilisation des contenus générés</h2>
+<p><strong>5.1 Usage privé exclusif.</strong> Les musiques générées via le Service sont exclusivement destinées à un usage privé, personnel et non commercial, dans le strict cadre de l'événement pour lequel elles ont été créées. Le Prestataire concède à l'Utilisateur une licence non exclusive, non transférable, révocable, à titre gratuit, limitée à cet usage privé.</p>
+<p><strong>5.2</strong> Il est expressément et formellement interdit de :</p>
+<ul>
+  <li>Diffuser publiquement les contenus générés, à titre gratuit ou onéreux, sur tout support ;</li>
+  <li>Exploiter commercialement les musiques générées, sous quelque forme que ce soit ;</li>
+  <li>Mettre en ligne les contenus sur des plateformes de streaming ou de distribution musicale (Spotify, Deezer, YouTube, TikTok, etc.) ;</li>
+  <li>Revendiquer des droits d'auteur ou droits voisins sur les contenus générés ;</li>
+  <li>Synchroniser les contenus avec des œuvres audiovisuelles destinées à une diffusion publique ou commerciale ;</li>
+  <li>Utiliser les contenus à des fins publicitaires, promotionnelles ou institutionnelles ;</li>
+  <li>Reproduire, représenter, distribuer ou adapter les contenus au-delà du cadre privé autorisé.</li>
+</ul>
+<p><strong>5.3</strong> Le Prestataire ne garantit pas l'originalité des contenus générés ni l'absence de similitude avec des œuvres préexistantes. Il appartient à l'Utilisateur de vérifier que l'utilisation projetée ne porte pas atteinte aux droits de tiers.</p>
+<p><strong>⚠️ Conséquence du non-respect :</strong> Toute exploitation commerciale, diffusion publique ou contrefaçon des contenus générés constitue une violation du présent article susceptible d'engager la responsabilité civile de l'Utilisateur (dommages et intérêts), et pénale au titre de la contrefaçon prévue aux articles L.335-2 et suivants du Code de la propriété intellectuelle, passible d'une peine pouvant aller jusqu'à 3 ans d'emprisonnement et 300 000 € d'amende. Le Prestataire se réserve le droit de résilier immédiatement l'accès au Service et d'engager toute action judiciaire appropriée.</p>
+
+<h2>Article 6 — Responsabilité du Prestataire</h2>
+<p><strong>6.1</strong> Le Prestataire est soumis à une obligation de moyens et non de résultat. Il s'engage à mettre en œuvre tous les moyens raisonnables pour assurer la disponibilité et la qualité du Service, sans garantir un résultat déterminé.</p>
+<p><strong>6.2</strong> La responsabilité du Prestataire ne saurait être engagée pour :</p>
+<ul>
+  <li>Toute indisponibilité temporaire du Service due à des opérations de maintenance, des défaillances techniques ou des interruptions des services tiers (API d'IA, hébergement, stockage) ;</li>
+  <li>Toute perte ou altération des données en cas de défaillance des services de stockage tiers ;</li>
+  <li>L'insatisfaction de l'Utilisateur quant à la qualité artistique subjective des contenus générés ;</li>
+  <li>Toute impossibilité d'accès due à une connexion Internet insuffisante, instable ou absente ;</li>
+  <li>Le contenu des messages, prompts ou textes soumis par les Utilisateurs ou leurs invités ;</li>
+  <li>Le contenu des paroles ou éléments musicaux générés automatiquement par l'IA à partir des prompts des Utilisateurs ;</li>
+  <li>Tout dommage indirect, immatériel ou consécutif résultant de l'utilisation ou de l'impossibilité d'utilisation du Service.</li>
+</ul>
+<p><strong>6.3</strong> En tout état de cause, et conformément à l'article 1231-3 du Code civil, la responsabilité contractuelle du Prestataire est expressément plafonnée au montant des sommes effectivement perçues de l'Utilisateur concerné au cours des 12 derniers mois précédant le fait générateur du dommage.</p>
+<p><strong>⚠️ Conséquence :</strong> Toute action en responsabilité à l'encontre du Prestataire au-delà de ce plafond sera irrecevable. L'Utilisateur reconnaît expressément ce plafonnement comme condition essentielle et déterminante du contrat.</p>
+
+<h2>Article 7 — Disponibilité et conservation des données</h2>
+<p><strong>7.1</strong> Les fichiers audio générés sont stockés sur des serveurs tiers (Supabase) dans la limite de l'espace de stockage alloué. Le Prestataire ne garantit pas la conservation indéfinie des fichiers audio générés. Il est fortement recommandé à l'Organisateur de télécharger et sauvegarder les musiques générées dans les meilleurs délais suivant leur création.</p>
+<p><strong>7.2</strong> Le Prestataire se réserve le droit de supprimer les fichiers après un délai raisonnable suivant la fin de l'événement, sans obligation de notification préalable.</p>
+<p><strong>⚠️ Conséquence :</strong> La perte définitive de fichiers audio non sauvegardés par l'Utilisateur ne pourra donner lieu à aucune indemnisation ni remboursement de la part du Prestataire.</p>
+
+<h2>Article 8 — Responsabilité relative aux contenus soumis et générés</h2>
+<p><strong>8.1 Absence de contrôle préalable.</strong> Les messages, textes et prompts saisis par les invités sont fournis sous leur seule et entière responsabilité. Le Prestataire n'exerce aucun contrôle préalable, automatique ou humain, sur les contenus soumis et ne saurait être tenu responsable de leur contenu, légalité ou caractère approprié. Conformément à l'article 6-I-2 de la LCEN, le Prestataire agit en qualité d'hébergeur et bénéficie du régime de responsabilité limitée prévu par ce texte.</p>
+<p><strong>8.2 Contenus générés par IA.</strong> Les paroles et contenus musicaux générés par l'IA résultent directement des prompts soumis. Le Prestataire ne contrôle, ne supervise ni n'approuve les contenus générés. Sa responsabilité ne saurait être engagée en raison du contenu des paroles générées automatiquement.</p>
+<p><strong>8.3 Contenus strictement interdits.</strong> Il est expressément et formellement interdit d'utiliser le Service pour soumettre ou tenter de générer des contenus :</p>
+<ul>
+  <li><strong>Racistes, xénophobes, antisémites ou négationnistes</strong> — infractions pénales au sens de la loi du 29 juillet 1881 et de la loi Gayssot n°90-615 du 13 juillet 1990 ;</li>
+  <li><strong>Discriminatoires</strong> à raison de tout critère protégé par la loi (origine, sexe, âge, orientation sexuelle, identité de genre, handicap, religion, etc.) — articles 225-1 et suivants du Code pénal ;</li>
+  <li><strong>Injurieux, insultants, diffamatoires</strong> envers toute personne — loi du 29 juillet 1881 ;</li>
+  <li><strong>Constitutifs de harcèlement</strong> moral, sexuel ou en ligne — articles 222-33-2 et suivants du Code pénal ;</li>
+  <li><strong>Incitant à la haine, à la violence ou à la discrimination</strong> — article 24 de la loi du 29 juillet 1881 ;</li>
+  <li>Portant atteinte à la <strong>dignité humaine</strong> — article 225-4-1 et suivants du Code pénal ;</li>
+  <li>Portant atteinte à la <strong>vie privée ou à l'image</strong> de tiers — articles 9 du Code civil et 226-1 du Code pénal ;</li>
+  <li>Constituant une <strong>contrefaçon</strong> de droits de propriété intellectuelle — articles L.335-2 et suivants du CPI ;</li>
+  <li>À caractère <strong>pornographique ou pédopornographique</strong> — articles 227-23 et suivants du Code pénal ;</li>
+  <li>Faisant l'<strong>apologie de crimes ou du terrorisme</strong> — articles 421-2-5 et 24 de la loi du 29 juillet 1881.</li>
+</ul>
+<p><strong>8.4 Conséquences graduées selon la gravité du manquement :</strong></p>
+<ul>
+  <li><strong>Manquement mineur</strong> (contenu inapproprié sans caractère illicite avéré) : avertissement adressé à l'Organisateur, suppression immédiate du contenu litigieux, sans remboursement du crédit consommé ;</li>
+  <li><strong>Manquement grave</strong> (contenu illicite sans caractère pénal établi) : suspension immédiate et sans préavis de l'accès au Service, résiliation du contrat aux torts exclusifs de l'Utilisateur, sans remboursement d'aucune somme, suppression de l'intégralité des données de l'événement concerné ;</li>
+  <li><strong>Manquement très grave</strong> (contenu constitutif d'une infraction pénale) : suspension immédiate, résiliation définitive, suppression des données, signalement obligatoire aux autorités compétentes (police, parquet) conformément aux articles 40 du Code de procédure pénale et 6-I-7 de la LCEN, et engagement de toute action civile et/ou pénale aux fins de réparation intégrale du préjudice subi.</li>
+</ul>
+<p>Dans tous les cas, la responsabilité civile et/ou pénale de l'auteur du contenu litigieux est seule engagée, à l'exclusion de toute responsabilité du Prestataire.</p>
+
+<h2>Article 9 — Gestion des crédits</h2>
+<p><strong>9.1</strong> Chaque génération musicale consomme un crédit. <strong>Un crédit est définitivement décompté dès le lancement de la génération, indépendamment du résultat obtenu</strong> (succès, échec technique, abandon en cours de génération).</p>
+<p><strong>9.2</strong> En cas d'échec technique imputable exclusivement au Service du Prestataire (et non à des services tiers ou à la connexion de l'Utilisateur), le Prestataire pourra, à sa seule et entière discrétion, procéder à la restitution du crédit concerné, sans que cela constitue une obligation ou un droit acquis pour l'Utilisateur.</p>
+<p><strong>⚠️ Conséquence :</strong> L'épuisement des crédits alloués n'ouvre droit à aucune compensation. L'Organisateur demeure responsable de la gestion de son solde de crédits.</p>
+
+<h2>Article 10 — Prix et conditions financières</h2>
+<p><strong>10.1</strong> Les prix du Service sont ceux en vigueur au jour de la commande, exprimés en euros toutes taxes comprises (TTC). Le Prestataire se réserve le droit de modifier ses tarifs à tout moment, les modifications étant applicables aux nouvelles commandes uniquement.</p>
+<p><strong>10.2</strong> Conformément à l'article L.221-18 du Code de la consommation, l'Utilisateur professionnel reconnaît expressément que le Service est souscrit dans le cadre de son activité professionnelle et renonce en conséquence au bénéfice du droit de rétractation prévu pour les consommateurs.</p>
+<p><strong>⚠️ Conséquence du défaut de paiement :</strong> Tout impayé entraînera la suspension immédiate du Service, l'application de pénalités de retard conformément à l'article L.441-10 du Code de commerce (taux légal majoré de 10 points), ainsi qu'une indemnité forfaitaire de recouvrement de 40 euros.</p>
+
+<h2>Article 11 — Force majeure</h2>
+<p>Le Prestataire ne saurait être tenu responsable de l'inexécution ou du retard dans l'exécution de ses obligations résultant d'un événement de force majeure au sens de l'article 1218 du Code civil, notamment : pannes généralisées d'Internet, cyberattaques, catastrophes naturelles, épidémies, grèves des prestataires tiers, décisions gouvernementales ou judiciaires. En cas de force majeure persistant au-delà de 30 jours, chacune des parties pourra résilier le contrat sans indemnité.</p>
+
+<h2>Article 12 — Protection des données personnelles (RGPD)</h2>
+<p>Le traitement des données personnelles des Utilisateurs est régi par la Politique de Confidentialité disponible dans le footer du Service, conforme au Règlement (UE) 2016/679 (RGPD) et à la loi n°78-17 du 6 janvier 1978 modifiée. Toute violation de données à caractère personnel sera notifiée à la CNIL dans les 72 heures conformément à l'article 33 du RGPD.</p>
+<p><strong>⚠️ Conséquence :</strong> Toute utilisation des données personnelles collectées via le Service à des fins autres que celles prévues aux présentes CGV est strictement interdite et pourra faire l'objet de sanctions civiles et pénales, ainsi que de poursuites devant la CNIL.</p>
+
+<h2>Article 13 — Médiation et règlement des litiges</h2>
+<p><strong>13.1</strong> Conformément aux articles L.616-1 et R.616-1 du Code de la consommation, le Prestataire propose un dispositif de médiation de la consommation. En cas de litige non résolu amiablement dans un délai de 60 jours, l'Utilisateur consommateur peut recourir gratuitement au médiateur compétent : [NOM DU MÉDIATEUR À COMPLÉTER — ex : Médiateur du e-commerce de la FEVAD].</p>
+<p><strong>13.2</strong> La plateforme européenne de règlement en ligne des litiges (RLL) est accessible à l'adresse : https://ec.europa.eu/consumers/odr</p>
+<p><strong>13.3</strong> À défaut de résolution amiable ou par médiation, tout litige relatif à la validité, l'interprétation ou l'exécution des présentes CGV sera soumis à la compétence exclusive des tribunaux du ressort de <strong>[VILLE DU SIÈGE SOCIAL]</strong>, nonobstant pluralité de défendeurs ou appel en garantie, y compris pour les procédures d'urgence ou conservatoires.</p>
+
+<h2>Article 14 — Droit applicable</h2>
+<p>Les présentes CGV sont soumises au droit français. En cas de traduction dans une langue étrangère, la version française prévaut.</p>
+
+<h2>Article 15 — Nullité partielle</h2>
+<p>Si l'une quelconque des stipulations des présentes CGV était déclarée nulle ou inapplicable en vertu d'une loi, d'un règlement ou d'une décision judiciaire définitive, cette nullité n'affecterait pas les autres stipulations qui demeureront en vigueur entre les parties.</p>
+
+<h2>Article 16 — Modification des CGV</h2>
+<p>Le Prestataire se réserve le droit de modifier les présentes CGV à tout moment. Les utilisateurs seront informés de toute modification substantielle par email ou par notification dans le Service. Les CGV applicables sont celles en vigueur à la date d'utilisation du Service. L'utilisation du Service après notification d'une modification vaut acceptation des nouvelles CGV.</p>
+    `
+  },
+  privacy: {
+    title: 'Politique de Confidentialité',
+    body: `
+<h2>Article 1 — Responsable du traitement</h2>
+<p>Le responsable du traitement des données personnelles est <strong>[NOM SOCIÉTÉ À COMPLÉTER]</strong>, [FORME JURIDIQUE], immatriculée sous le numéro [SIRET], dont le siège social est situé [ADRESSE COMPLÈTE]. Contact DPO : <strong>[EMAIL À COMPLÉTER]</strong>.</p>
+
+<h2>Article 2 — Données collectées</h2>
+<p>Dans le cadre de l'utilisation du Service, les données suivantes peuvent être collectées :</p>
+<ul>
+  <li><strong>Données fournies volontairement</strong> : prénom ou pseudonyme de l'invité, texte du message personnalisé, choix du style musical et de la voix ;</li>
+  <li><strong>Données techniques</strong> : adresse IP, type de navigateur, données de navigation à des fins de sécurité et de maintenance ;</li>
+  <li><strong>Données de l'Organisateur</strong> : adresse email fournie lors de la création d'un événement, utilisée pour l'envoi des liens et des invitations.</li>
+</ul>
+<p>Aucune donnée bancaire n'est collectée directement par le Service.</p>
+
+<h2>Article 3 — Finalités du traitement</h2>
+<p>Les données collectées sont utilisées pour :</p>
+<ul>
+  <li>La fourniture et l'amélioration du Service ;</li>
+  <li>L'envoi des liens d'invitation et de la galerie à l'Organisateur ;</li>
+  <li>La gestion des crédits et des événements ;</li>
+  <li>La sécurité et la prévention des abus.</li>
+</ul>
+
+<h2>Article 4 — Base légale du traitement</h2>
+<p>Le traitement des données est fondé sur l'exécution du contrat liant l'Utilisateur au Prestataire (article 6.1.b du RGPD), ainsi que sur l'intérêt légitime du Prestataire à assurer la sécurité et la qualité de son service (article 6.1.f du RGPD).</p>
+
+<h2>Article 5 — Durée de conservation</h2>
+<p>Les données personnelles sont conservées pendant une durée n'excédant pas celle nécessaire aux finalités pour lesquelles elles ont été collectées, et en tout état de cause pour une durée maximale de <strong>12 mois</strong> à compter de la date de l'événement. Les fichiers audio sont susceptibles d'être supprimés à l'issue de cette période.</p>
+
+<h2>Article 6 — Destinataires des données</h2>
+<p>Les données peuvent être transmises aux sous-traitants techniques suivants, dans le strict cadre de la fourniture du Service :</p>
+<ul>
+  <li><strong>Supabase Inc.</strong> (stockage des données et fichiers audio) — États-Unis, transfert encadré par les clauses contractuelles types de la Commission européenne ;</li>
+  <li><strong>Vercel Inc.</strong> (hébergement de l'application) — États-Unis ;</li>
+  <li><strong>Resend Inc.</strong> (envoi d'emails transactionnels) ;</li>
+  <li><strong>MusicGPT / fournisseur d'IA musical</strong> (génération musicale).</li>
+</ul>
+<p>Ces données ne sont jamais vendues ni cédées à des tiers à des fins commerciales.</p>
+
+<h2>Article 7 — Droits des personnes concernées</h2>
+<p>Conformément au Règlement Général sur la Protection des Données (RGPD) et à la loi Informatique et Libertés, vous disposez des droits suivants :</p>
+<ul>
+  <li>Droit d'accès, de rectification et d'effacement de vos données ;</li>
+  <li>Droit à la limitation et à la portabilité du traitement ;</li>
+  <li>Droit d'opposition au traitement.</li>
+</ul>
+<p>Pour exercer ces droits, contactez-nous à l'adresse : <strong>[EMAIL À COMPLÉTER]</strong>. En cas de réclamation non résolue, vous disposez du droit de saisir la CNIL (www.cnil.fr).</p>
+
+<h2>Article 8 — Cookies</h2>
+<p>Le Service utilise le stockage local du navigateur (localStorage) à des fins strictement fonctionnelles (mémorisation des préférences, gestion de session). Aucun cookie publicitaire ou de traçage tiers n'est déposé. Aucune plateforme publicitaire n'a accès aux données de navigation des Utilisateurs.</p>
+    `
+  },
+  legal: {
+    title: 'Mentions Légales',
+    body: `
+<h2>Éditeur du site</h2>
+<p><strong>[NOM SOCIÉTÉ À COMPLÉTER]</strong><br>
+[FORME JURIDIQUE] au capital de [MONTANT] euros<br>
+Siège social : [ADRESSE COMPLÈTE]<br>
+SIRET : [NUMÉRO SIRET]<br>
+N° TVA intracommunautaire : [NUMÉRO TVA]<br>
+Email : [EMAIL À COMPLÉTER]<br>
+Directeur de la publication : [NOM DU RESPONSABLE]</p>
+
+<h2>Hébergement</h2>
+<p><strong>Vercel Inc.</strong><br>
+340 Pine Street, Suite 701, San Francisco, CA 94104, États-Unis<br>
+Site web : vercel.com</p>
+
+<h2>Stockage des données</h2>
+<p><strong>Supabase Inc.</strong><br>
+970 Toa Payoh North #07-04, Singapore 318992<br>
+Site web : supabase.com</p>
+
+<h2>Propriété intellectuelle</h2>
+<p>L'ensemble des éléments constituant l'application EVOKE (marque, logo, interface, code source, textes) est la propriété exclusive de <strong>[NOM SOCIÉTÉ À COMPLÉTER]</strong> et est protégé par les lois françaises et internationales relatives à la propriété intellectuelle. Toute reproduction, représentation ou diffusion, totale ou partielle, sans autorisation préalable et écrite est interdite.</p>
+
+<h2>Limitation de responsabilité</h2>
+<p>Le Prestataire s'efforce d'assurer l'exactitude et la mise à jour des informations diffusées sur le Service. Toutefois, il ne peut garantir l'exactitude, la complétude ou l'actualité des informations. En conséquence, l'Utilisateur reconnaît utiliser le Service sous sa seule et entière responsabilité.</p>
+
+<h2>Droit applicable</h2>
+<p>Le présent site est soumis au droit français. Tout litige relatif à son utilisation relève de la compétence exclusive des tribunaux français.</p>
+    `
+  },
+  usage: {
+    title: "Conditions d'utilisation",
+    body: `
+<h2>1. Acceptation des conditions</h2>
+<p>L'accès et l'utilisation du Service EVOKE impliquent l'acceptation sans réserve des présentes conditions. Si vous n'acceptez pas ces conditions, veuillez ne pas utiliser le Service.</p>
+
+<h2>2. Prérequis obligatoires</h2>
+<p><strong>Une connexion Internet active est indispensable</strong> pour utiliser EVOKE. Le Service ne dispose d'aucun mode hors-ligne. Toute interruption de connexion en cours de génération peut entraîner la perte de la composition en cours.</p>
+<p><strong>Le temps de génération musicale est variable</strong> et dépend de facteurs indépendants de la volonté du Prestataire : qualité et débit de la connexion Internet de l'Utilisateur, charge des serveurs d'intelligence artificielle, complexité du prompt. Ce délai peut varier de quelques secondes à plusieurs minutes. L'Utilisateur s'engage à ne pas interrompre le processus de génération en cours.</p>
+
+<h2>3. Usage privé exclusif</h2>
+<p>Les musiques générées via EVOKE sont destinées <strong>exclusivement à un usage privé, dans le cadre strict de l'événement pour lequel elles ont été créées.</strong></p>
+<p>Il est expressément interdit de :</p>
+<ul>
+  <li>Diffuser les musiques sur des plateformes publiques (YouTube, Spotify, TikTok, Instagram, etc.) ;</li>
+  <li>Les utiliser dans un cadre professionnel ou commercial ;</li>
+  <li>Les monétiser sous quelque forme que ce soit ;</li>
+  <li>Les inclure dans des productions destinées à une diffusion publique ;</li>
+  <li>Les revendre, les licencier ou les sous-licencier.</li>
+</ul>
+
+<h2>4. Qualité du service et garanties</h2>
+<p>Le Prestataire ne garantit pas :</p>
+<ul>
+  <li>La qualité artistique subjective des contenus générés ;</li>
+  <li>La disponibilité permanente et ininterrompue du Service ;</li>
+  <li>L'absence d'erreurs ou d'anomalies dans les contenus générés ;</li>
+  <li>La conformité des contenus aux attentes précises de l'Utilisateur ;</li>
+  <li>L'originalité absolue des musiques générées par rapport à des œuvres préexistantes.</li>
+</ul>
+<p>Le Service est fourni « en l'état » (as is), sans garantie d'aucune sorte, explicite ou implicite.</p>
+
+<h2>5. Responsabilité de l'Utilisateur</h2>
+<p>L'Utilisateur est seul responsable des contenus qu'il soumet (messages, prompts). Il s'engage formellement à ne pas soumettre de contenus illicites, racistes, xénophobes, discriminatoires, diffamatoires, injurieux, insultants, ou portant atteinte aux droits, à la dignité ou à la réputation de tiers. <strong>Le Prestataire ne saurait être tenu responsable des contenus soumis par les Utilisateurs ni des paroles générées automatiquement par l'intelligence artificielle.</strong> Toute utilisation abusive, contraire à la loi ou aux présentes conditions engage la responsabilité civile et/ou pénale exclusive de l'Utilisateur. Le Prestataire se réserve le droit de suspendre immédiatement l'accès au Service sans préavis ni remboursement en cas de manquement constaté.</p>
+
+<h2>6. Crédits et utilisation</h2>
+<p>Chaque génération musicale consomme un crédit. <strong>Un crédit est décompté dès le lancement de la génération, indépendamment du résultat obtenu.</strong> En cas d'échec technique imputable aux services tiers d'IA, le Prestataire pourra, à sa discrétion et sans obligation, procéder à la restitution du crédit concerné.</p>
+
+<h2>7. Modification du service</h2>
+<p>Le Prestataire se réserve le droit de modifier, suspendre ou interrompre le Service à tout moment, sans préavis ni indemnité, notamment pour des raisons de maintenance, d'évolution technique ou de cessation d'activité des services tiers intégrés.</p>
+
+<h2>8. Contact</h2>
+<p>Pour toute question relative aux présentes conditions : <strong>[EMAIL À COMPLÉTER]</strong></p>
+    `
+  }
+};
+
+function openLegal(key){
+  const doc=LEGAL_CONTENT[key];if(!doc)return;
+  document.getElementById('legal-modal-title').textContent=doc.title;
+  document.getElementById('legal-modal-body').innerHTML=doc.body;
+  document.getElementById('legal-modal').classList.add('active');
+  document.getElementById('legal-modal-body').scrollTop=0;
+}
+function closeLegal(){document.getElementById('legal-modal').classList.remove('active');}
+// Afficher le footer sur les pages publiques (invité + galerie)
+function showLegalFooter(){document.getElementById('legal-footer').style.display='block';}
 loadDB();route();
 document.getElementById('admin-pwd').addEventListener('keydown',e=>{if(e.key==='Enter')adminLogin();});
 </script>
+
+<!-- FOOTER LÉGAL -->
+<footer class="legal-footer" id="legal-footer" style="display:none">
+  <div class="legal-footer-inner">
+    <div class="legal-footer-logo">EVOKE</div>
+    <div class="legal-footer-tagline">Service de génération musicale pour événements privés</div>
+    <div class="legal-links">
+      <a class="legal-link" onclick="openLegal('cgv')">Conditions générales</a>
+      <a class="legal-link" onclick="openLegal('privacy')">Politique de confidentialité</a>
+      <a class="legal-link" onclick="openLegal('legal')">Mentions légales</a>
+      <a class="legal-link" onclick="openLegal('usage')">Conditions d'utilisation</a>
+    </div>
+    <div class="legal-copy">© 2025 EVOKE — [NOM SOCIÉTÉ À COMPLÉTER] · [ADRESSE À COMPLÉTER] · [EMAIL À COMPLÉTER]<br>
+    Les musiques générées sont destinées à un usage strictement privé et non commercial.</div>
+  </div>
+</footer>
+
+<!-- MODAL LÉGAL -->
+<div class="legal-modal-overlay" id="legal-modal">
+  <div class="legal-modal-box">
+    <div class="legal-modal-header">
+      <div class="legal-modal-title" id="legal-modal-title"></div>
+      <button class="legal-modal-close" onclick="closeLegal()">✕</button>
+    </div>
+    <div class="legal-modal-body" id="legal-modal-body"></div>
+  </div>
+</div>
 </body>
 </html>
