@@ -1,14 +1,31 @@
+const SB = () => ({ url: process.env.SUPABASE_URL, key: process.env.SUPABASE_SERVICE_KEY });
+
+async function getUserIdFromToken(token, url, key) {
+  if (!token) return null;
+  try {
+    const r = await fetch(`${url}/auth/v1/user`, {
+      headers: { 'Authorization': `Bearer ${token}`, 'apikey': key }
+    });
+    if (!r.ok) return null;
+    const u = await r.json();
+    return u?.id || null;
+  } catch { return null; }
+}
+
 export default async function handler(req, res) {
   if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' });
 
-  const SB_URL = process.env.SUPABASE_URL;
-  const SB_KEY = process.env.SUPABASE_SERVICE_KEY;
-  if (!SB_URL || !SB_KEY) return res.status(500).json({ error: 'Supabase not configured' });
+  const { url, key } = SB();
+  const token = req.headers.authorization?.replace('Bearer ', '');
+  const userId = await getUserIdFromToken(token, url, key);
+
+  if (!userId) return res.status(401).json({ error: 'Non authentifié' });
 
   try {
-    const r = await fetch(`${SB_URL}/rest/v1/events?select=*&order=createdAt.desc`, {
-      headers: { 'Authorization': `Bearer ${SB_KEY}`, 'apikey': SB_KEY }
-    });
+    const r = await fetch(
+      `${url}/rest/v1/events?user_id=eq.${userId}&select=*&order=created_at.desc`,
+      { headers: { 'Authorization': `Bearer ${key}`, 'apikey': key } }
+    );
     const rows = await r.json();
     return res.status(200).json(rows || []);
   } catch (e) {

@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EVOKE — Super Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{--bg:#0e0e14;--card:#1a1a26;--card2:#22223a;--text:#f0f0f5;--text2:#9090a8;--text3:#55556e;--green:#3ecf6a;--red:#ff6b6b;--orange:#f59e0b;--border:rgba(255,255,255,0.08);--rmd:16px;--rlg:20px;}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;}
+
+/* LOGIN */
+#login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:2rem;}
+.login-box{background:var(--card);border-radius:24px;padding:2.5rem;width:100%;max-width:380px;}
+.login-title{font-size:1.3rem;font-weight:800;margin-bottom:.3rem;}
+.login-sub{font-size:.8rem;color:var(--text2);margin-bottom:1.5rem;}
+.fi{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:var(--rmd);padding:.85rem 1rem;font-family:'Plus Jakarta Sans',sans-serif;font-size:.88rem;color:var(--text);outline:none;margin-bottom:.8rem;}
+.fi::placeholder{color:var(--text3);}
+.fi:focus{border-color:rgba(255,255,255,.2);}
+.btn{width:100%;padding:.9rem;background:var(--green);border:none;border-radius:var(--rmd);font-family:'Plus Jakarta Sans',sans-serif;font-size:.85rem;font-weight:800;color:#0e0e14;cursor:pointer;}
+
+/* MAIN */
+#main-screen{display:none;}
+nav{background:var(--card);border-bottom:1px solid var(--border);padding:0 2rem;height:56px;display:flex;align-items:center;justify-content:space-between;}
+.nav-logo{font-size:1rem;font-weight:800;letter-spacing:-.02em;}
+.nav-badge{background:var(--green);color:#0e0e14;font-size:.6rem;font-weight:800;padding:.2rem .5rem;border-radius:100px;letter-spacing:.05em;text-transform:uppercase;}
+.nav-right{display:flex;align-items:center;gap:1rem;}
+.nav-logout{font-size:.72rem;font-weight:700;color:var(--text2);cursor:pointer;background:none;border:none;}
+.nav-logout:hover{color:var(--text);}
+
+/* CONTENT */
+.content{padding:2rem;max-width:1200px;margin:0 auto;}
+
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-bottom:2rem;}
+.stat-card{background:var(--card);border-radius:var(--rlg);padding:1.2rem;}
+.stat-num{font-size:2rem;font-weight:800;line-height:1;}
+.stat-label{font-size:.65rem;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.08em;margin-top:.3rem;}
+.stat-card.green .stat-num{color:var(--green);}
+.stat-card.orange .stat-num{color:var(--orange);}
+.stat-card.red .stat-num{color:var(--red);}
+
+/* USERS TABLE */
+.section-title{font-size:1rem;font-weight:800;margin-bottom:1rem;display:flex;align-items:center;justify-content:space-between;}
+.search-bar{background:var(--card);border:1px solid var(--border);border-radius:var(--rmd);padding:.6rem 1rem;font-family:'Plus Jakarta Sans',sans-serif;font-size:.8rem;color:var(--text);outline:none;width:240px;}
+.search-bar::placeholder{color:var(--text3);}
+.users-table{background:var(--card);border-radius:var(--rlg);overflow:hidden;}
+.table-header{display:grid;grid-template-columns:2fr 1.5fr 1fr 1fr 1fr 1fr 1.5fr;padding:.75rem 1.2rem;border-bottom:1px solid var(--border);font-size:.6rem;font-weight:800;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;}
+.user-row{display:grid;grid-template-columns:2fr 1.5fr 1fr 1fr 1fr 1fr 1.5fr;padding:.9rem 1.2rem;border-bottom:1px solid var(--border);align-items:center;transition:background .15s;}
+.user-row:last-child{border-bottom:none;}
+.user-row:hover{background:var(--card2);}
+.user-name{font-size:.82rem;font-weight:700;}
+.user-email{font-size:.7rem;color:var(--text2);margin-top:1px;}
+.user-company{font-size:.72rem;color:var(--text2);}
+.badge{display:inline-block;padding:.2rem .6rem;border-radius:100px;font-size:.6rem;font-weight:800;text-transform:uppercase;letter-spacing:.05em;}
+.badge.active{background:rgba(62,207,106,.15);color:var(--green);}
+.badge.pending{background:rgba(245,158,11,.15);color:var(--orange);}
+.badge.suspended{background:rgba(255,107,107,.15);color:var(--red);}
+.badge.starter{background:rgba(99,102,241,.15);color:#818cf8;}
+.badge.pro{background:rgba(16,185,129,.15);color:#34d399;}
+.badge.max{background:rgba(245,158,11,.15);color:var(--orange);}
+.badge.none{background:rgba(255,255,255,.05);color:var(--text3);}
+.cell-num{font-size:.82rem;font-weight:700;}
+.action-btns{display:flex;gap:6px;}
+.action-btn{padding:.35rem .7rem;border-radius:8px;font-family:'Plus Jakarta Sans',sans-serif;font-size:.65rem;font-weight:700;cursor:pointer;border:1px solid var(--border);background:transparent;color:var(--text2);transition:all .15s;}
+.action-btn:hover{background:var(--card2);color:var(--text);}
+.action-btn.danger{color:var(--red);border-color:rgba(255,107,107,.3);}
+.action-btn.danger:hover{background:rgba(255,107,107,.1);}
+
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:500;align-items:center;justify-content:center;padding:1rem;}
+.modal-overlay.active{display:flex;}
+.modal-box{background:var(--card);border-radius:24px;padding:2rem;width:100%;max-width:420px;}
+.modal-title{font-size:1rem;font-weight:800;margin-bottom:.3rem;}
+.modal-sub{font-size:.78rem;color:var(--text2);margin-bottom:1.4rem;}
+.modal-field{margin-bottom:.8rem;}
+.modal-field label{display:block;font-size:.65rem;font-weight:800;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.35rem;}
+.modal-field select,.modal-field input{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:var(--rmd);padding:.75rem 1rem;font-family:'Plus Jakarta Sans',sans-serif;font-size:.85rem;color:var(--text);outline:none;}
+.modal-actions{display:flex;gap:8px;margin-top:1.2rem;}
+.modal-cancel{flex:1;padding:.75rem;background:var(--card2);border:none;border-radius:var(--rmd);font-family:'Plus Jakarta Sans',sans-serif;font-size:.75rem;font-weight:700;color:var(--text2);cursor:pointer;}
+.modal-save{flex:2;padding:.75rem;background:var(--green);border:none;border-radius:var(--rmd);font-family:'Plus Jakarta Sans',sans-serif;font-size:.75rem;font-weight:800;color:#0e0e14;cursor:pointer;}
+.loading{text-align:center;padding:3rem;color:var(--text2);font-size:.85rem;}
+.empty{text-align:center;padding:3rem;color:var(--text3);}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-title">⚡ Super Admin</div>
+    <div class="login-sub">Accès réservé — EVOKE</div>
+    <input class="fi" type="password" id="admin-token" placeholder="Token d'accès">
+    <button class="btn" onclick="adminLogin()">Accéder →</button>
+    <div style="font-size:.65rem;color:var(--text3);margin-top:.8rem;text-align:center" id="login-err"></div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div id="main-screen">
+  <nav>
+    <div style="display:flex;align-items:center;gap:.6rem">
+      <div class="nav-logo">EVOKE</div>
+      <div class="nav-badge">Super Admin</div>
+    </div>
+    <div class="nav-right">
+      <span style="font-size:.72rem;color:var(--text2)" id="nav-date"></span>
+      <button class="nav-logout" onclick="logout()">Déconnexion</button>
+    </div>
+  </nav>
+
+  <div class="content">
+    <!-- KPIs -->
+    <div class="stats-grid" id="stats-grid">
+      <div class="loading" style="grid-column:1/-1">Chargement…</div>
+    </div>
+
+    <!-- Liste utilisateurs -->
+    <div class="section-title">
+      <span>Utilisateurs</span>
+      <input class="search-bar" id="search" placeholder="Rechercher…" oninput="filterUsers()">
+    </div>
+    <div class="users-table" id="users-table">
+      <div class="loading">Chargement des utilisateurs…</div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL ÉDITION -->
+<div class="modal-overlay" id="modal-edit">
+  <div class="modal-box">
+    <div class="modal-title">Modifier l'utilisateur</div>
+    <div class="modal-sub" id="modal-user-name"></div>
+    <div class="modal-field">
+      <label>Statut</label>
+      <select id="edit-status">
+        <option value="active">Actif</option>
+        <option value="pending">En attente</option>
+        <option value="suspended">Suspendu</option>
+      </select>
+    </div>
+    <div class="modal-field">
+      <label>Plan</label>
+      <select id="edit-plan">
+        <option value="none">Aucun</option>
+        <option value="starter">Starter</option>
+        <option value="pro">Pro</option>
+        <option value="max">Max</option>
+      </select>
+    </div>
+    <div class="modal-field">
+      <label>Crédits alloués</label>
+      <input type="number" id="edit-credits" min="0" placeholder="Ex: 50">
+    </div>
+    <div class="modal-actions">
+      <button class="modal-cancel" onclick="closeModal()">Annuler</button>
+      <button class="modal-save" onclick="saveUser()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let ADMIN_TOKEN = sessionStorage.getItem('sa_token') || '';
+let allUsers = [];
+let editingUserId = null;
+
+document.getElementById('nav-date').textContent = new Date().toLocaleDateString('fr-FR', {weekday:'long',day:'numeric',month:'long',year:'numeric'});
+document.getElementById('admin-token').addEventListener('keydown', e => { if(e.key==='Enter') adminLogin(); });
+
+if (ADMIN_TOKEN) initAdmin();
+
+async function adminLogin() {
+  const token = document.getElementById('admin-token').value.trim();
+  if (!token) return;
+  // Tester le token
+  const r = await fetch('/api/superadmin?action=stats', {
+    headers: { 'x-admin-token': token }
+  });
+  if (r.ok) {
+    ADMIN_TOKEN = token;
+    sessionStorage.setItem('sa_token', token);
+    initAdmin();
+  } else {
+    document.getElementById('login-err').textContent = 'Token invalide';
+  }
+}
+
+function logout() {
+  sessionStorage.removeItem('sa_token');
+  location.reload();
+}
+
+async function initAdmin() {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('main-screen').style.display = 'block';
+  loadStats();
+  loadUsers();
+}
+
+async function loadStats() {
+  const r = await fetch('/api/superadmin?action=stats', { headers: { 'x-admin-token': ADMIN_TOKEN } });
+  if (!r.ok) return;
+  const s = await r.json();
+  document.getElementById('stats-grid').innerHTML = `
+    <div class="stat-card green"><div class="stat-num">${s.totalUsers}</div><div class="stat-label">Utilisateurs total</div></div>
+    <div class="stat-card green"><div class="stat-num">${s.activeUsers}</div><div class="stat-label">Comptes actifs</div></div>
+    <div class="stat-card orange"><div class="stat-num">${s.pendingUsers}</div><div class="stat-label">En attente</div></div>
+    <div class="stat-card red"><div class="stat-num">${s.suspendedUsers}</div><div class="stat-label">Suspendus</div></div>
+    <div class="stat-card"><div class="stat-num">${s.totalEvents}</div><div class="stat-label">Événements</div></div>
+    <div class="stat-card"><div class="stat-num">${s.totalSongs}</div><div class="stat-label">Musiques générées</div></div>
+    <div class="stat-card"><div class="stat-num">${s.totalCreditsUsed}</div><div class="stat-label">Crédits consommés</div></div>
+    <div class="stat-card"><div class="stat-num">${s.planStarter}</div><div class="stat-label">Plan Starter</div></div>
+    <div class="stat-card"><div class="stat-num">${s.planPro}</div><div class="stat-label">Plan Pro</div></div>
+    <div class="stat-card"><div class="stat-num">${s.planMax}</div><div class="stat-label">Plan Max</div></div>
+  `;
+}
+
+async function loadUsers() {
+  const r = await fetch('/api/superadmin?action=users', { headers: { 'x-admin-token': ADMIN_TOKEN } });
+  if (!r.ok) return;
+  allUsers = await r.json();
+  renderUsers(allUsers);
+}
+
+function renderUsers(users) {
+  if (!users.length) {
+    document.getElementById('users-table').innerHTML = '<div class="empty">Aucun utilisateur</div>';
+    return;
+  }
+  document.getElementById('users-table').innerHTML = `
+    <div class="table-header">
+      <div>Utilisateur</div><div>Email</div><div>Type</div>
+      <div>Statut</div><div>Plan</div><div>Crédits</div><div>Actions</div>
+    </div>
+    ${users.map(u => `
+      <div class="user-row">
+        <div>
+          <div class="user-name">${esc(u.firstName)} ${esc(u.lastName)}</div>
+          <div class="user-email">${u.eventsCount} événement${u.eventsCount>1?'s':''} · ${u.songsCount} musique${u.songsCount>1?'s':''}</div>
+          ${u.company ? `<div class="user-company">${esc(u.company)}</div>` : ''}
+        </div>
+        <div style="font-size:.72rem;color:var(--text2);word-break:break-all">${esc(u.email)}</div>
+        <div><span class="badge ${u.accountType==='professional'?'pro':'none'}">${u.accountType==='professional'?'Pro':'Particulier'}</span></div>
+        <div><span class="badge ${u.status}">${u.status==='active'?'Actif':u.status==='pending'?'Attente':'Suspendu'}</span></div>
+        <div><span class="badge ${u.plan||'none'}">${u.plan||'—'}</span></div>
+        <div class="cell-num">${u.credits-u.creditsUsed} / ${u.credits}</div>
+        <div class="action-btns">
+          <button class="action-btn" onclick="openEdit('${u.id}')">✏️ Modifier</button>
+          <button class="action-btn danger" onclick="suspendUser('${u.id}','${u.status}')">${u.status==='suspended'?'Réactiver':'Suspendre'}</button>
+        </div>
+      </div>
+    `).join('')}
+  `;
+}
+
+function filterUsers() {
+  const q = document.getElementById('search').value.toLowerCase();
+  if (!q) { renderUsers(allUsers); return; }
+  renderUsers(allUsers.filter(u =>
+    u.email.toLowerCase().includes(q) ||
+    u.firstName.toLowerCase().includes(q) ||
+    u.lastName.toLowerCase().includes(q) ||
+    (u.company||'').toLowerCase().includes(q)
+  ));
+}
+
+function openEdit(userId) {
+  const u = allUsers.find(u => u.id === userId);
+  if (!u) return;
+  editingUserId = userId;
+  document.getElementById('modal-user-name').textContent = u.firstName + ' ' + u.lastName + ' — ' + u.email;
+  document.getElementById('edit-status').value = u.status;
+  document.getElementById('edit-plan').value = u.plan || 'none';
+  document.getElementById('edit-credits').value = u.credits;
+  document.getElementById('modal-edit').classList.add('active');
+}
+
+function closeModal() {
+  document.getElementById('modal-edit').classList.remove('active');
+  editingUserId = null;
+}
+
+async function saveUser() {
+  if (!editingUserId) return;
+  const status = document.getElementById('edit-status').value;
+  const plan = document.getElementById('edit-plan').value;
+  const credits = parseInt(document.getElementById('edit-credits').value) || 0;
+
+  const r = await fetch('/api/superadmin?action=user', {
+    method: 'PATCH',
+    headers: { 'x-admin-token': ADMIN_TOKEN, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ userId: editingUserId, status, plan, credits })
+  });
+
+  if (r.ok) {
+    closeModal();
+    loadStats();
+    loadUsers();
+  }
+}
+
+async function suspendUser(userId, currentStatus) {
+  const newStatus = currentStatus === 'suspended' ? 'active' : 'suspended';
+  const label = newStatus === 'suspended' ? 'suspendre' : 'réactiver';
+  if (!confirm(`Voulez-vous vraiment ${label} cet utilisateur ?`)) return;
+
+  await fetch('/api/superadmin?action=user', {
+    method: 'PATCH',
+    headers: { 'x-admin-token': ADMIN_TOKEN, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ userId, status: newStatus })
+  });
+  loadStats();
+  loadUsers();
+}
+
+function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+</script>
+</body>
+</html>
