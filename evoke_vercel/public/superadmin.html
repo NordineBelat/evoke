@@ -153,7 +153,7 @@ nav{background:var(--card);border-bottom:1px solid var(--border);padding:0 1.5re
     <div class="login-badge">Super Admin</div>
     <div class="login-sub">Espace de gestion — accès strictement restreint.</div>
     <input class="fi" type="password" id="sa-token" placeholder="Token d'accès secret">
-    <button class="btn-login" onclick="saLogin()">Accéder →</button>
+    <button class="btn-login" id="btn-login">Accéder →</button>
     <div class="login-err" id="login-err"></div>
   </div>
 </div>
@@ -279,6 +279,7 @@ window.impersonate = impersonate;
 
 document.getElementById('nav-date').textContent = new Date().toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
 document.getElementById('sa-token').addEventListener('keydown', e => { if(e.key==='Enter') saLogin(); });
+document.getElementById('btn-login').addEventListener('click', saLogin);
 
 // Valider le token stocké avant d'afficher le dashboard
 if(TOKEN) {
