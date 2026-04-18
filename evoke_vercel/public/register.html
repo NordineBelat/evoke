@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>EVOKE — Créer un compte</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.21/css/intlTelInput.min.css">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 :root{--bg:#f2f2f7;--white:#fff;--dark:#111118;--text:#111118;--text2:#6b6b80;--text3:#aeaec0;--green:#3ecf6a;--green-light:#b8f0c8;--red:#ff6b6b;--border:rgba(0,0,0,0.08);--sh:0 4px 24px rgba(0,0,0,0.06);--rmd:16px;--rlg:20px;--rxl:28px;--rp:100px;}
@@ -66,13 +65,24 @@ body{display:flex;flex-direction:column;align-items:center;padding:1.5rem 1rem 5
 .pw-bar.strong{background:#22c55e;}
 .pw-label{font-size:.62rem;color:var(--text3);margin-top:.2rem;}
 
-/* PHONE */
-.iti{width:100%;}
-.iti__flag-container{padding:.5rem;}
-.iti input{border-radius:var(--rmd)!important;background:var(--bg)!important;border:1.5px solid transparent!important;padding:.82rem 1rem .82rem 56px!important;font-family:'Plus Jakarta Sans',sans-serif!important;font-size:.88rem!important;color:var(--text)!important;width:100%!important;outline:none!important;transition:all .2s!important;}
-.iti input:focus{border-color:rgba(17,17,24,.2)!important;background:var(--white)!important;}
-.iti input::placeholder{color:var(--text3)!important;}
-@media(max-width:480px){.iti input{font-size:16px!important;padding:.78rem .9rem .78rem 54px!important;}}
+/* PHONE CUSTOM */
+.phone-wrap{display:flex;gap:8px;align-items:stretch;}
+.phone-country{display:flex;align-items:center;gap:.4rem;background:var(--bg);border:1.5px solid transparent;border-radius:var(--rmd);padding:.82rem .9rem;cursor:pointer;white-space:nowrap;font-family:'Plus Jakarta Sans',sans-serif;font-size:.88rem;font-weight:700;color:var(--text);transition:all .2s;position:relative;flex-shrink:0;min-width:90px;}
+.phone-country:focus{border-color:rgba(17,17,24,.2);background:var(--white);outline:none;}
+.phone-country-flag{font-size:1.1rem;line-height:1;}
+.phone-country-arrow{font-size:.6rem;color:var(--text3);margin-left:auto;}
+.phone-input{flex:1;background:var(--bg);border:1.5px solid transparent;border-radius:var(--rmd);padding:.82rem 1rem;font-family:'Plus Jakarta Sans',sans-serif;font-size:.88rem;color:var(--text);outline:none;transition:all .2s;min-width:0;}
+.phone-input:focus{border-color:rgba(17,17,24,.2);background:var(--white);}
+.phone-input::placeholder{color:var(--text3);}
+.country-dropdown{position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--white);border:1.5px solid rgba(17,17,24,.1);border-radius:var(--rmd);box-shadow:0 8px 32px rgba(0,0,0,.12);z-index:200;max-height:260px;overflow-y:auto;display:none;min-width:260px;-webkit-overflow-scrolling:touch;}
+.country-dropdown.show{display:block;}
+.country-search{width:100%;padding:.7rem 1rem;border:none;border-bottom:1px solid var(--border);font-family:'Plus Jakarta Sans',sans-serif;font-size:.82rem;color:var(--text);background:var(--white);outline:none;}
+.country-search::placeholder{color:var(--text3);}
+.country-opt{display:flex;align-items:center;gap:.7rem;padding:.65rem 1rem;font-size:.8rem;cursor:pointer;transition:background .1s;}
+.country-opt:hover{background:var(--bg);}
+.country-opt .flag{font-size:1rem;}
+.country-opt .name{flex:1;font-weight:600;color:var(--text);}
+@media(max-width:480px){.phone-input{font-size:16px;}.phone-country{font-size:16px;}}
 
 /* AUTOCOMPLETE */
 .autocomplete-wrap{position:relative;}
@@ -84,10 +94,15 @@ body{display:flex;flex-direction:column;align-items:center;padding:1.5rem 1rem 5
 .ac-item strong{color:var(--dark);font-weight:700;}
 .ac-item small{display:block;font-size:.7rem;color:var(--text2);margin-top:1px;}
 
-/* SIRET STATUS */
-.siret-status{display:flex;align-items:center;gap:.4rem;font-size:.7rem;margin-top:.35rem;min-height:1.1rem;}
-.siret-ok{color:#2d7a47;}
-.siret-err{color:var(--red);}
+/* SIRET */
+.siret-wrap{display:flex;gap:8px;align-items:stretch;}
+.siret-wrap input{flex:1;min-width:0;}
+.btn-siret{padding:.82rem 1rem;background:var(--dark);border:none;border-radius:var(--rmd);font-family:'Plus Jakarta Sans',sans-serif;font-size:.75rem;font-weight:800;color:white;cursor:pointer;white-space:nowrap;transition:opacity .2s;flex-shrink:0;-webkit-tap-highlight-color:transparent;}
+.btn-siret:hover{opacity:.85;}
+.btn-siret:disabled{opacity:.4;cursor:not-allowed;}
+.siret-status{display:flex;align-items:center;gap:.4rem;font-size:.7rem;margin-top:.35rem;min-height:1.2rem;}
+.siret-ok{color:#2d7a47;font-weight:700;}
+.siret-err{color:var(--red);font-weight:700;}
 .siret-loading{color:var(--text2);}
 
 /* CGV */
@@ -165,7 +180,18 @@ body{display:flex;flex-direction:column;align-items:center;padding:1.5rem 1rem 5
   <!-- TÉLÉPHONE -->
   <div class="field">
     <label>Téléphone</label>
-    <input type="tel" id="phone" placeholder="06 00 00 00 00">
+    <div class="phone-wrap">
+      <button type="button" class="phone-country" id="phone-country-btn" onclick="toggleCountryDropdown()">
+        <span class="phone-country-flag" id="selected-flag">🇫🇷</span>
+        <span class="phone-country-arrow">▼</span>
+        <div class="country-dropdown" id="country-dropdown">
+          <input class="country-search" type="text" placeholder="Rechercher un pays…" oninput="filterCountries(this.value)" onclick="event.stopPropagation()">
+          <div id="country-list"></div>
+        </div>
+      </button>
+      <input class="phone-input" type="tel" id="phone" id="phone-input" placeholder="06 12 34 56 78">
+    </div>
+    <small>Format : indicatif pré-rempli + votre numéro sans le 0 initial</small>
   </div>
 
   <!-- PRO FIELDS -->
@@ -175,7 +201,10 @@ body{display:flex;flex-direction:column;align-items:center;padding:1.5rem 1rem 5
     <!-- SIRET -->
     <div class="field">
       <label>Numéro SIRET</label>
-      <input type="text" id="siret" placeholder="14 chiffres" maxlength="14" oninput="onSiretInput(this)">
+      <div class="siret-wrap">
+        <input type="text" id="siret" placeholder="Ex : 83814388700014" maxlength="17" oninput="formatSiret(this)">
+        <button type="button" class="btn-siret" id="btn-siret" onclick="verifySiret()">Vérifier →</button>
+      </div>
       <div class="siret-status" id="siret-status"></div>
     </div>
 
@@ -258,22 +287,98 @@ body{display:flex;flex-direction:column;align-items:center;padding:1.5rem 1rem 5
 </div>
 
 <!-- intl-tel-input -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.21/js/intlTelInput.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.21/js/utils.js"></script>
 <script>
 let accountType = 'individual';
-let iti = null;
-let siretTimer = null;
 let addressTimer = null;
 
-// ── PHONE ─────────────────────────────────────────────────────────────────
+// ── PAYS & TÉLÉPHONE ──────────────────────────────────────────────────────
+const COUNTRIES = [
+  {code:'FR',flag:'🇫🇷',name:'France',dial:'+33'},
+  {code:'BE',flag:'🇧🇪',name:'Belgique',dial:'+32'},
+  {code:'CH',flag:'🇨🇭',name:'Suisse',dial:'+41'},
+  {code:'LU',flag:'🇱🇺',name:'Luxembourg',dial:'+352'},
+  {code:'MA',flag:'🇲🇦',name:'Maroc',dial:'+212'},
+  {code:'DZ',flag:'🇩🇿',name:'Algérie',dial:'+213'},
+  {code:'TN',flag:'🇹🇳',name:'Tunisie',dial:'+216'},
+  {code:'SN',flag:'🇸🇳',name:'Sénégal',dial:'+221'},
+  {code:'CI',flag:'🇨🇮',name:'Côte d\'Ivoire',dial:'+225'},
+  {code:'CM',flag:'🇨🇲',name:'Cameroun',dial:'+237'},
+  {code:'MG',flag:'🇲🇬',name:'Madagascar',dial:'+261'},
+  {code:'DE',flag:'🇩🇪',name:'Allemagne',dial:'+49'},
+  {code:'ES',flag:'🇪🇸',name:'Espagne',dial:'+34'},
+  {code:'IT',flag:'🇮🇹',name:'Italie',dial:'+39'},
+  {code:'PT',flag:'🇵🇹',name:'Portugal',dial:'+351'},
+  {code:'GB',flag:'🇬🇧',name:'Royaume-Uni',dial:'+44'},
+  {code:'US',flag:'🇺🇸',name:'États-Unis',dial:'+1'},
+  {code:'CA',flag:'🇨🇦',name:'Canada',dial:'+1'},
+  {code:'JP',flag:'🇯🇵',name:'Japon',dial:'+81'},
+  {code:'CN',flag:'🇨🇳',name:'Chine',dial:'+86'},
+  {code:'IN',flag:'🇮🇳',name:'Inde',dial:'+91'},
+  {code:'BR',flag:'🇧🇷',name:'Brésil',dial:'+55'},
+  {code:'AU',flag:'🇦🇺',name:'Australie',dial:'+61'},
+  {code:'AE',flag:'🇦🇪',name:'Émirats arabes unis',dial:'+971'},
+  {code:'SA',flag:'🇸🇦',name:'Arabie Saoudite',dial:'+966'},
+  {code:'NL',flag:'🇳🇱',name:'Pays-Bas',dial:'+31'},
+  {code:'PL',flag:'🇵🇱',name:'Pologne',dial:'+48'},
+  {code:'RU',flag:'🇷🇺',name:'Russie',dial:'+7'},
+  {code:'TR',flag:'🇹🇷',name:'Turquie',dial:'+90'},
+  {code:'MX',flag:'🇲🇽',name:'Mexique',dial:'+52'},
+];
+let selectedCountry = COUNTRIES[0];
+
+function renderCountryList(list) {
+  document.getElementById('country-list').innerHTML = list.map(c => `
+    <div class="country-opt" onclick="selectCountry('${c.code}')">
+      <span class="flag">${c.flag}</span>
+      <span class="name">${c.name}</span>
+    </div>
+  `).join('');
+}
+
+function filterCountries(q) {
+  const filtered = q ? COUNTRIES.filter(c => c.name.toLowerCase().includes(q.toLowerCase())) : COUNTRIES;
+  renderCountryList(filtered);
+}
+
+function selectCountry(code) {
+  selectedCountry = COUNTRIES.find(c => c.code === code) || COUNTRIES[0];
+  document.getElementById('selected-flag').textContent = selectedCountry.flag;
+  // Pré-remplir l'indicatif dans le champ téléphone
+  const phoneInput = document.getElementById('phone');
+  phoneInput.value = selectedCountry.dial + ' ';
+  phoneInput.placeholder = selectedCountry.dial + ' ' + (code === 'FR' ? '6 12 34 56 78' : '...');
+  phoneInput.focus();
+  // Positionner le curseur après l'indicatif
+  const pos = phoneInput.value.length;
+  setTimeout(() => { phoneInput.setSelectionRange(pos, pos); }, 10);
+  closeCountryDropdown();
+}
+
+function toggleCountryDropdown() {
+  const dd = document.getElementById('country-dropdown');
+  const isOpen = dd.classList.contains('show');
+  if(isOpen) { closeCountryDropdown(); }
+  else {
+    dd.classList.add('show');
+    renderCountryList(COUNTRIES);
+    setTimeout(() => { dd.querySelector('.country-search')?.focus(); }, 100);
+  }
+}
+
+function closeCountryDropdown() {
+  document.getElementById('country-dropdown').classList.remove('show');
+}
+
+document.addEventListener('click', e => {
+  if(!e.target.closest('#phone-country-btn')) closeCountryDropdown();
+});
+
+// Init téléphone avec France par défaut
 window.addEventListener('load', () => {
-  iti = window.intlTelInput(document.getElementById('phone'), {
-    initialCountry: 'fr',
-    preferredCountries: ['fr', 'be', 'ch', 'lu', 'ma', 'dz', 'tn'],
-    separateDialCode: true,
-    utilsScript: 'https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.21/js/utils.js'
-  });
+  const phoneInput = document.getElementById('phone');
+  phoneInput.value = '+33 ';
+  phoneInput.placeholder = '+33 6 12 34 56 78';
+  renderCountryList(COUNTRIES);
 });
 
 // ── TYPE ──────────────────────────────────────────────────────────────────
@@ -315,40 +420,58 @@ function validateEmail(el) {
 }
 
 // ── SIRET ─────────────────────────────────────────────────────────────────
-function onSiretInput(el) {
-  // Garder seulement les chiffres
-  el.value = el.value.replace(/\D/g, '').substring(0, 14);
-  const status = document.getElementById('siret-status');
-  clearTimeout(siretTimer);
-  if (el.value.length < 14) { status.innerHTML = ''; return; }
-  status.innerHTML = '<span class="siret-loading">⏳ Vérification…</span>';
-  siretTimer = setTimeout(() => verifySiret(el.value), 600);
+function formatSiret(el) {
+  // Garder uniquement les chiffres et formater en groupes : XXX XXX XXX XXXXX
+  let digits = el.value.replace(/\D/g, '').substring(0, 14);
+  let formatted = '';
+  for(let i = 0; i < digits.length; i++) {
+    if(i === 3 || i === 6 || i === 9) formatted += ' ';
+    formatted += digits[i];
+  }
+  el.value = formatted;
+  // Activer/désactiver le bouton vérifier
+  const btn = document.getElementById('btn-siret');
+  btn.disabled = digits.length < 14;
+  if(digits.length < 14) document.getElementById('siret-status').innerHTML = '';
 }
 
-async function verifySiret(siret) {
+async function verifySiret() {
+  const el = document.getElementById('siret');
+  const digits = el.value.replace(/\D/g, '');
+  if(digits.length !== 14) return;
   const status = document.getElementById('siret-status');
+  const btn = document.getElementById('btn-siret');
+  status.innerHTML = '<span class="siret-loading">⏳ Vérification en cours…</span>';
+  btn.disabled = true;
+  btn.textContent = '…';
   try {
-    const r = await fetch(`https://entreprise.data.gouv.fr/api/sirene/v3/etablissements/${siret}`);
-    if (!r.ok) throw new Error('not found');
+    const r = await fetch(`https://entreprise.data.gouv.fr/api/sirene/v3/etablissements/${digits}`);
+    if(!r.ok) throw new Error('not found');
     const data = await r.json();
     const etab = data.etablissement;
     const unite = etab?.unite_legale;
-    const nom = unite?.denomination || (unite?.prenom_usuel + ' ' + unite?.nom) || '';
+    const nom = unite?.denomination || ((unite?.prenom_usuel||'') + ' ' + (unite?.nom_usage||unite?.nom||'')).trim() || '';
     const adresse = etab?.geo_adresse || '';
     const cp = etab?.code_postal || '';
     const ville = etab?.libelle_commune || '';
+    const actif = etab?.etat_administratif === 'A';
 
-    // Pré-remplir
-    if (nom) document.getElementById('company').value = nom.trim();
-    if (adresse) document.getElementById('address-street').value = adresse;
-    if (cp) document.getElementById('address-zip').value = cp;
-    if (ville) document.getElementById('address-city').value = ville;
+    if(nom) { document.getElementById('company').value = nom.trim(); document.getElementById('company').classList.add('valid'); }
+    if(adresse) document.getElementById('address-street').value = adresse;
+    if(cp) document.getElementById('address-zip').value = cp;
+    if(ville) document.getElementById('address-city').value = ville;
+    if(adresse) document.getElementById('address-search').value = adresse + ', ' + cp + ' ' + ville;
 
-    status.innerHTML = '<span class="siret-ok">✅ Entreprise trouvée — informations pré-remplies</span>';
-    document.getElementById('company').classList.add('valid');
+    status.innerHTML = actif
+      ? '<span class="siret-ok">✅ Entreprise active — informations pré-remplies</span>'
+      : '<span class="siret-err">⚠️ Entreprise trouvée mais inactive (fermée)</span>';
+    el.classList.add('valid');
   } catch {
     status.innerHTML = '<span class="siret-err">❌ SIRET non reconnu — vérifiez le numéro</span>';
+    el.classList.add('invalid');
   }
+  btn.disabled = false;
+  btn.textContent = 'Vérifier →';
 }
 
 // ── ADDRESS AUTOCOMPLETE ──────────────────────────────────────────────────
@@ -410,7 +533,7 @@ async function doRegister() {
   const password2 = document.getElementById('password2').value;
   const company   = document.getElementById('company').value.trim();
   const siret     = document.getElementById('siret').value.trim();
-  const phone     = iti ? iti.getNumber() : document.getElementById('phone').value.trim();
+  const phone     = document.getElementById('phone').value.trim();
   const street    = document.getElementById('address-street').value.trim();
   const zip       = document.getElementById('address-zip').value.trim();
   const city      = document.getElementById('address-city').value.trim();

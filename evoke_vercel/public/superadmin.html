@@ -255,9 +255,27 @@ nav{background:var(--card);border-bottom:1px solid var(--border);padding:0 1.5re
 </div>
 
 <script>
+document.addEventListener('DOMContentLoaded', function() {
+
 let TOKEN = sessionStorage.getItem('sa_tok') || '';
 let allUsers = [], currentUserId = null, currentUser = null, currentEvents = [], currentEvent = null;
 let editId = null, deleteId = null;
+
+// Exposer les fonctions appelées via onclick dans le HTML
+window.saLogin = saLogin;
+window.saLogout = saLogout;
+window.refreshAll = refreshAll;
+window.showView = showView;
+window.filterUsers = filterUsers;
+window.loadUserDetail = loadUserDetail;
+window.loadEventDetail = loadEventDetail;
+window.openEdit = openEdit;
+window.openDelete = openDelete;
+window.closeModals = closeModals;
+window.saveUser = saveUser;
+window.toggleSuspend = toggleSuspend;
+window.confirmDelete = confirmDelete;
+window.impersonate = impersonate;
 
 document.getElementById('nav-date').textContent = new Date().toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
 document.getElementById('sa-token').addEventListener('keydown', e => { if(e.key==='Enter') saLogin(); });
@@ -626,6 +644,8 @@ function toast(msg){
   t.textContent=msg; t.classList.add('show');
   setTimeout(()=>t.classList.remove('show'),2800);
 }
+
+}); // fin DOMContentLoaded
 </script>
 </body>
 </html>
