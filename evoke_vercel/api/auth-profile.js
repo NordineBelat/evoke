@@ -34,6 +34,9 @@ export default async function handler(req, res) {
       company: p.company,
       siret: p.siret,
       phone: p.phone,
+      address: p.address,
+      zip: p.zip,
+      city: p.city,
       plan: p.plan,
       credits: p.credits,
       creditsUsed: p.credits_used,
@@ -51,6 +54,9 @@ export default async function handler(req, res) {
     if (company !== undefined) updates.company = company;
     if (siret !== undefined) updates.siret = siret;
     if (phone !== undefined) updates.phone = phone;
+    if (req.body.city !== undefined) updates.city = req.body.city;
+    if (req.body.zip !== undefined) updates.zip = req.body.zip;
+    if (req.body.siret !== undefined) updates.siret = req.body.siret;
     if (accountType) updates.account_type = accountType;
 
     const r = await fetch(`${url}/rest/v1/users?id=eq.${userId}`, {
