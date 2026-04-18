@@ -153,7 +153,7 @@ nav{background:var(--card);border-bottom:1px solid var(--border);padding:0 1.5re
     <div class="login-badge">Super Admin</div>
     <div class="login-sub">Espace de gestion — accès strictement restreint.</div>
     <input class="fi" type="password" id="sa-token" placeholder="Token d'accès secret">
-    <button class="btn-login" id="btn-login">Accéder →</button>
+    <button class="btn-login" id="btn-login" onclick="saLogin()">Accéder →</button>
     <div class="login-err" id="login-err"></div>
   </div>
 </div>
@@ -308,11 +308,11 @@ function showView(name){
 function updateBreadcrumb(name){
   var bc = document.getElementById('breadcrumb');
   if(name==='dashboard'){
-    bc.innerHTML='<span class="active" onclick="showView('dashboard')">Dashboard</span>';
+    bc.innerHTML='<span class="active" onclick="showView(&quot;dashboard&quot;)">Dashboard</span>';
   } else if(name==='user'){
-    bc.innerHTML='<span onclick="showView('dashboard')">Dashboard</span><span class="breadcrumb-sep">›</span><span class="active">'+(currentUser?esc(currentUser.first_name)+' '+esc(currentUser.last_name):'')+'</span>';
+    bc.innerHTML='<span onclick="showView(&quot;dashboard&quot;)">Dashboard</span><span class="breadcrumb-sep">›</span><span class="active">'+(currentUser?esc(currentUser.first_name)+' '+esc(currentUser.last_name):'')+'</span>';
   } else if(name==='event'){
-    bc.innerHTML='<span onclick="showView('dashboard')">Dashboard</span><span class="breadcrumb-sep">›</span><span onclick="loadUserDetail(''+currentUserId+'')">'+(currentUser?esc(currentUser.first_name)+' '+esc(currentUser.last_name):'')+'</span><span class="breadcrumb-sep">›</span><span class="active">'+(currentEvent?esc(currentEvent.couple||'Événement'):'')+'</span>';
+    bc.innerHTML='<span onclick="showView(&quot;dashboard&quot;)">Dashboard</span><span class="breadcrumb-sep">›</span><span onclick="loadUserDetail(&quot;'+currentUserId+'&quot;)">'+(currentUser?esc(currentUser.first_name)+' '+esc(currentUser.last_name):'')+'</span><span class="breadcrumb-sep">›</span><span class="active">'+(currentEvent?esc(currentEvent.couple||'Événement'):'')+'</span>';
   }
 }
 
@@ -345,7 +345,7 @@ function renderUsers(users){
   if(!users.length){ document.getElementById('users-tbl').innerHTML='<div class="empty">Aucun utilisateur</div>'; return; }
   var html = '<div class="t-head"><div>Utilisateur</div><div>Email</div><div>Type</div><div>Statut</div><div>Plan</div><div>Crédits</div><div>Actions</div></div>';
   users.forEach(function(u){
-    html += '<div class="t-row" onclick="loadUserDetail(''+u.id+'')">'+
+    html += '<div class="t-row" onclick="loadUserDetail(&quot;'+u.id+'&quot;)">'+
       '<div><div class="u-name">'+esc(u.firstName)+' '+esc(u.lastName)+'</div>'+
       '<div class="u-sub">'+u.eventsCount+' événement'+(u.eventsCount!==1?'s':'')+' · '+u.songsCount+' musique'+(u.songsCount!==1?'s':'')+'</div>'+
       (u.company?'<div class="u-company">'+esc(u.company)+'</div>':'')+
@@ -356,10 +356,10 @@ function renderUsers(users){
       '<div><span class="badge '+(u.plan||'none')+'">'+(u.plan||'—')+'</span></div>'+
       '<div class="cell-n">'+((u.credits||0)-(u.creditsUsed||0))+'<span style="color:var(--text3);font-size:.6rem"> / '+(u.credits||0)+'</span></div>'+
       '<div class="acts" onclick="event.stopPropagation()">'+
-        '<button class="ab g" onclick="openEdit(''+u.id+'')">✏️ Modifier</button>'+
-        '<button class="ab b" onclick="impersonate(''+u.id+'')">👁 Voir</button>'+
-        '<button class="ab '+(u.status==='suspended'?'g':'o')+'" onclick="toggleSuspend(''+u.id+'',''+u.status+'')">'+(u.status==='suspended'?'Réactiver':'Suspendre')+'</button>'+
-        '<button class="ab r" onclick="openDelete(''+u.id+'',''+esc(u.firstName)+' '+esc(u.lastName)+'')">🗑</button>'+
+        '<button class="ab g" onclick="openEdit(&quot;'+u.id+'&quot;)">✏️ Modifier</button>'+
+        '<button class="ab b" onclick="impersonate(&quot;'+u.id+'&quot;)">👁 Voir</button>'+
+        '<button class="ab '+(u.status==='suspended'?'g':'o')+'" onclick="toggleSuspend(&quot;'+u.id+'&quot;,&quot;'+u.status+'&quot;)">'+(u.status==='suspended'?'Réactiver':'Suspendre')+'</button>'+
+        '<button class="ab r" onclick="openDelete(&quot;'+u.id+'&quot;,&quot;'+esc(u.firstName)+' '+esc(u.lastName)+'&quot;)">🗑</button>'+
       '</div></div>';
   });
   document.getElementById('users-tbl').innerHTML = html;
@@ -400,10 +400,10 @@ async function loadUserDetail(userId){
       '</div>'+
     '</div>'+
     '<div class="acts">'+
-      '<button class="ab g" onclick="openEdit(''+u.id+'')">✏️ Modifier</button>'+
-      '<button class="ab b" onclick="impersonate(''+u.id+'')">👁 Voir son espace</button>'+
-      '<button class="ab '+(u.status==='suspended'?'g':'o')+'" onclick="toggleSuspend(''+u.id+'',''+u.status+'')">'+(u.status==='suspended'?'Réactiver':'Suspendre')+'</button>'+
-      '<button class="ab r" onclick="openDelete(''+u.id+'',''+esc(u.first_name)+' '+esc(u.last_name)+'')">🗑 Supprimer</button>'+
+      '<button class="ab g" onclick="openEdit(&quot;'+u.id+'&quot;)">✏️ Modifier</button>'+
+      '<button class="ab b" onclick="impersonate(&quot;'+u.id+'&quot;)">👁 Voir son espace</button>'+
+      '<button class="ab '+(u.status==='suspended'?'g':'o')+'" onclick="toggleSuspend(&quot;'+u.id+'&quot;,&quot;'+u.status+'&quot;)">'+(u.status==='suspended'?'Réactiver':'Suspendre')+'</button>'+
+      '<button class="ab r" onclick="openDelete(&quot;'+u.id+'&quot;,&quot;'+esc(u.first_name)+' '+esc(u.last_name)+'&quot;)">🗑 Supprimer</button>'+
     '</div>';
   document.getElementById('detail-stats').innerHTML =
     '<div class="dstat"><div class="dstat-num" style="color:var(--green)">'+creditsLeft+'</div><div class="dstat-label">Crédits restants</div></div>'+
@@ -413,13 +413,13 @@ async function loadUserDetail(userId){
   if(!currentEvents.length){ document.getElementById('events-tbl').innerHTML='<div class="empty">Aucun événement</div>'; return; }
   var evHtml = '<div class="t-head"><div>Couple</div><div>Date</div><div>Crédits</div><div>Musiques</div><div>Créé le</div><div>Actions</div></div>';
   currentEvents.forEach(function(e){
-    evHtml += '<div class="t-row" onclick="loadEventDetail(''+e.id+'')">'+
+    evHtml += '<div class="t-row" onclick="loadEventDetail(&quot;'+e.id+'&quot;)">'+
       '<div class="u-name">'+esc(e.couple||'—')+'</div>'+
       '<div class="cell-sm">'+(e.date?fmtDate(e.date):'—')+'</div>'+
       '<div class="cell-n">'+((e.credits||0)-(e.usedCredits||0))+' / '+(e.credits||0)+'</div>'+
       '<div class="cell-n">'+((e.songs||[]).length)+'</div>'+
       '<div class="cell-sm">'+fmt(e.createdAt)+'</div>'+
-      '<div class="acts" onclick="event.stopPropagation()"><button class="ab g" onclick="loadEventDetail(''+e.id+'')">Voir →</button></div>'+
+      '<div class="acts" onclick="event.stopPropagation()"><button class="ab g" onclick="loadEventDetail(&quot;'+e.id+'&quot;)">Voir →</button></div>'+
     '</div>';
   });
   document.getElementById('events-tbl').innerHTML = evHtml;
@@ -436,7 +436,7 @@ function loadEventDetail(eventId){
       '<div class="detail-name">'+esc(ev.couple||'—')+'</div>'+
       '<div class="detail-meta">'+(ev.date?'📅 '+fmtDate(ev.date)+'<br>':'')+songs.length+' musique'+(songs.length!==1?'s':'')+' générée'+(songs.length!==1?'s':'')+'<br>Crédits : '+((ev.credits||0)-(ev.usedCredits||0))+' restants / '+(ev.credits||0)+' alloués</div>'+
     '</div>'+
-    '<div class="acts"><button class="ab" onclick="loadUserDetail(''+currentUserId+'')">← Retour</button></div>';
+    '<div class="acts"><button class="ab" onclick="loadUserDetail(&quot;'+currentUserId+'&quot;)">← Retour</button></div>';
   if(!songs.length){ document.getElementById('songs-tbl').innerHTML='<div class="empty">Aucune musique</div>'; return; }
   var sHtml = '<div class="t-head"><div>Titre</div><div>Message</div><div>Style</div><div>Voix</div><div>Créée le</div></div>';
   songs.forEach(function(s){
@@ -509,10 +509,7 @@ async function impersonate(userId){
     if(r.ok && d.link && d.link.startsWith('http')){ window.open(d.link,'_blank'); toast('✅ Lien ouvert'); }
     else {
       var u = allUsers.find(function(x){return x.id===userId;})||{email:'cet utilisateur'};
-      alert('Pour accéder à l'espace de '+u.email+' :
-1. Allez dans Supabase → Authentication → Users
-2. Trouvez '+u.email+'
-3. Cliquez "Send magic link"');
+      alert('Pour accéder à l\'espace de '+u.email+':\n1. Allez dans Supabase > Authentication > Users\n2. Trouvez '+u.email+'\n3. Cliquez Send magic link');
     }
   } catch(e){ toast('❌ Erreur: '+e.message); }
 }
@@ -524,6 +521,10 @@ function toast(msg){ var t=document.getElementById('toast'); t.textContent=msg; 
 
 // Init au chargement
 window.onload = function() {
+  // Attacher le keydown sur le champ token
+  var tokenInput = document.getElementById('sa-token');
+  if(tokenInput) tokenInput.addEventListener('keydown', function(e){ if(e.key==='Enter') saLogin(); });
+  // Vérifier token en cache
   if(TOKEN){
     fetch('/api/superadmin?action=stats', {headers:{'x-admin-token':TOKEN}})
       .then(function(r){ if(r.ok){ initSA(); } else { sessionStorage.removeItem('sa_tok'); TOKEN=''; } })
