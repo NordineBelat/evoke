@@ -261,15 +261,31 @@ let editId = null, deleteId = null;
 
 document.getElementById('nav-date').textContent = new Date().toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
 document.getElementById('sa-token').addEventListener('keydown', e => { if(e.key==='Enter') saLogin(); });
-if(TOKEN) initSA();
+
+// Valider le token stocké avant d'afficher le dashboard
+if(TOKEN) {
+  fetch('/api/superadmin?action=stats', { headers: {'x-admin-token': TOKEN} })
+    .then(r => { if(r.ok){ initSA(); } else { sessionStorage.removeItem('sa_tok'); TOKEN=''; } })
+    .catch(() => { sessionStorage.removeItem('sa_tok'); TOKEN=''; });
+}
 
 // ── AUTH ──────────────────────────────────────────────────────────────────
 async function saLogin() {
   const t = document.getElementById('sa-token').value.trim();
-  if(!t) return;
-  const r = await fetch('/api/superadmin?action=stats', { headers: {'x-admin-token': t} });
-  if(r.ok){ TOKEN=t; sessionStorage.setItem('sa_tok',t); initSA(); }
-  else { document.getElementById('login-err').textContent='Token incorrect — accès refusé'; }
+  if(!t) { document.getElementById('login-err').textContent='Entrez votre token'; return; }
+  document.getElementById('login-err').textContent='Vérification…';
+  // Toujours vider le cache avant de tenter
+  sessionStorage.removeItem('sa_tok');
+  try {
+    const r = await fetch('/api/superadmin?action=stats', { headers: {'x-admin-token': t} });
+    if(r.ok){ TOKEN=t; sessionStorage.setItem('sa_tok',t); initSA(); }
+    else {
+      const d = await r.json().catch(()=>({}));
+      document.getElementById('login-err').textContent = r.status===401 ? 'Token incorrect — accès refusé' : 'Erreur '+r.status+': '+(d.error||'inconnue');
+    }
+  } catch(e) {
+    document.getElementById('login-err').textContent = 'Erreur réseau: '+e.message;
+  }
 }
 function saLogout(){ sessionStorage.removeItem('sa_tok'); location.reload(); }
 
