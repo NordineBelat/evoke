@@ -164,7 +164,15 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;height:60px;background:rgba(
 </div>
 
 <nav>
-  <div class="nlogo">EVOKE</div>
+  <div class="nlogo" style="color:var(--dark)"><svg width="116" height="32" viewBox="0 0 116 32" style="display:block;overflow:visible">
+  <defs><style>.bc1{animation:bca 1s ease-in-out infinite alternate;}.bc2{animation:bca 1s ease-in-out .25s infinite alternate;}.bc3{animation:bca 1s ease-in-out .5s infinite alternate;}@keyframes bca{0%{transform:scaleY(.15);}100%{transform:scaleY(1);}}</style></defs>
+  <text x="0" y="25" font-family="'Plus Jakarta Sans',sans-serif" font-size="22" font-weight="800" fill="currentColor" letter-spacing="-.3">EVOKE</text>
+  <g transform="translate(82,7)">
+    <rect class="bc1" x="0" y="0" width="4" height="18" rx="2" fill="currentColor" transform-origin="2 18"/>
+    <rect class="bc2" x="7" y="0" width="4" height="18" rx="2" fill="currentColor" transform-origin="9 18"/>
+    <rect class="bc3" x="14" y="0" width="4" height="18" rx="2" fill="currentColor" transform-origin="16 18"/>
+  </g>
+</svg></div>
   <div class="nright">
     <span class="nuser" id="nuser"></span>
     <span class="nplan none" id="nplan">—</span>
@@ -398,7 +406,7 @@ function renderEvents() {
     var songs = e.songs || [];
     var cr = (e.credits||0) - (e.usedCredits||0);
     var d = e.date ? new Date(e.date+"T00:00:00").toLocaleDateString("fr-FR",{day:"numeric",month:"long",year:"numeric"}) : "Date non définie";
-    return "<div class='ev' onclick='openEvent(""+e.id+"")'>" +
+    return "<div class='ev' onclick='openEvent(&quot;'+e.id+'&quot;)'>" +
       "<div class='ev-l'><div class='ev-name'>"+esc(e.couple||"—")+"</div><div class='ev-date'>"+d+"</div></div>" +
       "<div class='ev-r'><span class='pill pill-d'>🎵 "+songs.length+"</span><span class='pill pill-g'>"+cr+" crédits</span></div>" +
       "</div>";
@@ -512,12 +520,12 @@ function renderDetail() {
       "<div class='ds'><div class='ds-n'>"+(e.credits||0)+"</div><div class='ds-l'>Crédits total</div></div>" +
     "</div>" +
     "<div class='link-item'><span class='link-lbl'>Invités</span><span class='link-url'>"+gLink+"</span><div class='link-acts'>" +
-      "<button class='link-btn' onclick='copyText(""+gLink+"")'>Copier</button>" +
-      "<button class='link-btn' onclick='window.open(""+gLink+"","_blank")'>↗</button>" +
+      "<button class='link-btn' onclick='copyText(&quot;'+gLink+'&quot;)'>Copier</button>" +
+      "<button class='link-btn' onclick='window.open(&quot;'+gLink+'&quot;,&quot;_blank&quot;)'>↗</button>" +
     "</div></div>" +
     "<div class='link-item'><span class='link-lbl'>Galerie</span><span class='link-url'>"+galLink+"</span><div class='link-acts'>" +
-      "<button class='link-btn' onclick='copyText(""+galLink+"")'>Copier</button>" +
-      "<button class='link-btn' onclick='window.open(""+galLink+"","_blank")'>↗</button>" +
+      "<button class='link-btn' onclick='copyText(&quot;'+galLink+'&quot;)'>Copier</button>" +
+      "<button class='link-btn' onclick='window.open(&quot;'+galLink+'&quot;,&quot;_blank&quot;)'>↗</button>" +
     "</div></div>" +
     (e.email ? "<button class='send-btn' onclick='sendInvite()'>✉️ Envoyer les liens par email</button>" : "") +
     "<div style='display:flex;gap:6px;margin-top:.6rem'>" +
@@ -538,12 +546,12 @@ function renderDetail() {
     return "<div class='song-card'>" +
       "<div class='song-head'><div class='song-title'>"+esc(s.title||"Mélodie")+"</div><span class='song-style'>"+esc(s.style||"—")+"</span></div>" +
       "<div class='song-meta'>par "+esc(s.author||"—")+" · "+fmt(s.createdAt)+"</div>" +
-      (s.message?"<div class='song-msg'>""+esc(s.message.substring(0,120))+(s.message.length>120?"…":"")+""</div>":"")+
+      (s.message?"<div class='song-msg'>"+esc(s.message.substring(0,120))+(s.message.length>120?"…":"")+"</div>":"")+
       (s.url?"<audio controls src='"+s.url+"' style='width:100%;margin-bottom:.6rem;accent-color:#3ecf6a'></audio>":"")+
       "<div class='song-footer'>" +
         "<span class='song-voice'>"+(s.voice==="female"?"👩 Voix féminine":"👨 Voix masculine")+"</span>" +
         "<div style='display:flex;gap:5px'>" +
-          (s.url?"<button class='song-dl' onclick='dlSong(""+s.url+"",""+esc(s.author||"evoke")+"")'>"+
+          (s.url?"<button class='song-dl' onclick='dlSong(&quot;'+s.url+'&quot;,&quot;'+esc(s.author||'evoke')+'&quot;)'>"+
             "<svg width='10' height='12' viewBox='0 0 10 12' fill='none'><path d='M5 1v7M1 5.5L5 9.5l4-4M1 11h8' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/></svg> Télécharger</button>":"")+
           "<button class='song-del' onclick='delSong("+ri+")'>✕</button>" +
         "</div>" +
@@ -590,7 +598,7 @@ async function saveEditEvent() {
 // ── DELETE EVENT ──────────────────────────────────────────────────────────
 function confirmDelEv() {
   showDanger("Supprimer cet événement ?",
-    "L'événement ""+esc(currentEv.couple||"")+"" et toutes ses musiques seront définitivement supprimés.",
+    "L'événement '" + esc(currentEv.couple||"") + "' et toutes ses musiques seront définitivement supprimées.",
     "doDelEv()");
 }
 
@@ -612,7 +620,7 @@ async function doDelEv() {
 function delSong(idx) {
   var song = currentEv.songs[idx];
   showDanger("Supprimer cette musique ?",
-    """+esc((song?.title||"cette musique"))+"" sera définitivement supprimée.",
+    "'" + esc((song?.title||"cette musique")) + "' sera définitivement supprimée.",
     "doDelSong("+idx+")");
 }
 
