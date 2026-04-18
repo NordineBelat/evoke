@@ -110,7 +110,7 @@ export default async function handler(req, res) {
 
   // ── Construire l'objet email ──────────────────────────────────────────────
   const emailPayload = {
-    from: 'EVOKE <onboarding@resend.dev>',
+    from: 'EVOKE <noreply@evoke-app.com>',
     to: [to],
     subject: `🎵 EVOKE — Vos mélodies de mariage, ${p1} & ${p2}`,
     html
