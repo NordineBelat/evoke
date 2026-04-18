@@ -7,314 +7,598 @@
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-:root{--bg:#0e0e14;--card:#1a1a26;--card2:#22223a;--text:#f0f0f5;--text2:#9090a8;--text3:#55556e;--green:#3ecf6a;--red:#ff6b6b;--orange:#f59e0b;--border:rgba(255,255,255,0.08);--rmd:16px;--rlg:20px;}
+:root{--bg:#08080f;--card:#111120;--card2:#191928;--card3:#21213a;--text:#ededf5;--text2:#8080a0;--text3:#404060;--green:#3ecf6a;--red:#ff5b5b;--orange:#f59e0b;--blue:#6366f1;--purple:#a855f7;--border:rgba(255,255,255,0.06);--rmd:12px;--rlg:16px;--rxl:20px;}
 body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;}
 
 /* LOGIN */
-#login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:2rem;}
-.login-box{background:var(--card);border-radius:24px;padding:2.5rem;width:100%;max-width:380px;}
-.login-title{font-size:1.3rem;font-weight:800;margin-bottom:.3rem;}
-.login-sub{font-size:.8rem;color:var(--text2);margin-bottom:1.5rem;}
-.fi{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:var(--rmd);padding:.85rem 1rem;font-family:'Plus Jakarta Sans',sans-serif;font-size:.88rem;color:var(--text);outline:none;margin-bottom:.8rem;}
+#login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;}
+.login-box{background:var(--card);border:1px solid var(--border);border-radius:24px;padding:2.5rem;width:340px;}
+.login-logo{font-size:1.4rem;font-weight:800;letter-spacing:-.03em;}
+.login-badge{display:inline-block;background:var(--green);color:#08080f;font-size:.55rem;font-weight:800;padding:.2rem .55rem;border-radius:100px;letter-spacing:.08em;text-transform:uppercase;margin:.4rem 0 1rem;}
+.login-sub{font-size:.78rem;color:var(--text2);margin-bottom:1.5rem;line-height:1.5;}
+.fi{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:var(--rmd);padding:.85rem 1rem;font-family:'Plus Jakarta Sans',sans-serif;font-size:.85rem;color:var(--text);outline:none;margin-bottom:.8rem;transition:border-color .2s;}
+.fi:focus{border-color:rgba(255,255,255,.18);}
 .fi::placeholder{color:var(--text3);}
-.fi:focus{border-color:rgba(255,255,255,.2);}
-.btn{width:100%;padding:.9rem;background:var(--green);border:none;border-radius:var(--rmd);font-family:'Plus Jakarta Sans',sans-serif;font-size:.85rem;font-weight:800;color:#0e0e14;cursor:pointer;}
+.btn-login{width:100%;padding:.9rem;background:var(--green);border:none;border-radius:var(--rmd);font-family:'Plus Jakarta Sans',sans-serif;font-size:.85rem;font-weight:800;color:#08080f;cursor:pointer;transition:opacity .2s;}
+.btn-login:hover{opacity:.85;}
+.login-err{font-size:.7rem;color:var(--red);margin-top:.6rem;text-align:center;min-height:1rem;}
 
-/* MAIN */
-#main-screen{display:none;}
-nav{background:var(--card);border-bottom:1px solid var(--border);padding:0 2rem;height:56px;display:flex;align-items:center;justify-content:space-between;}
-.nav-logo{font-size:1rem;font-weight:800;letter-spacing:-.02em;}
-.nav-badge{background:var(--green);color:#0e0e14;font-size:.6rem;font-weight:800;padding:.2rem .5rem;border-radius:100px;letter-spacing:.05em;text-transform:uppercase;}
-.nav-right{display:flex;align-items:center;gap:1rem;}
-.nav-logout{font-size:.72rem;font-weight:700;color:var(--text2);cursor:pointer;background:none;border:none;}
-.nav-logout:hover{color:var(--text);}
+/* NAV */
+nav{background:var(--card);border-bottom:1px solid var(--border);padding:0 1.5rem;height:52px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200;}
+.nav-left{display:flex;align-items:center;gap:.5rem;}
+.nav-logo{font-size:.95rem;font-weight:800;}
+.nav-badge{background:var(--green);color:#08080f;font-size:.52rem;font-weight:800;padding:.18rem .5rem;border-radius:100px;letter-spacing:.08em;text-transform:uppercase;}
+.breadcrumb{display:flex;align-items:center;gap:.4rem;font-size:.72rem;color:var(--text2);}
+.breadcrumb span{cursor:pointer;transition:color .15s;}
+.breadcrumb span:hover{color:var(--text);}
+.breadcrumb span.active{color:var(--text);font-weight:700;}
+.breadcrumb-sep{color:var(--text3);}
+.nav-right{display:flex;align-items:center;gap:.8rem;}
+.nav-date{font-size:.68rem;color:var(--text2);}
+.btn-sm{padding:.32rem .7rem;border-radius:8px;font-family:'Plus Jakarta Sans',sans-serif;font-size:.65rem;font-weight:700;cursor:pointer;border:1px solid var(--border);background:transparent;color:var(--text2);transition:all .12s;}
+.btn-sm:hover{background:var(--card2);color:var(--text);}
 
-/* CONTENT */
-.content{padding:2rem;max-width:1200px;margin:0 auto;}
+/* LAYOUT */
+.content{padding:1.2rem 1.5rem;max-width:1400px;margin:0 auto;}
 
-/* STATS */
-.stats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-bottom:2rem;}
-.stat-card{background:var(--card);border-radius:var(--rlg);padding:1.2rem;}
-.stat-num{font-size:2rem;font-weight:800;line-height:1;}
-.stat-label{font-size:.65rem;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.08em;margin-top:.3rem;}
-.stat-card.green .stat-num{color:var(--green);}
-.stat-card.orange .stat-num{color:var(--orange);}
-.stat-card.red .stat-num{color:var(--red);}
+/* VIEWS */
+.view{display:none;}
+.view.active{display:block;}
 
-/* USERS TABLE */
-.section-title{font-size:1rem;font-weight:800;margin-bottom:1rem;display:flex;align-items:center;justify-content:space-between;}
-.search-bar{background:var(--card);border:1px solid var(--border);border-radius:var(--rmd);padding:.6rem 1rem;font-family:'Plus Jakarta Sans',sans-serif;font-size:.8rem;color:var(--text);outline:none;width:240px;}
-.search-bar::placeholder{color:var(--text3);}
-.users-table{background:var(--card);border-radius:var(--rlg);overflow:hidden;}
-.table-header{display:grid;grid-template-columns:2fr 1.5fr 1fr 1fr 1fr 1fr 1.5fr;padding:.75rem 1.2rem;border-bottom:1px solid var(--border);font-size:.6rem;font-weight:800;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;}
-.user-row{display:grid;grid-template-columns:2fr 1.5fr 1fr 1fr 1fr 1fr 1.5fr;padding:.9rem 1.2rem;border-bottom:1px solid var(--border);align-items:center;transition:background .15s;}
-.user-row:last-child{border-bottom:none;}
-.user-row:hover{background:var(--card2);}
-.user-name{font-size:.82rem;font-weight:700;}
-.user-email{font-size:.7rem;color:var(--text2);margin-top:1px;}
-.user-company{font-size:.72rem;color:var(--text2);}
-.badge{display:inline-block;padding:.2rem .6rem;border-radius:100px;font-size:.6rem;font-weight:800;text-transform:uppercase;letter-spacing:.05em;}
-.badge.active{background:rgba(62,207,106,.15);color:var(--green);}
-.badge.pending{background:rgba(245,158,11,.15);color:var(--orange);}
-.badge.suspended{background:rgba(255,107,107,.15);color:var(--red);}
-.badge.starter{background:rgba(99,102,241,.15);color:#818cf8;}
-.badge.pro{background:rgba(16,185,129,.15);color:#34d399;}
-.badge.max{background:rgba(245,158,11,.15);color:var(--orange);}
-.badge.none{background:rgba(255,255,255,.05);color:var(--text3);}
-.cell-num{font-size:.82rem;font-weight:700;}
-.action-btns{display:flex;gap:6px;}
-.action-btn{padding:.35rem .7rem;border-radius:8px;font-family:'Plus Jakarta Sans',sans-serif;font-size:.65rem;font-weight:700;cursor:pointer;border:1px solid var(--border);background:transparent;color:var(--text2);transition:all .15s;}
-.action-btn:hover{background:var(--card2);color:var(--text);}
-.action-btn.danger{color:var(--red);border-color:rgba(255,107,107,.3);}
-.action-btn.danger:hover{background:rgba(255,107,107,.1);}
+/* KPI */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;margin-bottom:1.2rem;}
+.kpi{background:var(--card);border:1px solid var(--border);border-radius:var(--rlg);padding:.9rem 1rem;}
+.kpi-num{font-size:1.7rem;font-weight:800;line-height:1;}
+.kpi-label{font-size:.58rem;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.08em;margin-top:.2rem;}
+.kpi.g .kpi-num{color:var(--green);}
+.kpi.o .kpi-num{color:var(--orange);}
+.kpi.r .kpi-num{color:var(--red);}
+.kpi.b .kpi-num{color:var(--blue);}
+.kpi.p .kpi-num{color:var(--purple);}
+
+/* SECTION */
+.sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:.7rem;}
+.sec-title{font-size:.88rem;font-weight:800;}
+.search{background:var(--card);border:1px solid var(--border);border-radius:var(--rmd);padding:.45rem .85rem;font-family:'Plus Jakarta Sans',sans-serif;font-size:.75rem;color:var(--text);outline:none;width:210px;transition:border-color .2s;}
+.search:focus{border-color:rgba(255,255,255,.18);}
+.search::placeholder{color:var(--text3);}
+
+/* TABLE */
+.tbl{background:var(--card);border:1px solid var(--border);border-radius:var(--rxl);overflow:hidden;}
+.t-head{display:grid;padding:.55rem 1.1rem;border-bottom:1px solid var(--border);font-size:.56rem;font-weight:800;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;}
+.t-row{display:grid;padding:.8rem 1.1rem;border-bottom:1px solid var(--border);align-items:center;transition:background .1s;cursor:pointer;}
+.t-row:last-child{border-bottom:none;}
+.t-row:hover{background:var(--card2);}
+/* users columns */
+.t-users .t-head,.t-users .t-row{grid-template-columns:2.2fr 1.8fr .8fr .9fr .9fr .8fr 1.8fr;}
+/* events columns */
+.t-events .t-head,.t-events .t-row{grid-template-columns:2fr 1.2fr 1fr 1fr 1fr 1.6fr;}
+/* songs columns */
+.t-songs .t-head,.t-songs .t-row{grid-template-columns:2fr 1.5fr 1fr 1fr 1.2fr;}
+
+.u-name{font-size:.78rem;font-weight:700;}
+.u-sub{font-size:.62rem;color:var(--text2);margin-top:1px;}
+.u-company{font-size:.62rem;color:var(--blue);margin-top:1px;}
+.cell-sm{font-size:.72rem;color:var(--text2);word-break:break-all;}
+.cell-n{font-size:.78rem;font-weight:700;}
+
+.badge{display:inline-block;padding:.15rem .5rem;border-radius:100px;font-size:.56rem;font-weight:800;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap;}
+.badge.active{background:rgba(62,207,106,.12);color:var(--green);}
+.badge.pending{background:rgba(245,158,11,.12);color:var(--orange);}
+.badge.suspended{background:rgba(255,91,91,.12);color:var(--red);}
+.badge.starter{background:rgba(99,102,241,.12);color:#a5b4fc;}
+.badge.pro{background:rgba(16,185,129,.12);color:#6ee7b7;}
+.badge.max{background:rgba(245,158,11,.12);color:var(--orange);}
+.badge.none,.badge.individual{background:rgba(255,255,255,.04);color:var(--text3);}
+.badge.professional{background:rgba(99,102,241,.1);color:#a5b4fc;}
+
+.acts{display:flex;gap:4px;flex-wrap:wrap;}
+.ab{padding:.28rem .6rem;border-radius:7px;font-family:'Plus Jakarta Sans',sans-serif;font-size:.6rem;font-weight:700;cursor:pointer;border:1px solid var(--border);background:transparent;color:var(--text2);transition:all .12s;white-space:nowrap;}
+.ab:hover{background:var(--card2);color:var(--text);}
+.ab.g{color:var(--green);border-color:rgba(62,207,106,.2);}
+.ab.g:hover{background:rgba(62,207,106,.08);}
+.ab.r{color:var(--red);border-color:rgba(255,91,91,.2);}
+.ab.r:hover{background:rgba(255,91,91,.08);}
+.ab.b{color:#a5b4fc;border-color:rgba(99,102,241,.2);}
+.ab.b:hover{background:rgba(99,102,241,.08);}
+.ab.o{color:var(--orange);border-color:rgba(245,158,11,.2);}
+.ab.o:hover{background:rgba(245,158,11,.08);}
+
+.empty{text-align:center;padding:3rem;color:var(--text3);font-size:.8rem;}
+.loading-msg{text-align:center;padding:2.5rem;color:var(--text2);font-size:.78rem;}
+
+/* USER DETAIL */
+.detail-header{background:var(--card);border:1px solid var(--border);border-radius:var(--rxl);padding:1.3rem 1.5rem;margin-bottom:1rem;display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;flex-wrap:wrap;}
+.detail-name{font-size:1.1rem;font-weight:800;margin-bottom:.2rem;}
+.detail-meta{font-size:.72rem;color:var(--text2);line-height:1.7;}
+.detail-badges{display:flex;gap:5px;flex-wrap:wrap;margin-top:.5rem;}
+.detail-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:1rem;}
+.dstat{background:var(--card);border:1px solid var(--border);border-radius:var(--rlg);padding:.8rem 1rem;text-align:center;}
+.dstat-num{font-size:1.4rem;font-weight:800;}
+.dstat-label{font-size:.58rem;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.07em;margin-top:.15rem;}
+
+/* SONG CARD */
+.song-row{display:grid;grid-template-columns:2fr 1.5fr 1fr 1fr 1.2fr;padding:.7rem 1.1rem;border-bottom:1px solid var(--border);align-items:center;}
+.song-row:last-child{border-bottom:none;}
+.song-title{font-size:.75rem;font-weight:700;}
+.song-msg{font-size:.62rem;color:var(--text2);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:300px;}
 
 /* MODAL */
-.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:500;align-items:center;justify-content:center;padding:1rem;}
-.modal-overlay.active{display:flex;}
-.modal-box{background:var(--card);border-radius:24px;padding:2rem;width:100%;max-width:420px;}
-.modal-title{font-size:1rem;font-weight:800;margin-bottom:.3rem;}
-.modal-sub{font-size:.78rem;color:var(--text2);margin-bottom:1.4rem;}
-.modal-field{margin-bottom:.8rem;}
-.modal-field label{display:block;font-size:.65rem;font-weight:800;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.35rem;}
-.modal-field select,.modal-field input{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:var(--rmd);padding:.75rem 1rem;font-family:'Plus Jakarta Sans',sans-serif;font-size:.85rem;color:var(--text);outline:none;}
-.modal-actions{display:flex;gap:8px;margin-top:1.2rem;}
-.modal-cancel{flex:1;padding:.75rem;background:var(--card2);border:none;border-radius:var(--rmd);font-family:'Plus Jakarta Sans',sans-serif;font-size:.75rem;font-weight:700;color:var(--text2);cursor:pointer;}
-.modal-save{flex:2;padding:.75rem;background:var(--green);border:none;border-radius:var(--rmd);font-family:'Plus Jakarta Sans',sans-serif;font-size:.75rem;font-weight:800;color:#0e0e14;cursor:pointer;}
-.loading{text-align:center;padding:3rem;color:var(--text2);font-size:.85rem;}
-.empty{text-align:center;padding:3rem;color:var(--text3);}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:500;align-items:center;justify-content:center;padding:1rem;}
+.overlay.show{display:flex;}
+.modal{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:1.7rem;width:100%;max-width:400px;}
+.modal-title{font-size:.92rem;font-weight:800;margin-bottom:.25rem;}
+.modal-sub{font-size:.73rem;color:var(--text2);margin-bottom:1.2rem;line-height:1.5;}
+.mf{margin-bottom:.75rem;}
+.mf label{display:block;font-size:.58rem;font-weight:800;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.3rem;}
+.mf select,.mf input{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:var(--rmd);padding:.65rem .85rem;font-family:'Plus Jakarta Sans',sans-serif;font-size:.82rem;color:var(--text);outline:none;}
+.mf select:focus,.mf input:focus{border-color:rgba(255,255,255,.18);}
+.m-acts{display:flex;gap:7px;margin-top:1.1rem;}
+.btn-cancel{flex:1;padding:.65rem;background:var(--card2);border:none;border-radius:var(--rmd);font-family:'Plus Jakarta Sans',sans-serif;font-size:.73rem;font-weight:700;color:var(--text2);cursor:pointer;}
+.btn-save{flex:2;padding:.65rem;background:var(--green);border:none;border-radius:var(--rmd);font-family:'Plus Jakarta Sans',sans-serif;font-size:.73rem;font-weight:800;color:#08080f;cursor:pointer;}
+.btn-del{flex:2;padding:.65rem;background:var(--red);border:none;border-radius:var(--rmd);font-family:'Plus Jakarta Sans',sans-serif;font-size:.73rem;font-weight:800;color:white;cursor:pointer;}
+
+/* TOAST */
+.toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(20px);background:var(--card2);border:1px solid var(--border);color:var(--text);padding:.6rem 1.2rem;border-radius:100px;font-size:.75rem;font-weight:700;z-index:999;opacity:0;transition:all .25s;pointer-events:none;white-space:nowrap;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 </style>
 </head>
 <body>
+<div class="toast" id="toast"></div>
 
 <!-- LOGIN -->
 <div id="login-screen">
   <div class="login-box">
-    <div class="login-title">⚡ Super Admin</div>
-    <div class="login-sub">Accès réservé — EVOKE</div>
-    <input class="fi" type="password" id="admin-token" placeholder="Token d'accès">
-    <button class="btn" onclick="adminLogin()">Accéder →</button>
-    <div style="font-size:.65rem;color:var(--text3);margin-top:.8rem;text-align:center" id="login-err"></div>
+    <div class="login-logo">EVOKE</div>
+    <div class="login-badge">Super Admin</div>
+    <div class="login-sub">Espace de gestion — accès strictement restreint.</div>
+    <input class="fi" type="password" id="sa-token" placeholder="Token d'accès secret">
+    <button class="btn-login" onclick="saLogin()">Accéder →</button>
+    <div class="login-err" id="login-err"></div>
   </div>
 </div>
 
 <!-- MAIN -->
-<div id="main-screen">
+<div id="main-screen" style="display:none">
   <nav>
-    <div style="display:flex;align-items:center;gap:.6rem">
-      <div class="nav-logo">EVOKE</div>
-      <div class="nav-badge">Super Admin</div>
+    <div class="nav-left">
+      <span class="nav-logo">EVOKE</span>
+      <span class="nav-badge">Super Admin</span>
+      <span style="color:var(--text3);margin:0 .3rem">·</span>
+      <div class="breadcrumb" id="breadcrumb">
+        <span class="active" onclick="showView('dashboard')">Dashboard</span>
+      </div>
     </div>
     <div class="nav-right">
-      <span style="font-size:.72rem;color:var(--text2)" id="nav-date"></span>
-      <button class="nav-logout" onclick="logout()">Déconnexion</button>
+      <span class="nav-date" id="nav-date"></span>
+      <button class="btn-sm" onclick="refreshAll()">↻ Actualiser</button>
+      <button class="btn-sm" onclick="saLogout()">Déconnexion</button>
     </div>
   </nav>
 
   <div class="content">
-    <!-- KPIs -->
-    <div class="stats-grid" id="stats-grid">
-      <div class="loading" style="grid-column:1/-1">Chargement…</div>
+
+    <!-- VIEW: DASHBOARD -->
+    <div class="view active" id="view-dashboard">
+      <div class="kpi-grid" id="kpi-grid"><div class="loading-msg" style="grid-column:1/-1">Chargement…</div></div>
+      <div class="sec-head">
+        <div class="sec-title">Tous les utilisateurs</div>
+        <input class="search" id="search-users" placeholder="Rechercher…" oninput="filterUsers()">
+      </div>
+      <div class="tbl t-users" id="users-tbl">
+        <div class="loading-msg">Chargement des utilisateurs…</div>
+      </div>
     </div>
 
-    <!-- Liste utilisateurs -->
-    <div class="section-title">
-      <span>Utilisateurs</span>
-      <input class="search-bar" id="search" placeholder="Rechercher…" oninput="filterUsers()">
+    <!-- VIEW: USER DETAIL -->
+    <div class="view" id="view-user">
+      <div class="detail-header" id="detail-header"></div>
+      <div class="detail-stats" id="detail-stats"></div>
+      <div class="sec-head">
+        <div class="sec-title">Événements</div>
+      </div>
+      <div class="tbl t-events" id="events-tbl"></div>
     </div>
-    <div class="users-table" id="users-table">
-      <div class="loading">Chargement des utilisateurs…</div>
+
+    <!-- VIEW: EVENT DETAIL -->
+    <div class="view" id="view-event">
+      <div class="detail-header" id="event-header"></div>
+      <div class="sec-head" style="margin-top:.8rem">
+        <div class="sec-title">Musiques générées</div>
+      </div>
+      <div class="tbl t-songs" id="songs-tbl"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Modal edit user -->
+<div class="overlay" id="modal-edit">
+  <div class="modal">
+    <div class="modal-title">Modifier l'utilisateur</div>
+    <div class="modal-sub" id="m-user-info"></div>
+    <div class="mf"><label>Statut</label>
+      <select id="m-status">
+        <option value="active">✅ Actif</option>
+        <option value="pending">⏳ En attente email</option>
+        <option value="suspended">🚫 Suspendu</option>
+      </select>
+    </div>
+    <div class="mf"><label>Plan d'abonnement</label>
+      <select id="m-plan">
+        <option value="none">— Aucun plan</option>
+        <option value="starter">Starter — 50 crédits/mois</option>
+        <option value="pro">Pro — 150 crédits/mois</option>
+        <option value="max">Max — 400 crédits/mois</option>
+      </select>
+    </div>
+    <div class="mf"><label>Crédits disponibles (solde actuel)</label>
+      <input type="number" id="m-credits" min="0" placeholder="Ex: 50">
+    </div>
+    <div class="m-acts">
+      <button class="btn-cancel" onclick="closeModals()">Annuler</button>
+      <button class="btn-save" onclick="saveUser()">✓ Enregistrer</button>
     </div>
   </div>
 </div>
 
-<!-- MODAL ÉDITION -->
-<div class="modal-overlay" id="modal-edit">
-  <div class="modal-box">
-    <div class="modal-title">Modifier l'utilisateur</div>
-    <div class="modal-sub" id="modal-user-name"></div>
-    <div class="modal-field">
-      <label>Statut</label>
-      <select id="edit-status">
-        <option value="active">Actif</option>
-        <option value="pending">En attente</option>
-        <option value="suspended">Suspendu</option>
-      </select>
-    </div>
-    <div class="modal-field">
-      <label>Plan</label>
-      <select id="edit-plan">
-        <option value="none">Aucun</option>
-        <option value="starter">Starter</option>
-        <option value="pro">Pro</option>
-        <option value="max">Max</option>
-      </select>
-    </div>
-    <div class="modal-field">
-      <label>Crédits alloués</label>
-      <input type="number" id="edit-credits" min="0" placeholder="Ex: 50">
-    </div>
-    <div class="modal-actions">
-      <button class="modal-cancel" onclick="closeModal()">Annuler</button>
-      <button class="modal-save" onclick="saveUser()">Enregistrer</button>
+<!-- Modal delete user -->
+<div class="overlay" id="modal-delete">
+  <div class="modal">
+    <div class="modal-title">Supprimer ce compte ?</div>
+    <div class="modal-sub" id="m-del-info"></div>
+    <div class="m-acts">
+      <button class="btn-cancel" onclick="closeModals()">Annuler</button>
+      <button class="btn-del" onclick="confirmDelete()">🗑 Supprimer définitivement</button>
     </div>
   </div>
 </div>
 
 <script>
-let ADMIN_TOKEN = sessionStorage.getItem('sa_token') || '';
-let allUsers = [];
-let editingUserId = null;
+let TOKEN = sessionStorage.getItem('sa_tok') || '';
+let allUsers = [], currentUserId = null, currentUser = null, currentEvents = [], currentEvent = null;
+let editId = null, deleteId = null;
 
-document.getElementById('nav-date').textContent = new Date().toLocaleDateString('fr-FR', {weekday:'long',day:'numeric',month:'long',year:'numeric'});
-document.getElementById('admin-token').addEventListener('keydown', e => { if(e.key==='Enter') adminLogin(); });
+document.getElementById('nav-date').textContent = new Date().toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+document.getElementById('sa-token').addEventListener('keydown', e => { if(e.key==='Enter') saLogin(); });
+if(TOKEN) initSA();
 
-if (ADMIN_TOKEN) initAdmin();
+// ── AUTH ──────────────────────────────────────────────────────────────────
+async function saLogin() {
+  const t = document.getElementById('sa-token').value.trim();
+  if(!t) return;
+  const r = await fetch('/api/superadmin?action=stats', { headers: {'x-admin-token': t} });
+  if(r.ok){ TOKEN=t; sessionStorage.setItem('sa_tok',t); initSA(); }
+  else { document.getElementById('login-err').textContent='Token incorrect — accès refusé'; }
+}
+function saLogout(){ sessionStorage.removeItem('sa_tok'); location.reload(); }
 
-async function adminLogin() {
-  const token = document.getElementById('admin-token').value.trim();
-  if (!token) return;
-  // Tester le token
-  const r = await fetch('/api/superadmin?action=stats', {
-    headers: { 'x-admin-token': token }
-  });
-  if (r.ok) {
-    ADMIN_TOKEN = token;
-    sessionStorage.setItem('sa_token', token);
-    initAdmin();
+async function initSA(){
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('main-screen').style.display='block';
+  await Promise.all([loadKPIs(), loadUsers()]);
+}
+
+async function refreshAll(){
+  if(document.getElementById('view-user').classList.contains('active') && currentUserId) {
+    loadUserDetail(currentUserId);
   } else {
-    document.getElementById('login-err').textContent = 'Token invalide';
+    await Promise.all([loadKPIs(), loadUsers()]);
+  }
+  toast('↻ Actualisé');
+}
+
+// ── NAVIGATION ────────────────────────────────────────────────────────────
+function showView(name){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('view-'+name).classList.add('active');
+  updateBreadcrumb(name);
+}
+
+function updateBreadcrumb(name){
+  const bc = document.getElementById('breadcrumb');
+  if(name==='dashboard'){
+    bc.innerHTML='<span class="active" onclick="showView(\'dashboard\')">Dashboard</span>';
+  } else if(name==='user'){
+    bc.innerHTML=`<span onclick="showView('dashboard')">Dashboard</span><span class="breadcrumb-sep">›</span><span class="active">${esc(currentUser?.first_name||'')} ${esc(currentUser?.last_name||'')}</span>`;
+  } else if(name==='event'){
+    bc.innerHTML=`<span onclick="showView('dashboard')">Dashboard</span><span class="breadcrumb-sep">›</span><span onclick="loadUserDetail('${currentUserId}')">${esc(currentUser?.first_name||'')} ${esc(currentUser?.last_name||'')}</span><span class="breadcrumb-sep">›</span><span class="active">${esc(currentEvent?.couple||'Événement')}</span>`;
   }
 }
 
-function logout() {
-  sessionStorage.removeItem('sa_token');
-  location.reload();
-}
-
-async function initAdmin() {
-  document.getElementById('login-screen').style.display = 'none';
-  document.getElementById('main-screen').style.display = 'block';
-  loadStats();
-  loadUsers();
-}
-
-async function loadStats() {
-  const r = await fetch('/api/superadmin?action=stats', { headers: { 'x-admin-token': ADMIN_TOKEN } });
-  if (!r.ok) return;
+// ── KPIs ──────────────────────────────────────────────────────────────────
+async function loadKPIs(){
+  const r = await fetch('/api/superadmin?action=stats', { headers: {'x-admin-token':TOKEN} });
+  if(!r.ok) return;
   const s = await r.json();
-  document.getElementById('stats-grid').innerHTML = `
-    <div class="stat-card green"><div class="stat-num">${s.totalUsers}</div><div class="stat-label">Utilisateurs total</div></div>
-    <div class="stat-card green"><div class="stat-num">${s.activeUsers}</div><div class="stat-label">Comptes actifs</div></div>
-    <div class="stat-card orange"><div class="stat-num">${s.pendingUsers}</div><div class="stat-label">En attente</div></div>
-    <div class="stat-card red"><div class="stat-num">${s.suspendedUsers}</div><div class="stat-label">Suspendus</div></div>
-    <div class="stat-card"><div class="stat-num">${s.totalEvents}</div><div class="stat-label">Événements</div></div>
-    <div class="stat-card"><div class="stat-num">${s.totalSongs}</div><div class="stat-label">Musiques générées</div></div>
-    <div class="stat-card"><div class="stat-num">${s.totalCreditsUsed}</div><div class="stat-label">Crédits consommés</div></div>
-    <div class="stat-card"><div class="stat-num">${s.planStarter}</div><div class="stat-label">Plan Starter</div></div>
-    <div class="stat-card"><div class="stat-num">${s.planPro}</div><div class="stat-label">Plan Pro</div></div>
-    <div class="stat-card"><div class="stat-num">${s.planMax}</div><div class="stat-label">Plan Max</div></div>
+  document.getElementById('kpi-grid').innerHTML = `
+    <div class="kpi g"><div class="kpi-num">${s.totalUsers}</div><div class="kpi-label">Utilisateurs</div></div>
+    <div class="kpi g"><div class="kpi-num">${s.activeUsers}</div><div class="kpi-label">Actifs</div></div>
+    <div class="kpi o"><div class="kpi-num">${s.pendingUsers}</div><div class="kpi-label">En attente</div></div>
+    <div class="kpi r"><div class="kpi-num">${s.suspendedUsers}</div><div class="kpi-label">Suspendus</div></div>
+    <div class="kpi"><div class="kpi-num">${s.totalEvents}</div><div class="kpi-label">Événements</div></div>
+    <div class="kpi"><div class="kpi-num">${s.totalSongs}</div><div class="kpi-label">Musiques</div></div>
+    <div class="kpi b"><div class="kpi-num">${s.planStarter}</div><div class="kpi-label">Starter</div></div>
+    <div class="kpi b"><div class="kpi-num">${s.planPro}</div><div class="kpi-label">Pro</div></div>
+    <div class="kpi p"><div class="kpi-num">${s.planMax}</div><div class="kpi-label">Max</div></div>
+    <div class="kpi"><div class="kpi-num">${s.totalCreditsUsed}</div><div class="kpi-label">Crédits utilisés</div></div>
   `;
 }
 
-async function loadUsers() {
-  const r = await fetch('/api/superadmin?action=users', { headers: { 'x-admin-token': ADMIN_TOKEN } });
-  if (!r.ok) return;
+// ── USERS LIST ────────────────────────────────────────────────────────────
+async function loadUsers(){
+  document.getElementById('users-tbl').innerHTML='<div class="loading-msg">Chargement…</div>';
+  const r = await fetch('/api/superadmin?action=users', { headers: {'x-admin-token':TOKEN} });
+  if(!r.ok){ document.getElementById('users-tbl').innerHTML='<div class="empty">Erreur de chargement</div>'; return; }
   allUsers = await r.json();
   renderUsers(allUsers);
 }
 
-function renderUsers(users) {
-  if (!users.length) {
-    document.getElementById('users-table').innerHTML = '<div class="empty">Aucun utilisateur</div>';
-    return;
-  }
-  document.getElementById('users-table').innerHTML = `
-    <div class="table-header">
+function renderUsers(users){
+  if(!users.length){ document.getElementById('users-tbl').innerHTML='<div class="empty">Aucun utilisateur</div>'; return; }
+  document.getElementById('users-tbl').innerHTML = `
+    <div class="t-head">
       <div>Utilisateur</div><div>Email</div><div>Type</div>
       <div>Statut</div><div>Plan</div><div>Crédits</div><div>Actions</div>
     </div>
-    ${users.map(u => `
-      <div class="user-row">
+    ${users.map(u=>`
+      <div class="t-row" onclick="loadUserDetail('${u.id}')">
         <div>
-          <div class="user-name">${esc(u.firstName)} ${esc(u.lastName)}</div>
-          <div class="user-email">${u.eventsCount} événement${u.eventsCount>1?'s':''} · ${u.songsCount} musique${u.songsCount>1?'s':''}</div>
-          ${u.company ? `<div class="user-company">${esc(u.company)}</div>` : ''}
+          <div class="u-name">${esc(u.firstName)} ${esc(u.lastName)}</div>
+          <div class="u-sub">${u.eventsCount} événement${u.eventsCount!==1?'s':''} · ${u.songsCount} musique${u.songsCount!==1?'s':''}</div>
+          ${u.company?`<div class="u-company">${esc(u.company)}</div>`:''}
         </div>
-        <div style="font-size:.72rem;color:var(--text2);word-break:break-all">${esc(u.email)}</div>
-        <div><span class="badge ${u.accountType==='professional'?'pro':'none'}">${u.accountType==='professional'?'Pro':'Particulier'}</span></div>
+        <div class="cell-sm">${esc(u.email)}</div>
+        <div><span class="badge ${u.accountType}">${u.accountType==='professional'?'Pro':'Perso'}</span></div>
         <div><span class="badge ${u.status}">${u.status==='active'?'Actif':u.status==='pending'?'Attente':'Suspendu'}</span></div>
         <div><span class="badge ${u.plan||'none'}">${u.plan||'—'}</span></div>
-        <div class="cell-num">${u.credits-u.creditsUsed} / ${u.credits}</div>
-        <div class="action-btns">
-          <button class="action-btn" onclick="openEdit('${u.id}')">✏️ Modifier</button>
-          <button class="action-btn danger" onclick="suspendUser('${u.id}','${u.status}')">${u.status==='suspended'?'Réactiver':'Suspendre'}</button>
+        <div class="cell-n">${(u.credits||0)-(u.creditsUsed||0)}<span style="color:var(--text3);font-size:.6rem"> / ${u.credits||0}</span></div>
+        <div class="acts" onclick="event.stopPropagation()">
+          <button class="ab g" onclick="openEdit('${u.id}')">✏️ Modifier</button>
+          <button class="ab b" onclick="impersonate('${u.id}')">👁 Voir</button>
+          <button class="ab ${u.status==='suspended'?'g':'o'}" onclick="toggleSuspend('${u.id}','${u.status}')">${u.status==='suspended'?'Réactiver':'Suspendre'}</button>
+          <button class="ab r" onclick="openDelete('${u.id}','${esc(u.firstName)} ${esc(u.lastName)}')">🗑</button>
         </div>
       </div>
     `).join('')}
   `;
 }
 
-function filterUsers() {
-  const q = document.getElementById('search').value.toLowerCase();
-  if (!q) { renderUsers(allUsers); return; }
-  renderUsers(allUsers.filter(u =>
-    u.email.toLowerCase().includes(q) ||
-    u.firstName.toLowerCase().includes(q) ||
-    u.lastName.toLowerCase().includes(q) ||
+function filterUsers(){
+  const q = document.getElementById('search-users').value.toLowerCase();
+  if(!q){ renderUsers(allUsers); return; }
+  renderUsers(allUsers.filter(u=>
+    u.email.toLowerCase().includes(q)||
+    (u.firstName||'').toLowerCase().includes(q)||
+    (u.lastName||'').toLowerCase().includes(q)||
     (u.company||'').toLowerCase().includes(q)
   ));
 }
 
-function openEdit(userId) {
-  const u = allUsers.find(u => u.id === userId);
-  if (!u) return;
-  editingUserId = userId;
-  document.getElementById('modal-user-name').textContent = u.firstName + ' ' + u.lastName + ' — ' + u.email;
-  document.getElementById('edit-status').value = u.status;
-  document.getElementById('edit-plan').value = u.plan || 'none';
-  document.getElementById('edit-credits').value = u.credits;
-  document.getElementById('modal-edit').classList.add('active');
+// ── USER DETAIL ───────────────────────────────────────────────────────────
+async function loadUserDetail(userId){
+  currentUserId = userId;
+  showView('user');
+  document.getElementById('detail-header').innerHTML='<div class="loading-msg">Chargement…</div>';
+  document.getElementById('events-tbl').innerHTML='<div class="loading-msg">Chargement…</div>';
+
+  const r = await fetch(`/api/superadmin?action=user-detail&userId=${userId}`, { headers: {'x-admin-token':TOKEN} });
+  if(!r.ok){ document.getElementById('detail-header').innerHTML='<div class="empty">Erreur</div>'; return; }
+  const data = await r.json();
+  currentUser = data.user;
+  currentEvents = data.events || [];
+
+  const u = data.user;
+  const totalSongs = currentEvents.reduce((acc,e)=>acc+(e.songs?.length||0),0);
+  const creditsLeft = (u.credits||0)-(u.credits_used||0);
+
+  document.getElementById('detail-header').innerHTML=`
+    <div>
+      <div class="detail-name">${esc(u.first_name)} ${esc(u.last_name)}</div>
+      <div class="detail-meta">
+        ${esc(u.email)}<br>
+        ${u.phone?'📞 '+esc(u.phone)+'<br>':''}
+        ${u.company?'🏢 '+esc(u.company)+(u.siret?' — SIRET: '+esc(u.siret):'')+'<br>':''}
+        Inscrit le ${fmt(u.created_at)}${u.last_login?' · Dernière connexion: '+fmt(u.last_login):''}
+      </div>
+      <div class="detail-badges">
+        <span class="badge ${u.status}">${u.status==='active'?'Actif':u.status==='pending'?'En attente':'Suspendu'}</span>
+        <span class="badge ${u.plan||'none'}">${u.plan||'Sans plan'}</span>
+        <span class="badge ${u.account_type}">${u.account_type==='professional'?'Professionnel':'Particulier'}</span>
+      </div>
+    </div>
+    <div class="acts">
+      <button class="ab g" onclick="openEdit('${u.id}')">✏️ Modifier</button>
+      <button class="ab b" onclick="impersonate('${u.id}')">👁 Voir son espace</button>
+      <button class="ab ${u.status==='suspended'?'g':'o'}" onclick="toggleSuspend('${u.id}','${u.status}')">${u.status==='suspended'?'Réactiver':'Suspendre'}</button>
+      <button class="ab r" onclick="openDelete('${u.id}','${esc(u.first_name)} ${esc(u.last_name)}')">🗑 Supprimer</button>
+    </div>
+  `;
+
+  document.getElementById('detail-stats').innerHTML=`
+    <div class="dstat"><div class="dstat-num" style="color:var(--green)">${creditsLeft}</div><div class="dstat-label">Crédits restants</div></div>
+    <div class="dstat"><div class="dstat-num">${u.credits||0}</div><div class="dstat-label">Crédits alloués</div></div>
+    <div class="dstat"><div class="dstat-num">${currentEvents.length}</div><div class="dstat-label">Événements</div></div>
+    <div class="dstat"><div class="dstat-num">${totalSongs}</div><div class="dstat-label">Musiques</div></div>
+  `;
+
+  if(!currentEvents.length){
+    document.getElementById('events-tbl').innerHTML='<div class="empty">Aucun événement</div>';
+    return;
+  }
+  document.getElementById('events-tbl').innerHTML=`
+    <div class="t-head">
+      <div>Couple</div><div>Date</div><div>Crédits</div><div>Musiques</div><div>Créé le</div><div>Actions</div>
+    </div>
+    ${currentEvents.map(e=>`
+      <div class="t-row" onclick="loadEventDetail('${e.id}')">
+        <div class="u-name">${esc(e.couple||'—')}</div>
+        <div class="cell-sm">${e.date?fmtDate(e.date):'—'}</div>
+        <div class="cell-n">${(e.credits||0)-(e.usedCredits||0)} / ${e.credits||0}</div>
+        <div class="cell-n">${(e.songs||[]).length}</div>
+        <div class="cell-sm">${fmt(e.createdAt)}</div>
+        <div class="acts" onclick="event.stopPropagation()">
+          <button class="ab g" onclick="loadEventDetail('${e.id}')">Voir les musiques →</button>
+        </div>
+      </div>
+    `).join('')}
+  `;
 }
 
-function closeModal() {
-  document.getElementById('modal-edit').classList.remove('active');
-  editingUserId = null;
+// ── EVENT DETAIL ──────────────────────────────────────────────────────────
+function loadEventDetail(eventId){
+  const ev = currentEvents.find(e=>e.id===eventId);
+  if(!ev) return;
+  currentEvent = ev;
+  showView('event');
+
+  const songs = ev.songs || [];
+  document.getElementById('event-header').innerHTML=`
+    <div>
+      <div class="detail-name">${esc(ev.couple||'—')}</div>
+      <div class="detail-meta">
+        ${ev.date?'📅 '+fmtDate(ev.date)+'<br>':''}
+        ${songs.length} musique${songs.length!==1?'s':''} générée${songs.length!==1?'s':''}<br>
+        Crédits : ${(ev.credits||0)-(ev.usedCredits||0)} restants / ${ev.credits||0} alloués
+      </div>
+    </div>
+    <div class="acts">
+      <button class="ab" onclick="loadUserDetail('${currentUserId}')">← Retour utilisateur</button>
+    </div>
+  `;
+
+  if(!songs.length){
+    document.getElementById('songs-tbl').innerHTML='<div class="empty">Aucune musique générée</div>';
+    return;
+  }
+  document.getElementById('songs-tbl').innerHTML=`
+    <div class="t-head">
+      <div>Titre</div><div>Message</div><div>Style</div><div>Voix</div><div>Créée le</div>
+    </div>
+    ${songs.map(s=>`
+      <div class="song-row">
+        <div>
+          <div class="song-title">${esc(s.title||'—')}</div>
+          <div class="song-msg">${esc(s.author||'')}</div>
+        </div>
+        <div class="song-msg">${esc((s.message||'').substring(0,60))}${(s.message||'').length>60?'…':''}</div>
+        <div><span class="badge none">${esc(s.style||'—')}</span></div>
+        <div class="cell-sm">${s.voice==='female'?'👩 Féminine':'👨 Masculine'}</div>
+        <div class="cell-sm">${fmt(s.createdAt)}</div>
+      </div>
+    `).join('')}
+  `;
 }
 
-async function saveUser() {
-  if (!editingUserId) return;
-  const status = document.getElementById('edit-status').value;
-  const plan = document.getElementById('edit-plan').value;
-  const credits = parseInt(document.getElementById('edit-credits').value) || 0;
+// ── ACTIONS ───────────────────────────────────────────────────────────────
+function openEdit(userId){
+  const u = allUsers.find(x=>x.id===userId) || (currentUser?.id===userId?{
+    id:currentUser.id,email:currentUser.email,
+    firstName:currentUser.first_name,lastName:currentUser.last_name,
+    status:currentUser.status,plan:currentUser.plan,credits:currentUser.credits
+  }:null);
+  if(!u) return;
+  editId = userId;
+  document.getElementById('m-user-info').textContent=(u.firstName||u.first_name)+' '+(u.lastName||u.last_name)+' — '+u.email;
+  document.getElementById('m-status').value = u.status||'active';
+  document.getElementById('m-plan').value = u.plan||'none';
+  document.getElementById('m-credits').value = u.credits||0;
+  document.getElementById('modal-edit').classList.add('show');
+}
 
-  const r = await fetch('/api/superadmin?action=user', {
-    method: 'PATCH',
-    headers: { 'x-admin-token': ADMIN_TOKEN, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ userId: editingUserId, status, plan, credits })
+function openDelete(userId, name){
+  deleteId = userId;
+  document.getElementById('m-del-info').textContent='Supprimer le compte de '+name+' ? Tous ses événements et musiques seront supprimés. Irréversible.';
+  document.getElementById('modal-delete').classList.add('show');
+}
+
+function closeModals(){
+  document.getElementById('modal-edit').classList.remove('show');
+  document.getElementById('modal-delete').classList.remove('show');
+  editId=null; deleteId=null;
+}
+
+async function saveUser(){
+  if(!editId) return;
+  const r = await fetch('/api/superadmin?action=user',{
+    method:'PATCH',
+    headers:{'x-admin-token':TOKEN,'Content-Type':'application/json'},
+    body:JSON.stringify({
+      userId:editId,
+      status:document.getElementById('m-status').value,
+      plan:document.getElementById('m-plan').value,
+      credits:parseInt(document.getElementById('m-credits').value)||0
+    })
   });
+  if(r.ok){
+    closeModals();
+    toast('✅ Utilisateur mis à jour');
+    await Promise.all([loadKPIs(), loadUsers()]);
+    if(currentUserId===editId) loadUserDetail(editId);
+  } else { toast('❌ Erreur lors de la sauvegarde'); }
+}
 
-  if (r.ok) {
-    closeModal();
-    loadStats();
-    loadUsers();
+async function toggleSuspend(userId, currentStatus){
+  const newStatus = currentStatus==='suspended'?'active':'suspended';
+  const r = await fetch('/api/superadmin?action=user',{
+    method:'PATCH',
+    headers:{'x-admin-token':TOKEN,'Content-Type':'application/json'},
+    body:JSON.stringify({userId,status:newStatus})
+  });
+  if(r.ok){
+    toast(newStatus==='suspended'?'🚫 Compte suspendu':'✅ Compte réactivé');
+    await Promise.all([loadKPIs(),loadUsers()]);
+    if(currentUserId===userId) loadUserDetail(userId);
   }
 }
 
-async function suspendUser(userId, currentStatus) {
-  const newStatus = currentStatus === 'suspended' ? 'active' : 'suspended';
-  const label = newStatus === 'suspended' ? 'suspendre' : 'réactiver';
-  if (!confirm(`Voulez-vous vraiment ${label} cet utilisateur ?`)) return;
-
-  await fetch('/api/superadmin?action=user', {
-    method: 'PATCH',
-    headers: { 'x-admin-token': ADMIN_TOKEN, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ userId, status: newStatus })
+async function confirmDelete(){
+  if(!deleteId) return;
+  const r = await fetch('/api/superadmin?action=user',{
+    method:'DELETE',
+    headers:{'x-admin-token':TOKEN,'Content-Type':'application/json'},
+    body:JSON.stringify({userId:deleteId})
   });
-  loadStats();
-  loadUsers();
+  if(r.ok){
+    closeModals();
+    toast('🗑 Compte supprimé');
+    showView('dashboard');
+    await Promise.all([loadKPIs(),loadUsers()]);
+  } else { toast('❌ Erreur lors de la suppression'); }
 }
 
-function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+async function impersonate(userId){
+  toast('🔄 Génération du lien…');
+  const r = await fetch(`/api/superadmin?action=impersonate&userId=${userId}`,{
+    headers:{'x-admin-token':TOKEN}
+  });
+  if(r.ok){
+    const d = await r.json();
+    if(d.link && d.link.startsWith('http')){
+      window.open(d.link,'_blank');
+    } else {
+      toast('⚠️ Lien indisponible — utilisez le dashboard Supabase Auth');
+    }
+  } else {
+    toast('⚠️ Impossible de générer le lien pour le moment');
+  }
+}
+
+// ── UTILS ─────────────────────────────────────────────────────────────────
+function fmt(iso){
+  try{ return new Date(iso).toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}); }
+  catch{ return '—'; }
+}
+function fmtDate(d){
+  try{ return new Date(d+'T00:00:00').toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'}); }
+  catch{ return d||'—'; }
+}
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2800);
+}
 </script>
 </body>
 </html>

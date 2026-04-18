@@ -3,7 +3,7 @@ const SB = () => ({ url: process.env.SUPABASE_URL, key: process.env.SUPABASE_SER
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const { email, password, firstName, lastName, accountType, company, siret, phone } = req.body || {};
+  const { email, password, firstName, lastName, accountType, company, siret, phone, address, zip, city } = req.body || {};
 
   if (!email || !password || !firstName || !lastName) {
     return res.status(400).json({ error: 'Champs obligatoires manquants' });
@@ -53,6 +53,9 @@ export default async function handler(req, res) {
         company: company || null,
         siret: siret || null,
         phone: phone || null,
+        address: address || null,
+        zip: zip || null,
+        city: city || null,
         plan: 'none',
         credits: 0,
         credits_used: 0,

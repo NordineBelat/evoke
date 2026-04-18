@@ -5,69 +5,147 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>EVOKE — Créer un compte</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.21/css/intlTelInput.min.css">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-:root{--bg:#f2f2f7;--white:#fff;--dark:#111118;--text:#111118;--text2:#6b6b80;--text3:#aeaec0;--green:#b8f0c8;--green2:#3ecf6a;--red:#ff6b6b;--border:rgba(0,0,0,0.07);--sh:0 4px 24px rgba(0,0,0,0.07);--rmd:24px;--rlg:32px;--rxl:40px;--rp:100px;}
+:root{--bg:#f2f2f7;--white:#fff;--dark:#111118;--text:#111118;--text2:#6b6b80;--text3:#aeaec0;--green:#3ecf6a;--green-light:#b8f0c8;--red:#ff6b6b;--border:rgba(0,0,0,0.08);--sh:0 4px 24px rgba(0,0,0,0.06);--rmd:16px;--rlg:20px;--rxl:28px;--rp:100px;}
 html,body{min-height:100vh;font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;}
-body{display:flex;flex-direction:column;align-items:center;padding:2rem 1rem 4rem;}
+body{display:flex;flex-direction:column;align-items:center;padding:2rem 1rem 5rem;}
+
+/* LOGO */
 .logo{margin-bottom:2rem;text-align:center;}
 .logo-text{font-size:1.8rem;font-weight:800;color:var(--dark);letter-spacing:-.04em;}
-.logo-sub{font-size:.7rem;font-weight:600;color:var(--text3);letter-spacing:.12em;text-transform:uppercase;margin-top:2px;}
-.card{background:var(--white);border-radius:var(--rxl);padding:2rem;width:100%;max-width:480px;box-shadow:var(--sh);}
-.card-title{font-size:1.2rem;font-weight:800;color:var(--dark);margin-bottom:.3rem;}
-.card-sub{font-size:.8rem;color:var(--text2);margin-bottom:1.6rem;}
-.section-label{font-size:.65rem;font-weight:800;color:var(--text3);letter-spacing:.12em;text-transform:uppercase;margin:1.2rem 0 .8rem;padding-top:.8rem;border-top:1px solid var(--border);}
-.section-label:first-of-type{border-top:none;padding-top:0;margin-top:0;}
+.logo-sub{font-size:.65rem;font-weight:700;color:var(--text3);letter-spacing:.14em;text-transform:uppercase;margin-top:3px;}
+
+/* CARD */
+.card{background:var(--white);border-radius:var(--rxl);padding:2rem;width:100%;max-width:500px;box-shadow:var(--sh);}
+.card-title{font-size:1.15rem;font-weight:800;color:var(--dark);margin-bottom:.25rem;}
+.card-sub{font-size:.78rem;color:var(--text2);margin-bottom:1.8rem;line-height:1.5;}
+
+/* SECTION */
+.sec{font-size:.6rem;font-weight:800;color:var(--text3);letter-spacing:.14em;text-transform:uppercase;margin:1.4rem 0 .8rem;padding-top:1.2rem;border-top:1px solid var(--border);display:flex;align-items:center;gap:.5rem;}
+.sec:first-of-type{border-top:none;padding-top:0;margin-top:0;}
+.sec-icon{width:20px;height:20px;background:var(--bg);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:.7rem;}
+
+/* TYPE TOGGLE */
+.type-wrap{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:1.2rem;}
+.type-btn{padding:.9rem;background:var(--bg);border:2px solid transparent;border-radius:var(--rmd);font-family:'Plus Jakarta Sans',sans-serif;font-size:.8rem;font-weight:700;color:var(--text2);cursor:pointer;transition:all .18s;text-align:center;display:flex;flex-direction:column;align-items:center;gap:.3rem;}
+.type-btn .ti{font-size:1.3rem;}
+.type-btn.active{background:var(--dark);color:white;border-color:var(--dark);}
+
+/* GRID */
 .f2{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;}
-.field{margin-bottom:.8rem;}
-.field label{display:block;font-size:.68rem;font-weight:800;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.4rem;}
-.field input,.field select{width:100%;background:var(--bg);border:none;border-radius:var(--rmd);padding:.85rem 1.1rem;font-family:'Plus Jakarta Sans',sans-serif;font-size:.88rem;color:var(--text);outline:none;transition:box-shadow .2s;}
-.field input:focus,.field select:focus{box-shadow:0 0 0 2.5px rgba(17,17,24,.15);}
+@media(max-width:480px){.f2{grid-template-columns:1fr;}}
+
+/* FIELD */
+.field{margin-bottom:.8rem;position:relative;}
+.field label{display:block;font-size:.62rem;font-weight:800;color:var(--text2);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.35rem;}
+.field input,.field select{width:100%;background:var(--bg);border:1.5px solid transparent;border-radius:var(--rmd);padding:.82rem 1rem;font-family:'Plus Jakarta Sans',sans-serif;font-size:.88rem;color:var(--text);outline:none;transition:all .2s;}
+.field input:focus,.field select:focus{border-color:rgba(17,17,24,.2);background:var(--white);}
+.field input.valid{border-color:rgba(62,207,106,.5);background:rgba(62,207,106,.03);}
+.field input.invalid{border-color:rgba(255,107,107,.4);background:rgba(255,107,107,.03);}
 .field input::placeholder{color:var(--text3);}
-.field small{display:block;font-size:.65rem;color:var(--text3);margin-top:.3rem;}
+.field small{display:block;font-size:.63rem;color:var(--text3);margin-top:.3rem;line-height:1.4;}
+.field small.hint-ok{color:#2d7a47;}
+.field small.hint-err{color:var(--red);}
+
+/* PASSWORD */
 .pw-wrap{position:relative;}
 .pw-wrap input{padding-right:2.8rem;}
-.pw-toggle{position:absolute;right:.8rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:.85rem;color:var(--text3);padding:.3rem;}
-.type-toggle{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:.8rem;}
-.type-btn{padding:.85rem;background:var(--bg);border:2px solid transparent;border-radius:var(--rmd);font-family:'Plus Jakarta Sans',sans-serif;font-size:.8rem;font-weight:700;color:var(--text2);cursor:pointer;transition:all .18s;text-align:center;}
-.type-btn.active{background:var(--dark);color:white;border-color:var(--dark);}
-.pro-fields{display:none;}
-.pro-fields.show{display:block;}
-.btn{width:100%;padding:1rem;background:var(--dark);border:none;border-radius:var(--rxl);font-family:'Plus Jakarta Sans',sans-serif;font-size:.88rem;font-weight:800;color:white;cursor:pointer;transition:all .2s;margin-top:.5rem;}
-.btn:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(17,17,24,.25);}
-.btn:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none;}
+.pw-eye{position:absolute;right:.8rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:.85rem;color:var(--text3);padding:.3rem;-webkit-tap-highlight-color:transparent;}
+
+/* STRENGTH */
+.pw-strength{display:flex;gap:3px;margin-top:.4rem;}
+.pw-bar{height:3px;flex:1;border-radius:100px;background:var(--bg);transition:background .3s;}
+.pw-bar.weak{background:#ff6b6b;}
+.pw-bar.fair{background:var(--green);}
+.pw-bar.strong{background:#22c55e;}
+.pw-label{font-size:.62rem;color:var(--text3);margin-top:.2rem;}
+
+/* PHONE */
+.iti{width:100%;}
+.iti__flag-container{padding:.5rem;}
+.iti input{border-radius:var(--rmd)!important;background:var(--bg)!important;border:1.5px solid transparent!important;padding:.82rem 1rem .82rem 56px!important;font-family:'Plus Jakarta Sans',sans-serif!important;font-size:.88rem!important;color:var(--text)!important;width:100%!important;outline:none!important;transition:all .2s!important;}
+.iti input:focus{border-color:rgba(17,17,24,.2)!important;background:var(--white)!important;}
+.iti input::placeholder{color:var(--text3)!important;}
+
+/* AUTOCOMPLETE */
+.autocomplete-wrap{position:relative;}
+.autocomplete-list{position:absolute;top:100%;left:0;right:0;background:var(--white);border:1.5px solid rgba(17,17,24,.1);border-radius:var(--rmd);box-shadow:0 8px 32px rgba(0,0,0,.12);z-index:100;max-height:220px;overflow-y:auto;display:none;}
+.autocomplete-list.show{display:block;}
+.ac-item{padding:.75rem 1rem;font-size:.82rem;cursor:pointer;transition:background .12s;border-bottom:1px solid var(--border);}
+.ac-item:last-child{border-bottom:none;}
+.ac-item:hover{background:var(--bg);}
+.ac-item strong{color:var(--dark);font-weight:700;}
+.ac-item small{display:block;font-size:.7rem;color:var(--text2);margin-top:1px;}
+
+/* SIRET STATUS */
+.siret-status{display:flex;align-items:center;gap:.4rem;font-size:.7rem;margin-top:.35rem;min-height:1.1rem;}
+.siret-ok{color:#2d7a47;}
+.siret-err{color:var(--red);}
+.siret-loading{color:var(--text2);}
+
+/* CGV */
+.cgv{display:flex;align-items:flex-start;gap:.65rem;margin:.8rem 0 1.2rem;padding:.9rem;background:var(--bg);border-radius:var(--rmd);}
+.cgv input[type=checkbox]{margin-top:2px;flex-shrink:0;accent-color:var(--dark);width:16px;height:16px;cursor:pointer;}
+.cgv label{font-size:.75rem;color:var(--text2);line-height:1.55;cursor:pointer;}
+.cgv a{color:var(--dark);font-weight:700;text-decoration:none;}
+.cgv a:hover{text-decoration:underline;}
+
+/* BUTTON */
+.btn-submit{width:100%;padding:1.1rem;background:var(--dark);border:none;border-radius:var(--rp);font-family:'Plus Jakarta Sans',sans-serif;font-size:.9rem;font-weight:800;color:white;cursor:pointer;transition:all .22s;box-shadow:0 8px 24px rgba(17,17,24,.2);}
+.btn-submit:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 12px 32px rgba(17,17,24,.28);}
+.btn-submit:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none;}
+
+/* ALERT */
+.alert{border-radius:var(--rmd);padding:.85rem 1rem;font-size:.78rem;font-weight:600;margin-bottom:1rem;display:none;line-height:1.5;}
+.alert.error{background:rgba(255,107,107,.1);color:#c0392b;border:1px solid rgba(255,107,107,.25);}
+.alert.show{display:block;}
+
+/* LINK */
 .link-row{text-align:center;font-size:.78rem;color:var(--text2);margin-top:1.2rem;}
 .link-row a{color:var(--dark);font-weight:700;text-decoration:none;}
-.alert{border-radius:var(--rmd);padding:.8rem 1rem;font-size:.78rem;font-weight:600;margin-bottom:1rem;display:none;}
-.alert.error{background:rgba(255,107,107,.1);color:#c0392b;border:1px solid rgba(255,107,107,.3);}
-.alert.success{background:rgba(62,207,106,.1);color:#1a5c2a;border:1px solid rgba(62,207,106,.3);}
-.alert.show{display:block;}
-.cgv-check{display:flex;align-items:flex-start;gap:.6rem;margin:.8rem 0;}
-.cgv-check input{margin-top:3px;flex-shrink:0;accent-color:var(--dark);}
-.cgv-check label{font-size:.75rem;color:var(--text2);line-height:1.5;}
-.cgv-check a{color:var(--dark);font-weight:700;text-decoration:none;}
+
+/* SUCCESS SCREEN */
+#success-screen{display:none;flex-direction:column;align-items:center;justify-content:center;min-height:80vh;text-align:center;padding:2rem;}
+.success-icon{font-size:3.5rem;margin-bottom:1.2rem;animation:pop .5s cubic-bezier(.34,1.56,.64,1) both;}
+@keyframes pop{from{transform:scale(0);opacity:0;}to{transform:scale(1);opacity:1;}}
+.success-title{font-size:1.3rem;font-weight:800;color:var(--dark);margin-bottom:.5rem;}
+.success-sub{font-size:.85rem;color:var(--text2);line-height:1.7;max-width:380px;}
+.success-email{font-weight:800;color:var(--dark);}
+.success-hint{font-size:.72rem;color:var(--text3);margin-top:1rem;line-height:1.6;}
+.btn-login-link{display:inline-block;margin-top:1.5rem;padding:.85rem 1.8rem;background:var(--dark);color:white;border-radius:var(--rp);font-size:.82rem;font-weight:800;text-decoration:none;transition:opacity .2s;}
+.btn-login-link:hover{opacity:.85;}
 </style>
 </head>
 <body>
+
+<!-- LOGO -->
 <div class="logo">
   <div class="logo-text">EVOKE</div>
-  <div class="logo-sub">Génération musicale pour événements</div>
+  <div class="logo-sub">Génération musicale</div>
 </div>
 
-<div class="card">
+<!-- FORM -->
+<div class="card" id="form-card">
   <div class="card-title">Créer un compte</div>
-  <div class="card-sub">Rejoignez EVOKE — DJ, wedding planners, organisateurs d'événements</div>
+  <div class="card-sub">Rejoignez EVOKE pour gérer vos événements musicaux.</div>
 
   <div class="alert error" id="alert-error"></div>
-  <div class="alert success" id="alert-success"></div>
 
-  <div class="section-label">Type de compte</div>
-  <div class="type-toggle">
-    <button class="type-btn active" id="btn-individual" onclick="setType('individual')">👤 Particulier</button>
-    <button class="type-btn" id="btn-professional" onclick="setType('professional')">💼 Professionnel</button>
+  <!-- TYPE -->
+  <div class="sec"><div class="sec-icon">👤</div>Type de compte</div>
+  <div class="type-wrap">
+    <button class="type-btn active" id="btn-individual" onclick="setType('individual')">
+      <span class="ti">👤</span>Particulier
+    </button>
+    <button class="type-btn" id="btn-professional" onclick="setType('professional')">
+      <span class="ti">💼</span>Professionnel
+    </button>
   </div>
 
-  <div class="section-label">Informations personnelles</div>
+  <!-- IDENTITÉ -->
+  <div class="sec"><div class="sec-icon">✍️</div>Informations personnelles</div>
   <div class="f2">
     <div class="field">
       <label>Prénom *</label>
@@ -78,108 +156,284 @@ body{display:flex;flex-direction:column;align-items:center;padding:2rem 1rem 4re
       <input type="text" id="lastName" placeholder="Nom" autocomplete="family-name">
     </div>
   </div>
+
+  <!-- TÉLÉPHONE -->
   <div class="field">
     <label>Téléphone</label>
-    <input type="tel" id="phone" placeholder="+33 6 00 00 00 00" autocomplete="tel">
+    <input type="tel" id="phone" placeholder="06 00 00 00 00">
   </div>
 
-  <div class="pro-fields" id="pro-fields">
-    <div class="section-label">Informations professionnelles</div>
-    <div class="field">
-      <label>Nom de société *</label>
-      <input type="text" id="company" placeholder="Ex: DJ Events SAS">
-    </div>
+  <!-- PRO FIELDS -->
+  <div id="pro-fields" style="display:none">
+    <div class="sec"><div class="sec-icon">🏢</div>Informations professionnelles</div>
+
+    <!-- SIRET -->
     <div class="field">
       <label>Numéro SIRET</label>
-      <input type="text" id="siret" placeholder="12345678901234" maxlength="14">
-      <small>14 chiffres sans espace</small>
+      <input type="text" id="siret" placeholder="14 chiffres" maxlength="14" oninput="onSiretInput(this)">
+      <div class="siret-status" id="siret-status"></div>
+    </div>
+
+    <!-- Société -->
+    <div class="field">
+      <label>Nom de société *</label>
+      <input type="text" id="company" placeholder="Nom de votre société">
     </div>
   </div>
 
-  <div class="section-label">Identifiants de connexion</div>
+  <!-- ADRESSE -->
+  <div class="sec"><div class="sec-icon">📍</div>Adresse</div>
+  <div class="field autocomplete-wrap">
+    <label>Rechercher une adresse</label>
+    <input type="text" id="address-search" placeholder="Commencez à saisir votre adresse…" autocomplete="off" oninput="onAddressInput(this)">
+    <div class="autocomplete-list" id="address-list"></div>
+  </div>
+  <div class="f2">
+    <div class="field" style="grid-column:1/-1">
+      <label>Rue</label>
+      <input type="text" id="address-street" placeholder="Rue et numéro" autocomplete="street-address">
+    </div>
+    <div class="field">
+      <label>Code postal</label>
+      <input type="text" id="address-zip" placeholder="75001" autocomplete="postal-code">
+    </div>
+    <div class="field">
+      <label>Ville</label>
+      <input type="text" id="address-city" placeholder="Paris" autocomplete="address-level2">
+    </div>
+  </div>
+
+  <!-- CONNEXION -->
+  <div class="sec"><div class="sec-icon">🔑</div>Identifiants de connexion</div>
   <div class="field">
     <label>Adresse email *</label>
-    <input type="email" id="email" placeholder="vous@exemple.com" autocomplete="email">
+    <input type="email" id="email" placeholder="vous@exemple.com" autocomplete="email" oninput="validateEmail(this)">
   </div>
   <div class="field">
     <label>Mot de passe *</label>
     <div class="pw-wrap">
-      <input type="password" id="password" placeholder="Minimum 8 caractères" autocomplete="new-password">
-      <button class="pw-toggle" onclick="togglePw('password')">👁</button>
+      <input type="password" id="password" placeholder="Minimum 8 caractères" autocomplete="new-password" oninput="checkStrength(this.value)">
+      <button class="pw-eye" type="button" onclick="togglePw('password')">👁</button>
     </div>
-    <small>Au moins 8 caractères, avec majuscule et chiffre recommandés</small>
+    <div class="pw-strength"><div class="pw-bar" id="b1"></div><div class="pw-bar" id="b2"></div><div class="pw-bar" id="b3"></div><div class="pw-bar" id="b4"></div></div>
+    <div class="pw-label" id="pw-label"></div>
   </div>
   <div class="field">
     <label>Confirmer le mot de passe *</label>
     <div class="pw-wrap">
       <input type="password" id="password2" placeholder="Répétez le mot de passe" autocomplete="new-password">
-      <button class="pw-toggle" onclick="togglePw('password2')">👁</button>
+      <button class="pw-eye" type="button" onclick="togglePw('password2')">👁</button>
     </div>
   </div>
 
-  <div class="cgv-check">
-    <input type="checkbox" id="cgv-accept">
-    <label for="cgv-accept">J'accepte les <a href="/#cgv" target="_blank">Conditions Générales de Vente</a> et la <a href="/#privacy" target="_blank">Politique de confidentialité</a> d'EVOKE.</label>
+  <!-- CGV -->
+  <div class="cgv">
+    <input type="checkbox" id="cgv-check">
+    <label for="cgv-check">J'ai lu et j'accepte les <a href="/#cgv" target="_blank">Conditions Générales de Vente</a> et la <a href="/#privacy" target="_blank">Politique de confidentialité</a> d'EVOKE.</label>
   </div>
 
-  <button class="btn" id="btn-register" onclick="doRegister()">Créer mon compte →</button>
+  <button class="btn-submit" id="btn-submit" onclick="doRegister()">Créer mon compte →</button>
 
-  <div class="link-row">
-    Déjà un compte ? <a href="/login">Se connecter</a>
-  </div>
+  <div class="link-row">Déjà un compte ? <a href="/login">Se connecter</a></div>
 </div>
 
+<!-- SUCCESS -->
+<div id="success-screen">
+  <div class="success-icon">✉️</div>
+  <div class="success-title">Vérifiez votre boîte mail</div>
+  <div class="success-sub">
+    Un email de confirmation a été envoyé à<br>
+    <span class="success-email" id="success-email"></span>
+  </div>
+  <div class="success-hint">
+    Cliquez sur le lien dans l'email pour activer votre compte.<br>
+    Pensez à vérifier vos spams si vous ne le voyez pas.
+  </div>
+  <a class="btn-login-link" href="/login">Aller à la connexion →</a>
+</div>
+
+<!-- intl-tel-input -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.21/js/intlTelInput.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.21/js/utils.js"></script>
 <script>
 let accountType = 'individual';
+let iti = null;
+let siretTimer = null;
+let addressTimer = null;
 
+// ── PHONE ─────────────────────────────────────────────────────────────────
+window.addEventListener('load', () => {
+  iti = window.intlTelInput(document.getElementById('phone'), {
+    initialCountry: 'fr',
+    preferredCountries: ['fr', 'be', 'ch', 'lu', 'ma', 'dz', 'tn'],
+    separateDialCode: true,
+    utilsScript: 'https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.21/js/utils.js'
+  });
+});
+
+// ── TYPE ──────────────────────────────────────────────────────────────────
 function setType(type) {
   accountType = type;
   document.getElementById('btn-individual').classList.toggle('active', type === 'individual');
   document.getElementById('btn-professional').classList.toggle('active', type === 'professional');
-  document.getElementById('pro-fields').classList.toggle('show', type === 'professional');
+  document.getElementById('pro-fields').style.display = type === 'professional' ? 'block' : 'none';
 }
 
+// ── PASSWORD ──────────────────────────────────────────────────────────────
 function togglePw(id) {
   const el = document.getElementById(id);
   el.type = el.type === 'password' ? 'text' : 'password';
 }
 
+function checkStrength(val) {
+  const bars = [document.getElementById('b1'),document.getElementById('b2'),document.getElementById('b3'),document.getElementById('b4')];
+  const label = document.getElementById('pw-label');
+  bars.forEach(b => { b.className = 'pw-bar'; });
+  if (!val) { label.textContent = ''; return; }
+  let score = 0;
+  if (val.length >= 8) score++;
+  if (/[A-Z]/.test(val)) score++;
+  if (/[0-9]/.test(val)) score++;
+  if (/[^A-Za-z0-9]/.test(val)) score++;
+  const cls = score <= 1 ? 'weak' : score <= 2 ? 'fair' : 'strong';
+  const labels = ['','Faible','Moyen','Fort','Très fort'];
+  for (let i = 0; i < score; i++) bars[i].classList.add(cls);
+  label.textContent = val.length >= 8 ? labels[score] : 'Trop court';
+  label.style.color = score <= 1 ? '#ff6b6b' : score <= 2 ? '#f59e0b' : '#2d7a47';
+}
+
+// ── EMAIL ─────────────────────────────────────────────────────────────────
+function validateEmail(el) {
+  const ok = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(el.value.trim());
+  el.classList.toggle('valid', ok && el.value.length > 0);
+  el.classList.toggle('invalid', !ok && el.value.length > 0);
+}
+
+// ── SIRET ─────────────────────────────────────────────────────────────────
+function onSiretInput(el) {
+  // Garder seulement les chiffres
+  el.value = el.value.replace(/\D/g, '').substring(0, 14);
+  const status = document.getElementById('siret-status');
+  clearTimeout(siretTimer);
+  if (el.value.length < 14) { status.innerHTML = ''; return; }
+  status.innerHTML = '<span class="siret-loading">⏳ Vérification…</span>';
+  siretTimer = setTimeout(() => verifySiret(el.value), 600);
+}
+
+async function verifySiret(siret) {
+  const status = document.getElementById('siret-status');
+  try {
+    const r = await fetch(`https://entreprise.data.gouv.fr/api/sirene/v3/etablissements/${siret}`);
+    if (!r.ok) throw new Error('not found');
+    const data = await r.json();
+    const etab = data.etablissement;
+    const unite = etab?.unite_legale;
+    const nom = unite?.denomination || (unite?.prenom_usuel + ' ' + unite?.nom) || '';
+    const adresse = etab?.geo_adresse || '';
+    const cp = etab?.code_postal || '';
+    const ville = etab?.libelle_commune || '';
+
+    // Pré-remplir
+    if (nom) document.getElementById('company').value = nom.trim();
+    if (adresse) document.getElementById('address-street').value = adresse;
+    if (cp) document.getElementById('address-zip').value = cp;
+    if (ville) document.getElementById('address-city').value = ville;
+
+    status.innerHTML = '<span class="siret-ok">✅ Entreprise trouvée — informations pré-remplies</span>';
+    document.getElementById('company').classList.add('valid');
+  } catch {
+    status.innerHTML = '<span class="siret-err">❌ SIRET non reconnu — vérifiez le numéro</span>';
+  }
+}
+
+// ── ADDRESS AUTOCOMPLETE ──────────────────────────────────────────────────
+function onAddressInput(el) {
+  clearTimeout(addressTimer);
+  const q = el.value.trim();
+  if (q.length < 3) { hideAddressList(); return; }
+  addressTimer = setTimeout(() => fetchAddresses(q), 300);
+}
+
+async function fetchAddresses(q) {
+  try {
+    const r = await fetch(`https://api-adresse.data.gouv.fr/search/?q=${encodeURIComponent(q)}&limit=6&autocomplete=1`);
+    const data = await r.json();
+    showAddressList(data.features || []);
+  } catch { hideAddressList(); }
+}
+
+function showAddressList(features) {
+  const list = document.getElementById('address-list');
+  if (!features.length) { hideAddressList(); return; }
+  list.innerHTML = features.map((f, i) => {
+    const p = f.properties;
+    return `<div class="ac-item" onclick="selectAddress(${i})">
+      <strong>${esc(p.name || p.label)}</strong>
+      <small>${esc(p.postcode)} ${esc(p.city)}</small>
+    </div>`;
+  }).join('');
+  list._features = features;
+  list.classList.add('show');
+}
+
+function selectAddress(idx) {
+  const list = document.getElementById('address-list');
+  const f = list._features[idx];
+  if (!f) return;
+  const p = f.properties;
+  document.getElementById('address-search').value = p.label || '';
+  document.getElementById('address-street').value = p.name || '';
+  document.getElementById('address-zip').value = p.postcode || '';
+  document.getElementById('address-city').value = p.city || '';
+  hideAddressList();
+}
+
+function hideAddressList() {
+  document.getElementById('address-list').classList.remove('show');
+}
+
+document.addEventListener('click', e => {
+  if (!e.target.closest('.autocomplete-wrap')) hideAddressList();
+});
+
+// ── REGISTER ──────────────────────────────────────────────────────────────
 async function doRegister() {
   const firstName = document.getElementById('firstName').value.trim();
-  const lastName = document.getElementById('lastName').value.trim();
-  const email = document.getElementById('email').value.trim();
-  const password = document.getElementById('password').value;
+  const lastName  = document.getElementById('lastName').value.trim();
+  const email     = document.getElementById('email').value.trim();
+  const password  = document.getElementById('password').value;
   const password2 = document.getElementById('password2').value;
-  const phone = document.getElementById('phone').value.trim();
-  const company = document.getElementById('company').value.trim();
-  const siret = document.getElementById('siret').value.trim();
-  const cgv = document.getElementById('cgv-accept').checked;
+  const company   = document.getElementById('company').value.trim();
+  const siret     = document.getElementById('siret').value.trim();
+  const phone     = iti ? iti.getNumber() : document.getElementById('phone').value.trim();
+  const street    = document.getElementById('address-street').value.trim();
+  const zip       = document.getElementById('address-zip').value.trim();
+  const city      = document.getElementById('address-city').value.trim();
+  const cgv       = document.getElementById('cgv-check').checked;
 
   const errEl = document.getElementById('alert-error');
   errEl.classList.remove('show');
 
   if (!firstName || !lastName || !email || !password) {
-    errEl.textContent = 'Veuillez remplir tous les champs obligatoires (*).';
-    errEl.classList.add('show'); return;
+    return showErr('Veuillez remplir tous les champs obligatoires (*).');
   }
-  if (password !== password2) {
-    errEl.textContent = 'Les mots de passe ne correspondent pas.';
-    errEl.classList.add('show'); return;
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return showErr('Adresse email invalide.');
   }
   if (password.length < 8) {
-    errEl.textContent = 'Le mot de passe doit contenir au moins 8 caractères.';
-    errEl.classList.add('show'); return;
+    return showErr('Le mot de passe doit contenir au moins 8 caractères.');
+  }
+  if (password !== password2) {
+    return showErr('Les mots de passe ne correspondent pas.');
   }
   if (accountType === 'professional' && !company) {
-    errEl.textContent = 'Le nom de société est requis pour un compte professionnel.';
-    errEl.classList.add('show'); return;
+    return showErr('Le nom de société est requis pour un compte professionnel.');
   }
   if (!cgv) {
-    errEl.textContent = 'Vous devez accepter les CGV pour créer un compte.';
-    errEl.classList.add('show'); return;
+    return showErr('Vous devez accepter les Conditions Générales de Vente.');
   }
 
-  const btn = document.getElementById('btn-register');
+  const btn = document.getElementById('btn-submit');
   btn.disabled = true;
   btn.textContent = 'Création en cours…';
 
@@ -187,30 +441,42 @@ async function doRegister() {
     const r = await fetch('/api/auth-register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ firstName, lastName, email, password, phone, accountType, company, siret })
+      body: JSON.stringify({
+        firstName, lastName, email, password,
+        accountType, company, siret, phone,
+        address: street, zip, city
+      })
     });
     const data = await r.json();
 
     if (!r.ok) {
-      errEl.textContent = data.error || 'Erreur lors de la création du compte.';
-      errEl.classList.add('show');
+      showErr(data.error || 'Erreur lors de la création du compte.');
       btn.disabled = false;
       btn.textContent = 'Créer mon compte →';
       return;
     }
 
-    const successEl = document.getElementById('alert-success');
-    successEl.textContent = '✅ Compte créé ! Un email de confirmation a été envoyé à ' + email + '. Vérifiez vos spams si besoin.';
-    successEl.classList.add('show');
-    btn.textContent = 'Email envoyé !';
+    // Afficher écran de succès
+    document.getElementById('form-card').style.display = 'none';
+    document.querySelector('.logo').style.display = 'none';
+    document.getElementById('success-email').textContent = email;
+    document.getElementById('success-screen').style.display = 'flex';
 
   } catch (e) {
-    errEl.textContent = 'Erreur réseau. Vérifiez votre connexion.';
-    errEl.classList.add('show');
+    showErr('Erreur réseau. Vérifiez votre connexion.');
     btn.disabled = false;
     btn.textContent = 'Créer mon compte →';
   }
 }
+
+function showErr(msg) {
+  const el = document.getElementById('alert-error');
+  el.textContent = msg;
+  el.classList.add('show');
+  el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 </script>
 </body>
 </html>
