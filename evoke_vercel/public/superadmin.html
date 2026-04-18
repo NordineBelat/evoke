@@ -255,62 +255,38 @@ nav{background:var(--card);border-bottom:1px solid var(--border);padding:0 1.5re
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-
-let TOKEN = sessionStorage.getItem('sa_tok') || '';
-let allUsers = [], currentUserId = null, currentUser = null, currentEvents = [], currentEvent = null;
-let editId = null, deleteId = null;
-
-// Exposer les fonctions appelées via onclick dans le HTML
-window.saLogin = saLogin;
-window.saLogout = saLogout;
-window.refreshAll = refreshAll;
-window.showView = showView;
-window.filterUsers = filterUsers;
-window.loadUserDetail = loadUserDetail;
-window.loadEventDetail = loadEventDetail;
-window.openEdit = openEdit;
-window.openDelete = openDelete;
-window.closeModals = closeModals;
-window.saveUser = saveUser;
-window.toggleSuspend = toggleSuspend;
-window.confirmDelete = confirmDelete;
-window.impersonate = impersonate;
-
-document.getElementById('nav-date').textContent = new Date().toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
-document.getElementById('sa-token').addEventListener('keydown', e => { if(e.key==='Enter') saLogin(); });
-document.getElementById('btn-login').addEventListener('click', saLogin);
-
-// Valider le token stocké avant d'afficher le dashboard
-if(TOKEN) {
-  fetch('/api/superadmin?action=stats', { headers: {'x-admin-token': TOKEN} })
-    .then(r => { if(r.ok){ initSA(); } else { sessionStorage.removeItem('sa_tok'); TOKEN=''; } })
-    .catch(() => { sessionStorage.removeItem('sa_tok'); TOKEN=''; });
-}
+// Variables globales
+var TOKEN = sessionStorage.getItem('sa_tok') || '';
+var allUsers = [], currentUserId = null, currentUser = null, currentEvents = [], currentEvent = null;
+var editId = null, deleteId = null;
 
 // ── AUTH ──────────────────────────────────────────────────────────────────
 async function saLogin() {
-  const t = document.getElementById('sa-token').value.trim();
+  var t = document.getElementById('sa-token').value.trim();
   if(!t) { document.getElementById('login-err').textContent='Entrez votre token'; return; }
-  document.getElementById('login-err').textContent='Vérification…';
-  // Toujours vider le cache avant de tenter
+  document.getElementById('login-err').textContent='Vérification en cours…';
   sessionStorage.removeItem('sa_tok');
   try {
-    const r = await fetch('/api/superadmin?action=stats', { headers: {'x-admin-token': t} });
-    if(r.ok){ TOKEN=t; sessionStorage.setItem('sa_tok',t); initSA(); }
-    else {
-      const d = await r.json().catch(()=>({}));
+    var r = await fetch('/api/superadmin?action=stats', { headers: {'x-admin-token': t} });
+    if(r.ok){
+      TOKEN = t;
+      sessionStorage.setItem('sa_tok', t);
+      initSA();
+    } else {
+      var d = await r.json().catch(function(){return {};});
       document.getElementById('login-err').textContent = r.status===401 ? 'Token incorrect — accès refusé' : 'Erreur '+r.status+': '+(d.error||'inconnue');
     }
   } catch(e) {
     document.getElementById('login-err').textContent = 'Erreur réseau: '+e.message;
   }
 }
+
 function saLogout(){ sessionStorage.removeItem('sa_tok'); location.reload(); }
 
 async function initSA(){
   document.getElementById('login-screen').style.display='none';
   document.getElementById('main-screen').style.display='block';
+  document.getElementById('nav-date').textContent = new Date().toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
   await Promise.all([loadKPIs(), loadUsers()]);
 }
 
@@ -323,47 +299,43 @@ async function refreshAll(){
   toast('↻ Actualisé');
 }
 
-// ── NAVIGATION ────────────────────────────────────────────────────────────
 function showView(name){
-  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.view').forEach(function(v){v.classList.remove('active');});
   document.getElementById('view-'+name).classList.add('active');
   updateBreadcrumb(name);
 }
 
 function updateBreadcrumb(name){
-  const bc = document.getElementById('breadcrumb');
+  var bc = document.getElementById('breadcrumb');
   if(name==='dashboard'){
-    bc.innerHTML='<span class="active" onclick="showView(\'dashboard\')">Dashboard</span>';
+    bc.innerHTML='<span class="active" onclick="showView('dashboard')">Dashboard</span>';
   } else if(name==='user'){
-    bc.innerHTML=`<span onclick="showView('dashboard')">Dashboard</span><span class="breadcrumb-sep">›</span><span class="active">${esc(currentUser?.first_name||'')} ${esc(currentUser?.last_name||'')}</span>`;
+    bc.innerHTML='<span onclick="showView('dashboard')">Dashboard</span><span class="breadcrumb-sep">›</span><span class="active">'+(currentUser?esc(currentUser.first_name)+' '+esc(currentUser.last_name):'')+'</span>';
   } else if(name==='event'){
-    bc.innerHTML=`<span onclick="showView('dashboard')">Dashboard</span><span class="breadcrumb-sep">›</span><span onclick="loadUserDetail('${currentUserId}')">${esc(currentUser?.first_name||'')} ${esc(currentUser?.last_name||'')}</span><span class="breadcrumb-sep">›</span><span class="active">${esc(currentEvent?.couple||'Événement')}</span>`;
+    bc.innerHTML='<span onclick="showView('dashboard')">Dashboard</span><span class="breadcrumb-sep">›</span><span onclick="loadUserDetail(''+currentUserId+'')">'+(currentUser?esc(currentUser.first_name)+' '+esc(currentUser.last_name):'')+'</span><span class="breadcrumb-sep">›</span><span class="active">'+(currentEvent?esc(currentEvent.couple||'Événement'):'')+'</span>';
   }
 }
 
-// ── KPIs ──────────────────────────────────────────────────────────────────
 async function loadKPIs(){
-  const r = await fetch('/api/superadmin?action=stats', { headers: {'x-admin-token':TOKEN} });
+  var r = await fetch('/api/superadmin?action=stats', { headers: {'x-admin-token':TOKEN} });
   if(!r.ok) return;
-  const s = await r.json();
-  document.getElementById('kpi-grid').innerHTML = `
-    <div class="kpi g"><div class="kpi-num">${s.totalUsers}</div><div class="kpi-label">Utilisateurs</div></div>
-    <div class="kpi g"><div class="kpi-num">${s.activeUsers}</div><div class="kpi-label">Actifs</div></div>
-    <div class="kpi o"><div class="kpi-num">${s.pendingUsers}</div><div class="kpi-label">En attente</div></div>
-    <div class="kpi r"><div class="kpi-num">${s.suspendedUsers}</div><div class="kpi-label">Suspendus</div></div>
-    <div class="kpi"><div class="kpi-num">${s.totalEvents}</div><div class="kpi-label">Événements</div></div>
-    <div class="kpi"><div class="kpi-num">${s.totalSongs}</div><div class="kpi-label">Musiques</div></div>
-    <div class="kpi b"><div class="kpi-num">${s.planStarter}</div><div class="kpi-label">Starter</div></div>
-    <div class="kpi b"><div class="kpi-num">${s.planPro}</div><div class="kpi-label">Pro</div></div>
-    <div class="kpi p"><div class="kpi-num">${s.planMax}</div><div class="kpi-label">Max</div></div>
-    <div class="kpi"><div class="kpi-num">${s.totalCreditsUsed}</div><div class="kpi-label">Crédits utilisés</div></div>
-  `;
+  var s = await r.json();
+  document.getElementById('kpi-grid').innerHTML =
+    '<div class="kpi g"><div class="kpi-num">'+s.totalUsers+'</div><div class="kpi-label">Utilisateurs</div></div>'+
+    '<div class="kpi g"><div class="kpi-num">'+s.activeUsers+'</div><div class="kpi-label">Actifs</div></div>'+
+    '<div class="kpi o"><div class="kpi-num">'+s.pendingUsers+'</div><div class="kpi-label">En attente</div></div>'+
+    '<div class="kpi r"><div class="kpi-num">'+s.suspendedUsers+'</div><div class="kpi-label">Suspendus</div></div>'+
+    '<div class="kpi"><div class="kpi-num">'+s.totalEvents+'</div><div class="kpi-label">Événements</div></div>'+
+    '<div class="kpi"><div class="kpi-num">'+s.totalSongs+'</div><div class="kpi-label">Musiques</div></div>'+
+    '<div class="kpi b"><div class="kpi-num">'+s.planStarter+'</div><div class="kpi-label">Starter</div></div>'+
+    '<div class="kpi b"><div class="kpi-num">'+s.planPro+'</div><div class="kpi-label">Pro</div></div>'+
+    '<div class="kpi p"><div class="kpi-num">'+s.planMax+'</div><div class="kpi-label">Max</div></div>'+
+    '<div class="kpi"><div class="kpi-num">'+s.totalCreditsUsed+'</div><div class="kpi-label">Crédits utilisés</div></div>';
 }
 
-// ── USERS LIST ────────────────────────────────────────────────────────────
 async function loadUsers(){
   document.getElementById('users-tbl').innerHTML='<div class="loading-msg">Chargement…</div>';
-  const r = await fetch('/api/superadmin?action=users', { headers: {'x-admin-token':TOKEN} });
+  var r = await fetch('/api/superadmin?action=users', { headers: {'x-admin-token':TOKEN} });
   if(!r.ok){ document.getElementById('users-tbl').innerHTML='<div class="empty">Erreur de chargement</div>'; return; }
   allUsers = await r.json();
   renderUsers(allUsers);
@@ -371,167 +343,119 @@ async function loadUsers(){
 
 function renderUsers(users){
   if(!users.length){ document.getElementById('users-tbl').innerHTML='<div class="empty">Aucun utilisateur</div>'; return; }
-  document.getElementById('users-tbl').innerHTML = `
-    <div class="t-head">
-      <div>Utilisateur</div><div>Email</div><div>Type</div>
-      <div>Statut</div><div>Plan</div><div>Crédits</div><div>Actions</div>
-    </div>
-    ${users.map(u=>`
-      <div class="t-row" onclick="loadUserDetail('${u.id}')">
-        <div>
-          <div class="u-name">${esc(u.firstName)} ${esc(u.lastName)}</div>
-          <div class="u-sub">${u.eventsCount} événement${u.eventsCount!==1?'s':''} · ${u.songsCount} musique${u.songsCount!==1?'s':''}</div>
-          ${u.company?`<div class="u-company">${esc(u.company)}</div>`:''}
-        </div>
-        <div class="cell-sm">${esc(u.email)}</div>
-        <div><span class="badge ${u.accountType}">${u.accountType==='professional'?'Pro':'Perso'}</span></div>
-        <div><span class="badge ${u.status}">${u.status==='active'?'Actif':u.status==='pending'?'Attente':'Suspendu'}</span></div>
-        <div><span class="badge ${u.plan||'none'}">${u.plan||'—'}</span></div>
-        <div class="cell-n">${(u.credits||0)-(u.creditsUsed||0)}<span style="color:var(--text3);font-size:.6rem"> / ${u.credits||0}</span></div>
-        <div class="acts" onclick="event.stopPropagation()">
-          <button class="ab g" onclick="openEdit('${u.id}')">✏️ Modifier</button>
-          <button class="ab b" onclick="impersonate('${u.id}')">👁 Voir</button>
-          <button class="ab ${u.status==='suspended'?'g':'o'}" onclick="toggleSuspend('${u.id}','${u.status}')">${u.status==='suspended'?'Réactiver':'Suspendre'}</button>
-          <button class="ab r" onclick="openDelete('${u.id}','${esc(u.firstName)} ${esc(u.lastName)}')">🗑</button>
-        </div>
-      </div>
-    `).join('')}
-  `;
+  var html = '<div class="t-head"><div>Utilisateur</div><div>Email</div><div>Type</div><div>Statut</div><div>Plan</div><div>Crédits</div><div>Actions</div></div>';
+  users.forEach(function(u){
+    html += '<div class="t-row" onclick="loadUserDetail(''+u.id+'')">'+
+      '<div><div class="u-name">'+esc(u.firstName)+' '+esc(u.lastName)+'</div>'+
+      '<div class="u-sub">'+u.eventsCount+' événement'+(u.eventsCount!==1?'s':'')+' · '+u.songsCount+' musique'+(u.songsCount!==1?'s':'')+'</div>'+
+      (u.company?'<div class="u-company">'+esc(u.company)+'</div>':'')+
+      '</div>'+
+      '<div class="cell-sm">'+esc(u.email)+'</div>'+
+      '<div><span class="badge '+u.accountType+'">'+(u.accountType==='professional'?'Pro':'Perso')+'</span></div>'+
+      '<div><span class="badge '+u.status+'">'+(u.status==='active'?'Actif':u.status==='pending'?'Attente':'Suspendu')+'</span></div>'+
+      '<div><span class="badge '+(u.plan||'none')+'">'+(u.plan||'—')+'</span></div>'+
+      '<div class="cell-n">'+((u.credits||0)-(u.creditsUsed||0))+'<span style="color:var(--text3);font-size:.6rem"> / '+(u.credits||0)+'</span></div>'+
+      '<div class="acts" onclick="event.stopPropagation()">'+
+        '<button class="ab g" onclick="openEdit(''+u.id+'')">✏️ Modifier</button>'+
+        '<button class="ab b" onclick="impersonate(''+u.id+'')">👁 Voir</button>'+
+        '<button class="ab '+(u.status==='suspended'?'g':'o')+'" onclick="toggleSuspend(''+u.id+'',''+u.status+'')">'+(u.status==='suspended'?'Réactiver':'Suspendre')+'</button>'+
+        '<button class="ab r" onclick="openDelete(''+u.id+'',''+esc(u.firstName)+' '+esc(u.lastName)+'')">🗑</button>'+
+      '</div></div>';
+  });
+  document.getElementById('users-tbl').innerHTML = html;
 }
 
 function filterUsers(){
-  const q = document.getElementById('search-users').value.toLowerCase();
+  var q = document.getElementById('search-users').value.toLowerCase();
   if(!q){ renderUsers(allUsers); return; }
-  renderUsers(allUsers.filter(u=>
-    u.email.toLowerCase().includes(q)||
-    (u.firstName||'').toLowerCase().includes(q)||
-    (u.lastName||'').toLowerCase().includes(q)||
-    (u.company||'').toLowerCase().includes(q)
-  ));
+  renderUsers(allUsers.filter(function(u){
+    return u.email.toLowerCase().includes(q)||
+      (u.firstName||'').toLowerCase().includes(q)||
+      (u.lastName||'').toLowerCase().includes(q)||
+      (u.company||'').toLowerCase().includes(q);
+  }));
 }
 
-// ── USER DETAIL ───────────────────────────────────────────────────────────
 async function loadUserDetail(userId){
   currentUserId = userId;
   showView('user');
   document.getElementById('detail-header').innerHTML='<div class="loading-msg">Chargement…</div>';
   document.getElementById('events-tbl').innerHTML='<div class="loading-msg">Chargement…</div>';
-
-  const r = await fetch(`/api/superadmin?action=user-detail&userId=${userId}`, { headers: {'x-admin-token':TOKEN} });
+  var r = await fetch('/api/superadmin?action=user-detail&userId='+userId, { headers: {'x-admin-token':TOKEN} });
   if(!r.ok){ document.getElementById('detail-header').innerHTML='<div class="empty">Erreur</div>'; return; }
-  const data = await r.json();
+  var data = await r.json();
   currentUser = data.user;
   currentEvents = data.events || [];
-
-  const u = data.user;
-  const totalSongs = currentEvents.reduce((acc,e)=>acc+(e.songs?.length||0),0);
-  const creditsLeft = (u.credits||0)-(u.credits_used||0);
-
-  document.getElementById('detail-header').innerHTML=`
-    <div>
-      <div class="detail-name">${esc(u.first_name)} ${esc(u.last_name)}</div>
-      <div class="detail-meta">
-        ${esc(u.email)}<br>
-        ${u.phone?'📞 '+esc(u.phone)+'<br>':''}
-        ${u.company?'🏢 '+esc(u.company)+(u.siret?' — SIRET: '+esc(u.siret):'')+'<br>':''}
-        Inscrit le ${fmt(u.created_at)}${u.last_login?' · Dernière connexion: '+fmt(u.last_login):''}
-      </div>
-      <div class="detail-badges">
-        <span class="badge ${u.status}">${u.status==='active'?'Actif':u.status==='pending'?'En attente':'Suspendu'}</span>
-        <span class="badge ${u.plan||'none'}">${u.plan||'Sans plan'}</span>
-        <span class="badge ${u.account_type}">${u.account_type==='professional'?'Professionnel':'Particulier'}</span>
-      </div>
-    </div>
-    <div class="acts">
-      <button class="ab g" onclick="openEdit('${u.id}')">✏️ Modifier</button>
-      <button class="ab b" onclick="impersonate('${u.id}')">👁 Voir son espace</button>
-      <button class="ab ${u.status==='suspended'?'g':'o'}" onclick="toggleSuspend('${u.id}','${u.status}')">${u.status==='suspended'?'Réactiver':'Suspendre'}</button>
-      <button class="ab r" onclick="openDelete('${u.id}','${esc(u.first_name)} ${esc(u.last_name)}')">🗑 Supprimer</button>
-    </div>
-  `;
-
-  document.getElementById('detail-stats').innerHTML=`
-    <div class="dstat"><div class="dstat-num" style="color:var(--green)">${creditsLeft}</div><div class="dstat-label">Crédits restants</div></div>
-    <div class="dstat"><div class="dstat-num">${u.credits||0}</div><div class="dstat-label">Crédits alloués</div></div>
-    <div class="dstat"><div class="dstat-num">${currentEvents.length}</div><div class="dstat-label">Événements</div></div>
-    <div class="dstat"><div class="dstat-num">${totalSongs}</div><div class="dstat-label">Musiques</div></div>
-  `;
-
-  if(!currentEvents.length){
-    document.getElementById('events-tbl').innerHTML='<div class="empty">Aucun événement</div>';
-    return;
-  }
-  document.getElementById('events-tbl').innerHTML=`
-    <div class="t-head">
-      <div>Couple</div><div>Date</div><div>Crédits</div><div>Musiques</div><div>Créé le</div><div>Actions</div>
-    </div>
-    ${currentEvents.map(e=>`
-      <div class="t-row" onclick="loadEventDetail('${e.id}')">
-        <div class="u-name">${esc(e.couple||'—')}</div>
-        <div class="cell-sm">${e.date?fmtDate(e.date):'—'}</div>
-        <div class="cell-n">${(e.credits||0)-(e.usedCredits||0)} / ${e.credits||0}</div>
-        <div class="cell-n">${(e.songs||[]).length}</div>
-        <div class="cell-sm">${fmt(e.createdAt)}</div>
-        <div class="acts" onclick="event.stopPropagation()">
-          <button class="ab g" onclick="loadEventDetail('${e.id}')">Voir les musiques →</button>
-        </div>
-      </div>
-    `).join('')}
-  `;
+  var u = data.user;
+  var totalSongs = currentEvents.reduce(function(acc,e){ return acc+(e.songs?e.songs.length:0); },0);
+  var creditsLeft = (u.credits||0)-(u.credits_used||0);
+  document.getElementById('detail-header').innerHTML =
+    '<div>'+
+      '<div class="detail-name">'+esc(u.first_name)+' '+esc(u.last_name)+'</div>'+
+      '<div class="detail-meta">'+esc(u.email)+'<br>'+(u.phone?'📞 '+esc(u.phone)+'<br>':'')+(u.company?'🏢 '+esc(u.company)+(u.siret?' — SIRET: '+esc(u.siret):'')+' <br>':'')+'Inscrit le '+fmt(u.created_at)+(u.last_login?' · Dernière connexion: '+fmt(u.last_login):'')+'</div>'+
+      '<div class="detail-badges">'+
+        '<span class="badge '+(u.status)+'">'+(u.status==='active'?'Actif':u.status==='pending'?'En attente':'Suspendu')+'</span>'+
+        '<span class="badge '+(u.plan||'none')+'">'+(u.plan||'Sans plan')+'</span>'+
+        '<span class="badge '+(u.account_type)+'">'+(u.account_type==='professional'?'Professionnel':'Particulier')+'</span>'+
+      '</div>'+
+    '</div>'+
+    '<div class="acts">'+
+      '<button class="ab g" onclick="openEdit(''+u.id+'')">✏️ Modifier</button>'+
+      '<button class="ab b" onclick="impersonate(''+u.id+'')">👁 Voir son espace</button>'+
+      '<button class="ab '+(u.status==='suspended'?'g':'o')+'" onclick="toggleSuspend(''+u.id+'',''+u.status+'')">'+(u.status==='suspended'?'Réactiver':'Suspendre')+'</button>'+
+      '<button class="ab r" onclick="openDelete(''+u.id+'',''+esc(u.first_name)+' '+esc(u.last_name)+'')">🗑 Supprimer</button>'+
+    '</div>';
+  document.getElementById('detail-stats').innerHTML =
+    '<div class="dstat"><div class="dstat-num" style="color:var(--green)">'+creditsLeft+'</div><div class="dstat-label">Crédits restants</div></div>'+
+    '<div class="dstat"><div class="dstat-num">'+(u.credits||0)+'</div><div class="dstat-label">Crédits alloués</div></div>'+
+    '<div class="dstat"><div class="dstat-num">'+currentEvents.length+'</div><div class="dstat-label">Événements</div></div>'+
+    '<div class="dstat"><div class="dstat-num">'+totalSongs+'</div><div class="dstat-label">Musiques</div></div>';
+  if(!currentEvents.length){ document.getElementById('events-tbl').innerHTML='<div class="empty">Aucun événement</div>'; return; }
+  var evHtml = '<div class="t-head"><div>Couple</div><div>Date</div><div>Crédits</div><div>Musiques</div><div>Créé le</div><div>Actions</div></div>';
+  currentEvents.forEach(function(e){
+    evHtml += '<div class="t-row" onclick="loadEventDetail(''+e.id+'')">'+
+      '<div class="u-name">'+esc(e.couple||'—')+'</div>'+
+      '<div class="cell-sm">'+(e.date?fmtDate(e.date):'—')+'</div>'+
+      '<div class="cell-n">'+((e.credits||0)-(e.usedCredits||0))+' / '+(e.credits||0)+'</div>'+
+      '<div class="cell-n">'+((e.songs||[]).length)+'</div>'+
+      '<div class="cell-sm">'+fmt(e.createdAt)+'</div>'+
+      '<div class="acts" onclick="event.stopPropagation()"><button class="ab g" onclick="loadEventDetail(''+e.id+'')">Voir →</button></div>'+
+    '</div>';
+  });
+  document.getElementById('events-tbl').innerHTML = evHtml;
 }
 
-// ── EVENT DETAIL ──────────────────────────────────────────────────────────
 function loadEventDetail(eventId){
-  const ev = currentEvents.find(e=>e.id===eventId);
+  var ev = currentEvents.find(function(e){ return e.id===eventId; });
   if(!ev) return;
   currentEvent = ev;
   showView('event');
-
-  const songs = ev.songs || [];
-  document.getElementById('event-header').innerHTML=`
-    <div>
-      <div class="detail-name">${esc(ev.couple||'—')}</div>
-      <div class="detail-meta">
-        ${ev.date?'📅 '+fmtDate(ev.date)+'<br>':''}
-        ${songs.length} musique${songs.length!==1?'s':''} générée${songs.length!==1?'s':''}<br>
-        Crédits : ${(ev.credits||0)-(ev.usedCredits||0)} restants / ${ev.credits||0} alloués
-      </div>
-    </div>
-    <div class="acts">
-      <button class="ab" onclick="loadUserDetail('${currentUserId}')">← Retour utilisateur</button>
-    </div>
-  `;
-
-  if(!songs.length){
-    document.getElementById('songs-tbl').innerHTML='<div class="empty">Aucune musique générée</div>';
-    return;
-  }
-  document.getElementById('songs-tbl').innerHTML=`
-    <div class="t-head">
-      <div>Titre</div><div>Message</div><div>Style</div><div>Voix</div><div>Créée le</div>
-    </div>
-    ${songs.map(s=>`
-      <div class="song-row">
-        <div>
-          <div class="song-title">${esc(s.title||'—')}</div>
-          <div class="song-msg">${esc(s.author||'')}</div>
-        </div>
-        <div class="song-msg">${esc((s.message||'').substring(0,60))}${(s.message||'').length>60?'…':''}</div>
-        <div><span class="badge none">${esc(s.style||'—')}</span></div>
-        <div class="cell-sm">${s.voice==='female'?'👩 Féminine':'👨 Masculine'}</div>
-        <div class="cell-sm">${fmt(s.createdAt)}</div>
-      </div>
-    `).join('')}
-  `;
+  var songs = ev.songs || [];
+  document.getElementById('event-header').innerHTML =
+    '<div>'+
+      '<div class="detail-name">'+esc(ev.couple||'—')+'</div>'+
+      '<div class="detail-meta">'+(ev.date?'📅 '+fmtDate(ev.date)+'<br>':'')+songs.length+' musique'+(songs.length!==1?'s':'')+' générée'+(songs.length!==1?'s':'')+'<br>Crédits : '+((ev.credits||0)-(ev.usedCredits||0))+' restants / '+(ev.credits||0)+' alloués</div>'+
+    '</div>'+
+    '<div class="acts"><button class="ab" onclick="loadUserDetail(''+currentUserId+'')">← Retour</button></div>';
+  if(!songs.length){ document.getElementById('songs-tbl').innerHTML='<div class="empty">Aucune musique</div>'; return; }
+  var sHtml = '<div class="t-head"><div>Titre</div><div>Message</div><div>Style</div><div>Voix</div><div>Créée le</div></div>';
+  songs.forEach(function(s){
+    sHtml += '<div class="song-row">'+
+      '<div><div class="song-title">'+esc(s.title||'—')+'</div><div class="song-msg">'+esc(s.author||'')+'</div></div>'+
+      '<div class="song-msg">'+esc((s.message||'').substring(0,60))+((s.message||'').length>60?'…':'')+'</div>'+
+      '<div><span class="badge none">'+esc(s.style||'—')+'</span></div>'+
+      '<div class="cell-sm">'+(s.voice==='female'?'👩 Féminine':'👨 Masculine')+'</div>'+
+      '<div class="cell-sm">'+fmt(s.createdAt)+'</div>'+
+    '</div>';
+  });
+  document.getElementById('songs-tbl').innerHTML = sHtml;
 }
 
-// ── ACTIONS ───────────────────────────────────────────────────────────────
 function openEdit(userId){
-  const u = allUsers.find(x=>x.id===userId) || (currentUser?.id===userId?{
-    id:currentUser.id,email:currentUser.email,
-    firstName:currentUser.first_name,lastName:currentUser.last_name,
-    status:currentUser.status,plan:currentUser.plan,credits:currentUser.credits
-  }:null);
+  var u = allUsers.find(function(x){ return x.id===userId; });
+  if(!u && currentUser && currentUser.id===userId) {
+    u = {id:currentUser.id,email:currentUser.email,firstName:currentUser.first_name,lastName:currentUser.last_name,status:currentUser.status,plan:currentUser.plan,credits:currentUser.credits};
+  }
   if(!u) return;
   editId = userId;
   document.getElementById('m-user-info').textContent=(u.firstName||u.first_name)+' '+(u.lastName||u.last_name)+' — '+u.email;
@@ -555,98 +479,57 @@ function closeModals(){
 
 async function saveUser(){
   if(!editId) return;
-  const r = await fetch('/api/superadmin?action=user',{
+  var r = await fetch('/api/superadmin?action=user',{
     method:'PATCH',
     headers:{'x-admin-token':TOKEN,'Content-Type':'application/json'},
-    body:JSON.stringify({
-      userId:editId,
-      status:document.getElementById('m-status').value,
-      plan:document.getElementById('m-plan').value,
-      credits:parseInt(document.getElementById('m-credits').value)||0
-    })
+    body:JSON.stringify({userId:editId,status:document.getElementById('m-status').value,plan:document.getElementById('m-plan').value,credits:parseInt(document.getElementById('m-credits').value)||0})
   });
-  if(r.ok){
-    closeModals();
-    toast('✅ Utilisateur mis à jour');
-    await Promise.all([loadKPIs(), loadUsers()]);
-    if(currentUserId===editId) loadUserDetail(editId);
-  } else { toast('❌ Erreur lors de la sauvegarde'); }
+  if(r.ok){ closeModals(); toast('✅ Mis à jour'); await Promise.all([loadKPIs(),loadUsers()]); if(currentUserId===editId) loadUserDetail(editId); }
+  else toast('❌ Erreur lors de la sauvegarde');
 }
 
 async function toggleSuspend(userId, currentStatus){
-  const newStatus = currentStatus==='suspended'?'active':'suspended';
-  const r = await fetch('/api/superadmin?action=user',{
-    method:'PATCH',
-    headers:{'x-admin-token':TOKEN,'Content-Type':'application/json'},
-    body:JSON.stringify({userId,status:newStatus})
-  });
-  if(r.ok){
-    toast(newStatus==='suspended'?'🚫 Compte suspendu':'✅ Compte réactivé');
-    await Promise.all([loadKPIs(),loadUsers()]);
-    if(currentUserId===userId) loadUserDetail(userId);
-  }
+  var newStatus = currentStatus==='suspended'?'active':'suspended';
+  var r = await fetch('/api/superadmin?action=user',{method:'PATCH',headers:{'x-admin-token':TOKEN,'Content-Type':'application/json'},body:JSON.stringify({userId:userId,status:newStatus})});
+  if(r.ok){ toast(newStatus==='suspended'?'🚫 Suspendu':'✅ Réactivé'); await Promise.all([loadKPIs(),loadUsers()]); if(currentUserId===userId) loadUserDetail(userId); }
 }
 
 async function confirmDelete(){
   if(!deleteId) return;
-  const r = await fetch('/api/superadmin?action=user',{
-    method:'DELETE',
-    headers:{'x-admin-token':TOKEN,'Content-Type':'application/json'},
-    body:JSON.stringify({userId:deleteId})
-  });
-  if(r.ok){
-    closeModals();
-    toast('🗑 Compte supprimé');
-    showView('dashboard');
-    await Promise.all([loadKPIs(),loadUsers()]);
-  } else { toast('❌ Erreur lors de la suppression'); }
+  var r = await fetch('/api/superadmin?action=user',{method:'DELETE',headers:{'x-admin-token':TOKEN,'Content-Type':'application/json'},body:JSON.stringify({userId:deleteId})});
+  if(r.ok){ closeModals(); toast('🗑 Supprimé'); showView('dashboard'); await Promise.all([loadKPIs(),loadUsers()]); }
+  else toast('❌ Erreur');
 }
 
 async function impersonate(userId){
-  toast('🔄 Génération du lien de connexion…');
+  toast('🔄 Génération du lien…');
   try {
-    const r = await fetch('/api/superadmin?action=impersonate&userId='+userId, {
-      headers:{'x-admin-token':TOKEN}
-    });
-    const d = await r.json();
-    if(r.ok && d.link && d.link.startsWith('http')){
-      window.open(d.link, '_blank');
-      toast('✅ Ouverture de l\'espace utilisateur');
-    } else {
-      // Fallback : ouvrir le dashboard avec instruction
-      const u = allUsers.find(x=>x.id===userId) || {email:'cet utilisateur'};
-      toast('⚠️ Lien non disponible — voir instructions');
-      setTimeout(()=>{
-        alert('Pour accéder à l\'espace de '+u.email+' :
-
+    var r = await fetch('/api/superadmin?action=impersonate&userId='+userId, {headers:{'x-admin-token':TOKEN}});
+    var d = await r.json();
+    if(r.ok && d.link && d.link.startsWith('http')){ window.open(d.link,'_blank'); toast('✅ Lien ouvert'); }
+    else {
+      var u = allUsers.find(function(x){return x.id===userId;})||{email:'cet utilisateur'};
+      alert('Pour accéder à l'espace de '+u.email+' :
 1. Allez dans Supabase → Authentication → Users
 2. Trouvez '+u.email+'
-3. Cliquez "Send magic link"
-4. Utilisez ce lien pour vous connecter');
-      }, 500);
+3. Cliquez "Send magic link"');
     }
-  } catch(e) {
-    toast('❌ Erreur: '+e.message);
-  }
+  } catch(e){ toast('❌ Erreur: '+e.message); }
 }
 
-// ── UTILS ─────────────────────────────────────────────────────────────────
-function fmt(iso){
-  try{ return new Date(iso).toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}); }
-  catch{ return '—'; }
-}
-function fmtDate(d){
-  try{ return new Date(d+'T00:00:00').toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'}); }
-  catch{ return d||'—'; }
-}
+function fmt(iso){ try{ return new Date(iso).toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}); }catch{ return '—'; } }
+function fmtDate(d){ try{ return new Date(d+'T00:00:00').toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'}); }catch{ return d||'—'; } }
 function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-function toast(msg){
-  const t=document.getElementById('toast');
-  t.textContent=msg; t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'),2800);
-}
+function toast(msg){ var t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(function(){t.classList.remove('show');},2800); }
 
-}); // fin DOMContentLoaded
+// Init au chargement
+window.onload = function() {
+  if(TOKEN){
+    fetch('/api/superadmin?action=stats', {headers:{'x-admin-token':TOKEN}})
+      .then(function(r){ if(r.ok){ initSA(); } else { sessionStorage.removeItem('sa_tok'); TOKEN=''; } })
+      .catch(function(){ sessionStorage.removeItem('sa_tok'); TOKEN=''; });
+  }
+};
 </script>
 </body>
 </html>
