@@ -16,11 +16,12 @@
     { "src": "/api/send-invite",    "dest": "/api/send-invite.js" },
     { "src": "/login",              "dest": "/public/login.html" },
     { "src": "/register",           "dest": "/public/register.html" },
+    { "src": "/dashboard",          "dest": "/public/dashboard.html" },
     { "src": "/verify-email",       "dest": "/api/auth-verify.js" },
     { "src": "/superadmin",         "dest": "/public/superadmin.html" },
-    { "src": "/dashboard",          "dest": "/index.html" },
     { "src": "/mariage/(.*)",       "dest": "/index.html" },
     { "src": "/galerie/(.*)",       "dest": "/index.html" },
+    { "src": "/",                   "dest": "/public/login.html" },
     { "src": "/(.*)",               "dest": "/index.html" }
   ]
 }
