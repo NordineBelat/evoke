@@ -85,16 +85,14 @@ body{display:flex;flex-direction:column;align-items:center;justify-content:cente
 </div>
 
 <script>
-// Vérifier si déjà connecté
 const stored = localStorage.getItem('evoke_session');
 if (stored) {
   try {
     const s = JSON.parse(stored);
-    if (s.token) window.location = '/dashboard';
+    if (s.token) window.location = '/public/dashboard.html';
   } catch(e) {}
 }
 
-// Message de succès si email vérifié
 const params = new URLSearchParams(window.location.search);
 if (params.get('verified') === '1') {
   const a = document.getElementById('alert-success');
@@ -148,7 +146,6 @@ async function doLogin() {
       return;
     }
 
-    // Sauvegarder la session
     localStorage.setItem('evoke_session', JSON.stringify({
       token: data.token,
       refreshToken: data.refresh_token,
@@ -156,7 +153,7 @@ async function doLogin() {
       loginAt: Date.now()
     }));
 
-    window.location = '/dashboard';
+    window.location = '/public/dashboard.html';
 
   } catch (e) {
     errEl.textContent = 'Erreur réseau. Vérifiez votre connexion.';
