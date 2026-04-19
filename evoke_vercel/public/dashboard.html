@@ -228,9 +228,12 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;height:60px;background:rgba(
       </div>
       <div class="field"><label>Email mariés</label><input type="email" id="nemail" placeholder="mariés@exemple.com"></div>
       <div class="field">
-        <label>Mot de passe galerie (optionnel)</label>
-        <input type="password" id="ntoken-custom" placeholder="Laissez vide = généré automatiquement">
-        <small>Protège l'accès à la galerie des mariés</small>
+        <label>Mot de passe galerie <span style="font-weight:500;color:var(--text3)">(optionnel)</span></label>
+        <div class="pw-wrap">
+          <input type="password" id="ntoken-custom" placeholder="Aucun mot de passe = accès libre">
+          <button class="pw-eye" type="button" onclick="togglePw('ntoken-custom')">👁</button>
+        </div>
+        <small>Si renseigné, les invités devront entrer ce mot de passe pour accéder à la galerie. Laissez vide pour un accès libre.</small>
       </div>
       <div style="margin-bottom:.8rem">
         <div class="card-title" style="margin-bottom:.6rem">Questions quiz (optionnel)</div>
@@ -447,7 +450,7 @@ async function createEvent() {
   var btn = document.getElementById("btn-create");
   btn.disabled = true; btn.textContent = "Création…";
 
-  var token = tokenCustom || (Math.random().toString(36).substring(2) + Date.now().toString(36));
+  var token = tokenCustom || null; // null = pas de mot de passe requis pour la galerie
   var id = Date.now().toString(36) + Math.random().toString(36).substring(2);
   var quiz = getQuizFields("create");
 
@@ -575,7 +578,8 @@ function editEvent() {
     "<div class='field'><label>Prénom 1</label><input id='ep1' value='"+esc(e.p1||"")+"' style='width:100%;background:var(--bg);border:1.5px solid transparent;border-radius:var(--rmd);padding:.8rem .95rem;font-family:Plus Jakarta Sans,sans-serif;font-size:.88rem;color:var(--text);outline:none'></div>",
     "<div class='field'><label>Prénom 2</label><input id='ep2' value='"+esc(e.p2||"")+"' style='width:100%;background:var(--bg);border:1.5px solid transparent;border-radius:var(--rmd);padding:.8rem .95rem;font-family:Plus Jakarta Sans,sans-serif;font-size:.88rem;color:var(--text);outline:none'></div>",
     "<div class='field'><label>Date</label><input id='edate' type='date' value='"+( e.date||"")+"' style='width:100%;background:var(--bg);border:1.5px solid transparent;border-radius:var(--rmd);padding:.8rem .95rem;font-family:Plus Jakarta Sans,sans-serif;font-size:.88rem;color:var(--text);outline:none'></div>",
-    "<div class='field'><label>Email</label><input id='eemail' type='email' value='"+esc(e.email||"")+"' style='width:100%;background:var(--bg);border:1.5px solid transparent;border-radius:var(--rmd);padding:.8rem .95rem;font-family:Plus Jakarta Sans,sans-serif;font-size:.88rem;color:var(--text);outline:none'></div>"
+    "<div class='field'><label>Email</label><input id='eemail' type='email' value='"+esc(e.email||"")+"' style='width:100%;background:var(--bg);border:1.5px solid transparent;border-radius:var(--rmd);padding:.8rem .95rem;font-family:Plus Jakarta Sans,sans-serif;font-size:.88rem;color:var(--text);outline:none'></div>" +
+    "<div class='field'><label>Mot de passe galerie <small style='font-weight:500;color:var(--text3);text-transform:none'>(laisser vide = accès libre)</small></label><div style='position:relative'><input type='password' id='etoken' value='"+esc(e.token||"")+"' placeholder='Aucun mot de passe' style='width:100%;background:var(--bg);border:1.5px solid transparent;border-radius:var(--rmd);padding:.8rem 2.8rem .8rem .95rem;font-family:Plus Jakarta Sans,sans-serif;font-size:.88rem;color:var(--text);outline:none'><button type='button' onclick='toggleEyeEdit()' style='position:absolute;right:.8rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:.85rem'>👁</button></div></div>"
   ].join(""),
   [
     {label:"Annuler",cls:"m-cancel",fn:"closeModal()"},
@@ -589,7 +593,8 @@ async function saveEditEvent() {
   var date = document.getElementById("edate")?.value;
   var email = document.getElementById("eemail")?.value.trim();
   if(!p1||!p2) { toast("Les prénoms sont requis"); return; }
-  var updates = { id: currentEvId, couple: p1+" & "+p2, p1:p1, p2:p2, date:date, email:email };
+  var etoken = document.getElementById("etoken")?.value.trim() || null;
+  var updates = { id: currentEvId, couple: p1+" & "+p2, p1:p1, p2:p2, date:date, email:email, token:etoken };
   Object.assign(currentEv, updates);
   try {
     await fetch("/api/event", {
@@ -873,6 +878,10 @@ async function saveProfile() {
 // ── SETTINGS ──────────────────────────────────────────────────────────────
 function togglePw(id) {
   var el = document.getElementById(id);
+  if(el) el.type = el.type==="password"?"text":"password";
+}
+function toggleEyeEdit() {
+  var el = document.getElementById("etoken");
   if(el) el.type = el.type==="password"?"text":"password";
 }
 
