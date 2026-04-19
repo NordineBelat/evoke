@@ -82,19 +82,19 @@
     },
     {
       "src": "/login",
-      "dest": "/public/login.html"
+      "dest": "/login.html"
     },
     {
       "src": "/register",
-      "dest": "/public/register.html"
+      "dest": "/register.html"
     },
     {
       "src": "/dashboard",
-      "dest": "/public/dashboard.html"
+      "dest": "/dashboard.html"
     },
     {
       "src": "/superadmin",
-      "dest": "/public/superadmin.html"
+      "dest": "/superadmin.html"
     },
     {
       "src": "/verify-email",
@@ -110,7 +110,7 @@
     },
     {
       "src": "/",
-      "dest": "/public/login.html"
+      "dest": "/login.html"
     },
     {
       "src": "/(.*)",

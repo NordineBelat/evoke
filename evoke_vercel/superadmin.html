@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EVOKE — Super Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{--bg:#08080f;--card:#111120;--card2:#191928;--card3:#21213a;--text:#ededf5;--text2:#8080a0;--text3:#404060;--green:#3ecf6a;--red:#ff5b5b;--orange:#f59e0b;--blue:#6366f1;--purple:#a855f7;--border:rgba(255,255,255,0.06);--rmd:12px;--rlg:16px;--rxl:20px;}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;overflow-x:hidden;max-width:100vw;}
+
+/* LOGIN */
+#login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;}
+.login-box{background:var(--card);border:1px solid var(--border);border-radius:24px;padding:2.5rem;width:340px;}
+.login-logo{font-size:1.4rem;font-weight:800;letter-spacing:-.03em;}
+.login-badge{display:inline-block;background:var(--green);color:#08080f;font-size:.55rem;font-weight:800;padding:.2rem .55rem;border-radius:100px;letter-spacing:.08em;text-transform:uppercase;margin:.4rem 0 1rem;}
+.login-sub{font-size:.78rem;color:var(--text2);margin-bottom:1.5rem;line-height:1.5;}
+.fi{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:var(--rmd);padding:.85rem 1rem;font-family:'Plus Jakarta Sans',sans-serif;font-size:.85rem;color:var(--text);outline:none;margin-bottom:.8rem;transition:border-color .2s;}
+.fi:focus{border-color:rgba(255,255,255,.18);}
+.fi::placeholder{color:var(--text3);}
+.btn-login{width:100%;padding:.9rem;background:var(--green);border:none;border-radius:var(--rmd);font-family:'Plus Jakarta Sans',sans-serif;font-size:.85rem;font-weight:800;color:#08080f;cursor:pointer;transition:opacity .2s;}
+.btn-login:hover{opacity:.85;}
+.login-err{font-size:.7rem;color:var(--red);margin-top:.6rem;text-align:center;min-height:1rem;}
+
+/* NAV */
+nav{background:var(--card);border-bottom:1px solid var(--border);padding:0 1.5rem;height:52px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200;}
+.nav-left{display:flex;align-items:center;gap:.5rem;}
+.nav-logo{font-size:.95rem;font-weight:800;}
+.nav-badge{background:var(--green);color:#08080f;font-size:.52rem;font-weight:800;padding:.18rem .5rem;border-radius:100px;letter-spacing:.08em;text-transform:uppercase;}
+.breadcrumb{display:flex;align-items:center;gap:.4rem;font-size:.72rem;color:var(--text2);}
+.breadcrumb span{cursor:pointer;transition:color .15s;}
+.breadcrumb span:hover{color:var(--text);}
+.breadcrumb span.active{color:var(--text);font-weight:700;}
+.breadcrumb-sep{color:var(--text3);}
+.nav-right{display:flex;align-items:center;gap:.8rem;}
+.nav-date{font-size:.68rem;color:var(--text2);}
+.btn-sm{padding:.32rem .7rem;border-radius:8px;font-family:'Plus Jakarta Sans',sans-serif;font-size:.65rem;font-weight:700;cursor:pointer;border:1px solid var(--border);background:transparent;color:var(--text2);transition:all .12s;}
+.btn-sm:hover{background:var(--card2);color:var(--text);}
+
+/* LAYOUT */
+.content{padding:1.2rem 1.5rem;max-width:1400px;margin:0 auto;}
+
+/* VIEWS */
+.view{display:none;}
+.view.active{display:block;}
+
+/* KPI */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;margin-bottom:1.2rem;}
+.kpi{background:var(--card);border:1px solid var(--border);border-radius:var(--rlg);padding:.9rem 1rem;}
+.kpi-num{font-size:1.7rem;font-weight:800;line-height:1;}
+.kpi-label{font-size:.58rem;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.08em;margin-top:.2rem;}
+.kpi.g .kpi-num{color:var(--green);}
+.kpi.o .kpi-num{color:var(--orange);}
+.kpi.r .kpi-num{color:var(--red);}
+.kpi.b .kpi-num{color:var(--blue);}
+.kpi.p .kpi-num{color:var(--purple);}
+
+/* SECTION */
+.sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:.7rem;}
+.sec-title{font-size:.88rem;font-weight:800;}
+.search{background:var(--card);border:1px solid var(--border);border-radius:var(--rmd);padding:.45rem .85rem;font-family:'Plus Jakarta Sans',sans-serif;font-size:.75rem;color:var(--text);outline:none;width:210px;transition:border-color .2s;}
+.search:focus{border-color:rgba(255,255,255,.18);}
+.search::placeholder{color:var(--text3);}
+
+/* TABLE */
+.tbl{background:var(--card);border:1px solid var(--border);border-radius:var(--rxl);overflow:hidden;}
+.t-head{display:grid;padding:.55rem 1.1rem;border-bottom:1px solid var(--border);font-size:.56rem;font-weight:800;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;}
+.t-row{display:grid;padding:.8rem 1.1rem;border-bottom:1px solid var(--border);align-items:center;transition:background .1s;cursor:pointer;}
+.t-row:last-child{border-bottom:none;}
+.t-row:hover{background:var(--card2);}
+/* users columns */
+.t-users .t-head,.t-users .t-row{grid-template-columns:2.2fr 1.8fr .8fr .9fr .9fr .8fr 1.8fr;}
+/* events columns */
+.t-events .t-head,.t-events .t-row{grid-template-columns:2fr 1.2fr 1fr 1fr 1fr 1.6fr;}
+/* songs columns */
+.t-songs .t-head,.t-songs .t-row{grid-template-columns:2fr 1.5fr 1fr 1fr 1.2fr;}
+
+.u-name{font-size:.78rem;font-weight:700;}
+.u-sub{font-size:.62rem;color:var(--text2);margin-top:1px;}
+.u-company{font-size:.62rem;color:var(--blue);margin-top:1px;}
+.cell-sm{font-size:.72rem;color:var(--text2);word-break:break-all;}
+.cell-n{font-size:.78rem;font-weight:700;}
+
+.badge{display:inline-block;padding:.15rem .5rem;border-radius:100px;font-size:.56rem;font-weight:800;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap;}
+.badge.active{background:rgba(62,207,106,.12);color:var(--green);}
+.badge.pending{background:rgba(245,158,11,.12);color:var(--orange);}
+.badge.suspended{background:rgba(255,91,91,.12);color:var(--red);}
+.badge.starter{background:rgba(99,102,241,.12);color:#a5b4fc;}
+.badge.pro{background:rgba(16,185,129,.12);color:#6ee7b7;}
+.badge.max{background:rgba(245,158,11,.12);color:var(--orange);}
+.badge.none,.badge.individual{background:rgba(255,255,255,.04);color:var(--text3);}
+.badge.professional{background:rgba(99,102,241,.1);color:#a5b4fc;}
+
+.acts{display:flex;gap:4px;flex-wrap:wrap;}
+.ab{padding:.28rem .6rem;border-radius:7px;font-family:'Plus Jakarta Sans',sans-serif;font-size:.6rem;font-weight:700;cursor:pointer;border:1px solid var(--border);background:transparent;color:var(--text2);transition:all .12s;white-space:nowrap;}
+.ab:hover{background:var(--card2);color:var(--text);}
+.ab.g{color:var(--green);border-color:rgba(62,207,106,.2);}
+.ab.g:hover{background:rgba(62,207,106,.08);}
+.ab.r{color:var(--red);border-color:rgba(255,91,91,.2);}
+.ab.r:hover{background:rgba(255,91,91,.08);}
+.ab.b{color:#a5b4fc;border-color:rgba(99,102,241,.2);}
+.ab.b:hover{background:rgba(99,102,241,.08);}
+.ab.o{color:var(--orange);border-color:rgba(245,158,11,.2);}
+.ab.o:hover{background:rgba(245,158,11,.08);}
+.ab.p{color:#a855f7;border-color:rgba(168,85,247,.2);}
+.ab.p:hover{background:rgba(168,85,247,.08);}
+
+.empty{text-align:center;padding:3rem;color:var(--text3);font-size:.8rem;}
+.loading-msg{text-align:center;padding:2.5rem;color:var(--text2);font-size:.78rem;}
+
+/* USER DETAIL */
+.detail-header{background:var(--card);border:1px solid var(--border);border-radius:var(--rxl);padding:1.3rem 1.5rem;margin-bottom:1rem;display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;flex-wrap:wrap;}
+.detail-name{font-size:1.1rem;font-weight:800;margin-bottom:.2rem;}
+.detail-meta{font-size:.72rem;color:var(--text2);line-height:1.7;}
+.detail-badges{display:flex;gap:5px;flex-wrap:wrap;margin-top:.5rem;}
+.detail-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:1rem;}
+.dstat{background:var(--card);border:1px solid var(--border);border-radius:var(--rlg);padding:.8rem 1rem;text-align:center;}
+.dstat-num{font-size:1.4rem;font-weight:800;}
+.dstat-label{font-size:.58rem;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.07em;margin-top:.15rem;}
+
+/* SONG CARD */
+.song-row{display:grid;grid-template-columns:2fr 1.5fr 1fr 1fr 1.2fr;padding:.7rem 1.1rem;border-bottom:1px solid var(--border);align-items:center;}
+.song-row:last-child{border-bottom:none;}
+.song-title{font-size:.75rem;font-weight:700;}
+.song-msg{font-size:.62rem;color:var(--text2);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:300px;}
+
+/* MODAL */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:500;align-items:center;justify-content:center;padding:1rem;}
+.overlay.show{display:flex;}
+.modal{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:1.7rem;width:100%;max-width:400px;}
+.modal-title{font-size:.92rem;font-weight:800;margin-bottom:.25rem;}
+.modal-sub{font-size:.73rem;color:var(--text2);margin-bottom:1.2rem;line-height:1.5;}
+.mf{margin-bottom:.75rem;}
+.mf label{display:block;font-size:.58rem;font-weight:800;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.3rem;}
+.mf select,.mf input{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:var(--rmd);padding:.65rem .85rem;font-family:'Plus Jakarta Sans',sans-serif;font-size:.82rem;color:var(--text);outline:none;}
+.mf select:focus,.mf input:focus{border-color:rgba(255,255,255,.18);}
+.m-acts{display:flex;gap:7px;margin-top:1.1rem;}
+.btn-cancel{flex:1;padding:.65rem;background:var(--card2);border:none;border-radius:var(--rmd);font-family:'Plus Jakarta Sans',sans-serif;font-size:.73rem;font-weight:700;color:var(--text2);cursor:pointer;}
+.btn-save{flex:2;padding:.65rem;background:var(--green);border:none;border-radius:var(--rmd);font-family:'Plus Jakarta Sans',sans-serif;font-size:.73rem;font-weight:800;color:#08080f;cursor:pointer;}
+.btn-del{flex:2;padding:.65rem;background:var(--red);border:none;border-radius:var(--rmd);font-family:'Plus Jakarta Sans',sans-serif;font-size:.73rem;font-weight:800;color:white;cursor:pointer;}
+
+/* TOAST */
+.toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(20px);background:var(--card2);border:1px solid var(--border);color:var(--text);padding:.6rem 1.2rem;border-radius:100px;font-size:.75rem;font-weight:700;z-index:999;opacity:0;transition:all .25s;pointer-events:none;white-space:nowrap;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+<div class="toast" id="toast"></div>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">EVOKE</div>
+    <div class="login-badge">Super Admin</div>
+    <div class="login-sub">Espace de gestion — accès strictement restreint.</div>
+    <input class="fi" type="password" id="sa-token" placeholder="Token d'accès secret">
+    <button class="btn-login" id="btn-login" onclick="saLogin()">Accéder →</button>
+    <div class="login-err" id="login-err"></div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div id="main-screen" style="display:none">
+  <nav>
+    <div class="nav-left">
+      <span class="nav-logo">EVOKE</span>
+      <span class="nav-badge">Super Admin</span>
+      <span style="color:var(--text3);margin:0 .3rem">·</span>
+      <div class="breadcrumb" id="breadcrumb">
+        <span class="active" onclick="showView('dashboard')">Dashboard</span>
+      </div>
+    </div>
+    <div class="nav-right">
+      <span class="nav-date" id="nav-date"></span>
+      <button class="btn-sm" onclick="refreshAll()">↻ Actualiser</button>
+      <button class="btn-sm" onclick="saLogout()">Déconnexion</button>
+    </div>
+  </nav>
+
+  <div class="content">
+
+    <!-- VIEW: DASHBOARD -->
+    <div class="view active" id="view-dashboard">
+      <div class="kpi-grid" id="kpi-grid"><div class="loading-msg" style="grid-column:1/-1">Chargement…</div></div>
+      <div class="sec-head">
+        <div class="sec-title">Tous les utilisateurs</div>
+        <input class="search" id="search-users" placeholder="Rechercher…" oninput="filterUsers()">
+      </div>
+      <div class="tbl t-users" id="users-tbl">
+        <div class="loading-msg">Chargement des utilisateurs…</div>
+      </div>
+    </div>
+
+    <!-- VIEW: USER DETAIL -->
+    <div class="view" id="view-user">
+      <div class="detail-header" id="detail-header"></div>
+      <div class="detail-stats" id="detail-stats"></div>
+      <div class="sec-head">
+        <div class="sec-title">Événements</div>
+      </div>
+      <div class="tbl t-events" id="events-tbl"></div>
+    </div>
+
+    <!-- VIEW: EVENT DETAIL -->
+    <div class="view" id="view-event">
+      <div class="detail-header" id="event-header"></div>
+      <div class="sec-head" style="margin-top:.8rem">
+        <div class="sec-title">Musiques générées</div>
+      </div>
+      <div class="tbl t-songs" id="songs-tbl"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Modal crédits -->
+<div class="overlay" id="modal-credits">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Gérer les crédits</div>
+    <div class="modal-sub" id="m-credits-user"></div>
+    <div style="display:flex;gap:8px;margin-bottom:.8rem">
+      <button id="btn-cr-add" onclick="setCreditMode(1)" style="flex:1;padding:.6rem;background:rgba(62,207,106,.1);border:1.5px solid rgba(62,207,106,.3);border-radius:var(--rmd);font-family:Plus Jakarta Sans,sans-serif;font-size:.75rem;font-weight:800;color:#16a34a;cursor:pointer">+ Ajouter</button>
+      <button id="btn-cr-remove" onclick="setCreditMode(-1)" style="flex:1;padding:.6rem;background:transparent;border:1.5px solid var(--border);border-radius:var(--rmd);font-family:Plus Jakarta Sans,sans-serif;font-size:.75rem;font-weight:800;color:var(--text2);cursor:pointer">- Retirer</button>
+    </div>
+    <div class="mf">
+      <label>Nombre de crédits</label>
+      <input type="number" id="m-cr-amount" min="1" placeholder="Ex: 50" style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:var(--rmd);padding:.7rem .9rem;font-family:Plus Jakarta Sans,sans-serif;font-size:.85rem;color:var(--text);outline:none">
+    </div>
+    <div class="mf">
+      <label>Motif (visible par l'utilisateur) *</label>
+      <input type="text" id="m-cr-reason" placeholder="Ex: Bonus bienvenue, Correction, Offert…" style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:var(--rmd);padding:.7rem .9rem;font-family:Plus Jakarta Sans,sans-serif;font-size:.85rem;color:var(--text);outline:none">
+    </div>
+    <div class="mf">
+      <label>Note interne (admin uniquement, optionnel)</label>
+      <input type="text" id="m-cr-note" placeholder="Note privée…" style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:var(--rmd);padding:.7rem .9rem;font-family:Plus Jakarta Sans,sans-serif;font-size:.85rem;color:var(--text);outline:none">
+    </div>
+    <div class="mf" id="m-cr-history-wrap">
+      <label>Historique récent</label>
+      <div id="m-cr-history" style="max-height:160px;overflow-y:auto;font-size:.72rem;color:var(--text2)"></div>
+    </div>
+    <div class="modal-actions" style="margin-top:.8rem">
+      <button class="btn-cancel" onclick="closeCreditsModal()">Annuler</button>
+      <button class="btn-save" id="btn-cr-save" onclick="saveCredits()">Confirmer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal edit user -->
+<div class="overlay" id="modal-edit">
+  <div class="modal">
+    <div class="modal-title">Modifier l'utilisateur</div>
+    <div class="modal-sub" id="m-user-info"></div>
+    <div class="mf"><label>Statut</label>
+      <select id="m-status">
+        <option value="active">✅ Actif</option>
+        <option value="pending">⏳ En attente email</option>
+        <option value="suspended">🚫 Suspendu</option>
+      </select>
+    </div>
+    <div class="mf"><label>Plan d'abonnement</label>
+      <select id="m-plan">
+        <option value="none">— Aucun plan</option>
+        <option value="starter">Starter — 50 crédits/mois</option>
+        <option value="pro">Pro — 150 crédits/mois</option>
+        <option value="max">Max — 400 crédits/mois</option>
+      </select>
+    </div>
+    <div class="mf"><label>Crédits disponibles (solde actuel)</label>
+      <input type="number" id="m-credits" min="0" placeholder="Ex: 50">
+    </div>
+    <div class="m-acts">
+      <button class="btn-cancel" onclick="closeModals()">Annuler</button>
+      <button class="btn-save" onclick="saveUser()">✓ Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal delete user -->
+<div class="overlay" id="modal-delete">
+  <div class="modal">
+    <div class="modal-title">Supprimer ce compte ?</div>
+    <div class="modal-sub" id="m-del-info"></div>
+    <div class="m-acts">
+      <button class="btn-cancel" onclick="closeModals()">Annuler</button>
+      <button class="btn-del" onclick="confirmDelete()">🗑 Supprimer définitivement</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// Variables globales
+var TOKEN = sessionStorage.getItem('sa_tok') || '';
+var allUsers = [], currentUserId = null, currentUser = null, currentEvents = [], currentEvent = null;
+var editId = null, deleteId = null;
+
+// ── AUTH ──────────────────────────────────────────────────────────────────
+async function saLogin() {
+  var t = document.getElementById('sa-token').value.trim();
+  if(!t) { document.getElementById('login-err').textContent='Entrez votre token'; return; }
+  document.getElementById('login-err').textContent='Vérification en cours…';
+  sessionStorage.removeItem('sa_tok');
+  try {
+    var r = await fetch('/api/superadmin?action=stats', { headers: {'x-admin-token': t} });
+    if(r.ok){
+      TOKEN = t;
+      sessionStorage.setItem('sa_tok', t);
+      initSA();
+    } else {
+      var d = await r.json().catch(function(){return {};});
+      document.getElementById('login-err').textContent = r.status===401 ? 'Token incorrect — accès refusé' : 'Erreur '+r.status+': '+(d.error||'inconnue');
+    }
+  } catch(e) {
+    document.getElementById('login-err').textContent = 'Erreur réseau: '+e.message;
+  }
+}
+
+function saLogout(){ sessionStorage.removeItem('sa_tok'); location.reload(); }
+
+async function initSA(){
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('main-screen').style.display='block';
+  document.getElementById('nav-date').textContent = new Date().toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  await Promise.all([loadKPIs(), loadUsers()]);
+}
+
+async function refreshAll(){
+  if(document.getElementById('view-user').classList.contains('active') && currentUserId) {
+    loadUserDetail(currentUserId);
+  } else {
+    await Promise.all([loadKPIs(), loadUsers()]);
+  }
+  toast('↻ Actualisé');
+}
+
+function showView(name){
+  document.querySelectorAll('.view').forEach(function(v){v.classList.remove('active');});
+  document.getElementById('view-'+name).classList.add('active');
+  updateBreadcrumb(name);
+}
+
+function updateBreadcrumb(name){
+  var bc = document.getElementById('breadcrumb');
+  if(name==='dashboard'){
+    bc.innerHTML='<span class="active" onclick="showView(&quot;dashboard&quot;)">Dashboard</span>';
+  } else if(name==='user'){
+    bc.innerHTML='<span onclick="showView(&quot;dashboard&quot;)">Dashboard</span><span class="breadcrumb-sep">›</span><span class="active">'+(currentUser?esc(currentUser.first_name)+' '+esc(currentUser.last_name):'')+'</span>';
+  } else if(name==='event'){
+    bc.innerHTML='<span onclick="showView(&quot;dashboard&quot;)">Dashboard</span><span class="breadcrumb-sep">›</span><span onclick="loadUserDetail(&quot;'+currentUserId+'&quot;)">'+(currentUser?esc(currentUser.first_name)+' '+esc(currentUser.last_name):'')+'</span><span class="breadcrumb-sep">›</span><span class="active">'+(currentEvent?esc(currentEvent.couple||'Événement'):'')+'</span>';
+  }
+}
+
+async function loadKPIs(){
+  var r = await fetch('/api/superadmin?action=stats', { headers: {'x-admin-token':TOKEN} });
+  if(!r.ok) return;
+  var s = await r.json();
+  document.getElementById('kpi-grid').innerHTML =
+    '<div class="kpi g"><div class="kpi-num">'+s.totalUsers+'</div><div class="kpi-label">Utilisateurs</div></div>'+
+    '<div class="kpi g"><div class="kpi-num">'+s.activeUsers+'</div><div class="kpi-label">Actifs</div></div>'+
+    '<div class="kpi o"><div class="kpi-num">'+s.pendingUsers+'</div><div class="kpi-label">En attente</div></div>'+
+    '<div class="kpi r"><div class="kpi-num">'+s.suspendedUsers+'</div><div class="kpi-label">Suspendus</div></div>'+
+    '<div class="kpi"><div class="kpi-num">'+s.totalEvents+'</div><div class="kpi-label">Événements</div></div>'+
+    '<div class="kpi"><div class="kpi-num">'+s.totalSongs+'</div><div class="kpi-label">Musiques</div></div>'+
+    '<div class="kpi b"><div class="kpi-num">'+s.planStarter+'</div><div class="kpi-label">Starter</div></div>'+
+    '<div class="kpi b"><div class="kpi-num">'+s.planPro+'</div><div class="kpi-label">Pro</div></div>'+
+    '<div class="kpi p"><div class="kpi-num">'+s.planMax+'</div><div class="kpi-label">Max</div></div>'+
+    '<div class="kpi"><div class="kpi-num">'+s.totalCreditsUsed+'</div><div class="kpi-label">Crédits utilisés</div></div>';
+}
+
+async function loadUsers(){
+  document.getElementById('users-tbl').innerHTML='<div class="loading-msg">Chargement…</div>';
+  var r = await fetch('/api/superadmin?action=users', { headers: {'x-admin-token':TOKEN} });
+  if(!r.ok){ document.getElementById('users-tbl').innerHTML='<div class="empty">Erreur de chargement</div>'; return; }
+  allUsers = await r.json();
+  renderUsers(allUsers);
+}
+
+function renderUsers(users){
+  if(!users.length){ document.getElementById('users-tbl').innerHTML='<div class="empty">Aucun utilisateur</div>'; return; }
+  var html = '<div class="t-head"><div>Utilisateur</div><div>Email</div><div>Type</div><div>Statut</div><div>Plan</div><div>Crédits</div><div>Actions</div></div>';
+  users.forEach(function(u){
+    html += '<div class="t-row" onclick="loadUserDetail(&quot;'+u.id+'&quot;)">'+
+      '<div><div class="u-name">'+esc(u.firstName)+' '+esc(u.lastName)+'</div>'+
+      '<div class="u-sub">'+u.eventsCount+' événement'+(u.eventsCount!==1?'s':'')+' · '+u.songsCount+' musique'+(u.songsCount!==1?'s':'')+'</div>'+
+      (u.company?'<div class="u-company">'+esc(u.company)+'</div>':'')+
+      '</div>'+
+      '<div class="cell-sm">'+esc(u.email)+'</div>'+
+      '<div><span class="badge '+u.accountType+'">'+(u.accountType==='professional'?'Pro':'Perso')+'</span></div>'+
+      '<div><span class="badge '+u.status+'">'+(u.status==='active'?'Actif':u.status==='pending'?'Attente':'Suspendu')+'</span></div>'+
+      '<div><span class="badge '+(u.plan||'none')+'">'+(u.plan||'—')+'</span></div>'+
+      '<div class="cell-n">'+((u.credits||0)-(u.creditsUsed||0))+'<span style="color:var(--text3);font-size:.6rem"> / '+(u.credits||0)+'</span></div>'+
+      '<div class="acts" onclick="event.stopPropagation()">'+
+        '<button class="ab g" onclick="openEdit(&quot;'+u.id+'&quot;)">✏️ Modifier</button>'+
+        '<button class="ab p" onclick="openCredits(&quot;'+u.id+'&quot;)">💳 Crédits</button>'+
+        '<button class="ab b" onclick="impersonate(&quot;'+u.id+'&quot;)">👁 Voir</button>'+
+        '<button class="ab '+(u.status==='suspended'?'g':'o')+'" onclick="toggleSuspend(&quot;'+u.id+'&quot;,&quot;'+u.status+'&quot;)">'+(u.status==='suspended'?'Réactiver':'Suspendre')+'</button>'+
+        '<button class="ab r" onclick="openDelete(&quot;'+u.id+'&quot;,&quot;'+esc(u.firstName)+' '+esc(u.lastName)+'&quot;)">🗑</button>'+
+      '</div></div>';
+  });
+  document.getElementById('users-tbl').innerHTML = html;
+}
+
+function filterUsers(){
+  var q = document.getElementById('search-users').value.toLowerCase();
+  if(!q){ renderUsers(allUsers); return; }
+  renderUsers(allUsers.filter(function(u){
+    return u.email.toLowerCase().includes(q)||
+      (u.firstName||'').toLowerCase().includes(q)||
+      (u.lastName||'').toLowerCase().includes(q)||
+      (u.company||'').toLowerCase().includes(q);
+  }));
+}
+
+async function loadUserDetail(userId){
+  currentUserId = userId;
+  showView('user');
+  document.getElementById('detail-header').innerHTML='<div class="loading-msg">Chargement…</div>';
+  document.getElementById('events-tbl').innerHTML='<div class="loading-msg">Chargement…</div>';
+  var r = await fetch('/api/superadmin?action=user-detail&userId='+userId, { headers: {'x-admin-token':TOKEN} });
+  if(!r.ok){ document.getElementById('detail-header').innerHTML='<div class="empty">Erreur</div>'; return; }
+  var data = await r.json();
+  currentUser = data.user;
+  currentEvents = data.events || [];
+  var u = data.user;
+  var totalSongs = currentEvents.reduce(function(acc,e){ return acc+(e.songs?e.songs.length:0); },0);
+  var creditsLeft = (u.credits||0)-(u.credits_used||0);
+  document.getElementById('detail-header').innerHTML =
+    '<div>'+
+      '<div class="detail-name">'+esc(u.first_name)+' '+esc(u.last_name)+'</div>'+
+      '<div class="detail-meta">'+esc(u.email)+'<br>'+(u.phone?'📞 '+esc(u.phone)+'<br>':'')+(u.company?'🏢 '+esc(u.company)+(u.siret?' — SIRET: '+esc(u.siret):'')+' <br>':'')+'Inscrit le '+fmt(u.created_at)+(u.last_login?' · Dernière connexion: '+fmt(u.last_login):'')+'</div>'+
+      '<div class="detail-badges">'+
+        '<span class="badge '+(u.status)+'">'+(u.status==='active'?'Actif':u.status==='pending'?'En attente':'Suspendu')+'</span>'+
+        '<span class="badge '+(u.plan||'none')+'">'+(u.plan||'Sans plan')+'</span>'+
+        '<span class="badge '+(u.account_type)+'">'+(u.account_type==='professional'?'Professionnel':'Particulier')+'</span>'+
+      '</div>'+
+    '</div>'+
+    '<div class="acts">'+
+      '<button class="ab g" onclick="openEdit(&quot;'+u.id+'&quot;)">✏️ Modifier</button>'+
+      '<button class="ab p" onclick="openCredits(&quot;'+u.id+'&quot;)">💳 Donner des crédits</button>'+
+      '<button class="ab b" onclick="impersonate(&quot;'+u.id+'&quot;)">👁 Voir son espace</button>'+
+      '<button class="ab '+(u.status==='suspended'?'g':'o')+'" onclick="toggleSuspend(&quot;'+u.id+'&quot;,&quot;'+u.status+'&quot;)">'+(u.status==='suspended'?'Réactiver':'Suspendre')+'</button>'+
+      '<button class="ab r" onclick="openDelete(&quot;'+u.id+'&quot;,&quot;'+esc(u.first_name)+' '+esc(u.last_name)+'&quot;)">🗑 Supprimer</button>'+
+    '</div>';
+  document.getElementById('detail-stats').innerHTML =
+    '<div class="dstat"><div class="dstat-num" style="color:var(--green)">'+creditsLeft+'</div><div class="dstat-label">Crédits restants</div></div>'+
+    '<div class="dstat"><div class="dstat-num">'+(u.credits||0)+'</div><div class="dstat-label">Crédits alloués</div></div>'+
+    '<div class="dstat"><div class="dstat-num">'+currentEvents.length+'</div><div class="dstat-label">Événements</div></div>'+
+    '<div class="dstat"><div class="dstat-num">'+totalSongs+'</div><div class="dstat-label">Musiques</div></div>';
+  if(!currentEvents.length){ document.getElementById('events-tbl').innerHTML='<div class="empty">Aucun événement</div>'; return; }
+  var evHtml = '<div class="t-head"><div>Couple</div><div>Date</div><div>Crédits</div><div>Musiques</div><div>Créé le</div><div>Actions</div></div>';
+  currentEvents.forEach(function(e){
+    evHtml += '<div class="t-row" onclick="loadEventDetail(&quot;'+e.id+'&quot;)">'+
+      '<div class="u-name">'+esc(e.couple||'—')+'</div>'+
+      '<div class="cell-sm">'+(e.date?fmtDate(e.date):'—')+'</div>'+
+      '<div class="cell-n">'+((e.credits||0)-(e.usedCredits||0))+' / '+(e.credits||0)+'</div>'+
+      '<div class="cell-n">'+((e.songs||[]).length)+'</div>'+
+      '<div class="cell-sm">'+fmt(e.createdAt)+'</div>'+
+      '<div class="acts" onclick="event.stopPropagation()"><button class="ab g" onclick="loadEventDetail(&quot;'+e.id+'&quot;)">Voir →</button></div>'+
+    '</div>';
+  });
+  document.getElementById('events-tbl').innerHTML = evHtml;
+}
+
+function loadEventDetail(eventId){
+  var ev = currentEvents.find(function(e){ return e.id===eventId; });
+  if(!ev) return;
+  currentEvent = ev;
+  showView('event');
+  var songs = ev.songs || [];
+  document.getElementById('event-header').innerHTML =
+    '<div>'+
+      '<div class="detail-name">'+esc(ev.couple||'—')+'</div>'+
+      '<div class="detail-meta">'+(ev.date?'📅 '+fmtDate(ev.date)+'<br>':'')+songs.length+' musique'+(songs.length!==1?'s':'')+' générée'+(songs.length!==1?'s':'')+'<br>Crédits : '+((ev.credits||0)-(ev.usedCredits||0))+' restants / '+(ev.credits||0)+' alloués</div>'+
+    '</div>'+
+    '<div class="acts"><button class="ab" onclick="loadUserDetail(&quot;'+currentUserId+'&quot;)">← Retour</button></div>';
+  if(!songs.length){ document.getElementById('songs-tbl').innerHTML='<div class="empty">Aucune musique</div>'; return; }
+  var sHtml = '<div class="t-head"><div>Titre</div><div>Message</div><div>Style</div><div>Voix</div><div>Créée le</div></div>';
+  songs.forEach(function(s){
+    sHtml += '<div class="song-row">'+
+      '<div><div class="song-title">'+esc(s.title||'—')+'</div><div class="song-msg">'+esc(s.author||'')+'</div></div>'+
+      '<div class="song-msg">'+esc((s.message||'').substring(0,60))+((s.message||'').length>60?'…':'')+'</div>'+
+      '<div><span class="badge none">'+esc(s.style||'—')+'</span></div>'+
+      '<div class="cell-sm">'+(s.voice==='female'?'👩 Féminine':'👨 Masculine')+'</div>'+
+      '<div class="cell-sm">'+fmt(s.createdAt)+'</div>'+
+    '</div>';
+  });
+  document.getElementById('songs-tbl').innerHTML = sHtml;
+}
+
+function openEdit(userId){
+  var u = allUsers.find(function(x){ return x.id===userId; });
+  if(!u && currentUser && currentUser.id===userId) {
+    u = {id:currentUser.id,email:currentUser.email,firstName:currentUser.first_name,lastName:currentUser.last_name,status:currentUser.status,plan:currentUser.plan,credits:currentUser.credits};
+  }
+  if(!u) return;
+  editId = userId;
+  document.getElementById('m-user-info').textContent=(u.firstName||u.first_name)+' '+(u.lastName||u.last_name)+' — '+u.email;
+  document.getElementById('m-status').value = u.status||'active';
+  document.getElementById('m-plan').value = u.plan||'none';
+  document.getElementById('m-credits').value = u.credits||0;
+  document.getElementById('modal-edit').classList.add('show');
+}
+
+function openDelete(userId, name){
+  deleteId = userId;
+  document.getElementById('m-del-info').textContent='Supprimer le compte de '+name+' ? Tous ses événements et musiques seront supprimés. Irréversible.';
+  document.getElementById('modal-delete').classList.add('show');
+}
+
+function closeModals(){
+  document.getElementById('modal-edit').classList.remove('show');
+  document.getElementById('modal-delete').classList.remove('show');
+  editId=null; deleteId=null;
+}
+
+async function saveUser(){
+  if(!editId) return;
+  var r = await fetch('/api/superadmin?action=user',{
+    method:'PATCH',
+    headers:{'x-admin-token':TOKEN,'Content-Type':'application/json'},
+    body:JSON.stringify({userId:editId,status:document.getElementById('m-status').value,plan:document.getElementById('m-plan').value,credits:parseInt(document.getElementById('m-credits').value)||0})
+  });
+  if(r.ok){ closeModals(); toast('✅ Mis à jour'); await Promise.all([loadKPIs(),loadUsers()]); if(currentUserId===editId) loadUserDetail(editId); }
+  else toast('❌ Erreur lors de la sauvegarde');
+}
+
+async function toggleSuspend(userId, currentStatus){
+  var newStatus = currentStatus==='suspended'?'active':'suspended';
+  var r = await fetch('/api/superadmin?action=user',{method:'PATCH',headers:{'x-admin-token':TOKEN,'Content-Type':'application/json'},body:JSON.stringify({userId:userId,status:newStatus})});
+  if(r.ok){ toast(newStatus==='suspended'?'🚫 Suspendu':'✅ Réactivé'); await Promise.all([loadKPIs(),loadUsers()]); if(currentUserId===userId) loadUserDetail(userId); }
+}
+
+async function confirmDelete(){
+  if(!deleteId) return;
+  var r = await fetch('/api/superadmin?action=user',{method:'DELETE',headers:{'x-admin-token':TOKEN,'Content-Type':'application/json'},body:JSON.stringify({userId:deleteId})});
+  if(r.ok){ closeModals(); toast('🗑 Supprimé'); showView('dashboard'); await Promise.all([loadKPIs(),loadUsers()]); }
+  else toast('❌ Erreur');
+}
+
+async function impersonate(userId){
+  toast('🔄 Génération du lien…');
+  try {
+    var r = await fetch('/api/superadmin?action=impersonate&userId='+userId, {headers:{'x-admin-token':TOKEN}});
+    var d = await r.json();
+    if(r.ok && d.link && d.link.startsWith('http')){ window.open(d.link,'_blank'); toast('✅ Lien ouvert'); }
+    else {
+      var u = allUsers.find(function(x){return x.id===userId;})||{email:'cet utilisateur'};
+      alert('Pour accéder à l\'espace de '+u.email+':\n1. Allez dans Supabase > Authentication > Users\n2. Trouvez '+u.email+'\n3. Cliquez Send magic link');
+    }
+  } catch(e){ toast('❌ Erreur: '+e.message); }
+}
+
+function fmt(iso){ try{ return new Date(iso).toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}); }catch{ return '—'; } }
+function fmtDate(d){ try{ return new Date(d+'T00:00:00').toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'}); }catch{ return d||'—'; } }
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function toast(msg){ var t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(function(){t.classList.remove('show');},2800); }
+
+
+// ── CRÉDITS ──────────────────────────────────────────────────────────────
+var creditUserId = null;
+var creditMode = 1;
+
+function openCredits(userId) {
+  var u = allUsers.find(function(x){ return x.id===userId; });
+  if(!u) return;
+  creditUserId = userId;
+  creditMode = 1;
+  document.getElementById('m-credits-user').textContent = u.firstName+' '+u.lastName+' — '+u.email+' — Solde actuel: '+((u.credits||0)-(u.creditsUsed||0))+' crédits';
+  document.getElementById('m-cr-amount').value = '';
+  document.getElementById('m-cr-reason').value = '';
+  document.getElementById('m-cr-note').value = '';
+  setCreditMode(1);
+  loadSACreditHistory(userId);
+  document.getElementById('modal-credits').classList.add('show');
+}
+
+function setCreditMode(mode) {
+  creditMode = mode;
+  var btnAdd = document.getElementById('btn-cr-add');
+  var btnRm = document.getElementById('btn-cr-remove');
+  var btnSave = document.getElementById('btn-cr-save');
+  if(mode === 1) {
+    btnAdd.style.background = 'rgba(62,207,106,.15)';
+    btnAdd.style.borderColor = 'rgba(62,207,106,.4)';
+    btnRm.style.background = 'transparent';
+    btnRm.style.borderColor = 'var(--border)';
+    btnSave.textContent = '✓ Ajouter les crédits';
+    btnSave.style.background = 'var(--green)';
+  } else {
+    btnRm.style.background = 'rgba(255,91,91,.15)';
+    btnRm.style.borderColor = 'rgba(255,91,91,.3)';
+    btnAdd.style.background = 'transparent';
+    btnAdd.style.borderColor = 'var(--border)';
+    btnSave.textContent = '✓ Retirer les crédits';
+    btnSave.style.background = 'var(--red)';
+  }
+}
+
+async function loadSACreditHistory(userId) {
+  var el = document.getElementById('m-cr-history');
+  if(!el) return;
+  el.textContent = 'Chargement…';
+  try {
+    var r = await fetch('/api/superadmin?action=credit-history&userId='+userId, {
+      headers: {'x-admin-token': TOKEN}
+    });
+    if(!r.ok) { el.textContent = 'Historique indisponible'; return; }
+    var rows = await r.json();
+    if(!rows.length) { el.textContent = 'Aucun mouvement de crédits'; return; }
+    el.innerHTML = rows.slice(0,8).map(function(row) {
+      var isAdd = row.amount > 0;
+      return '<div style="display:flex;justify-content:space-between;align-items:flex-start;padding:.4rem 0;border-bottom:1px solid var(--border)">'+
+        '<div>'+
+          '<div style="font-weight:700;color:var(--text)">'+esc(row.reason)+'</div>'+
+          (row.admin_note ? '<div style="color:var(--text3);font-size:.65rem;font-style:italic">'+esc(row.admin_note)+'</div>' : '')+
+          '<div style="color:var(--text3);font-size:.65rem">'+fmt(row.created_at)+' · Solde après: '+row.balance_after+'</div>'+
+        '</div>'+
+        '<span style="font-weight:800;color:'+(isAdd?'var(--green)':'var(--red)')+'">'+( isAdd?'+':'')+row.amount+'</span>'+
+      '</div>';
+    }).join('');
+  } catch(e) { el.textContent = 'Erreur'; }
+}
+
+async function saveCredits() {
+  var amount = parseInt(document.getElementById('m-cr-amount').value);
+  var reason = document.getElementById('m-cr-reason').value.trim();
+  var note = document.getElementById('m-cr-note').value.trim();
+  if(!amount || amount < 1) { toast('Entrez un nombre valide (minimum 1)'); return; }
+  if(!reason) { toast('Le motif est obligatoire'); return; }
+  var finalAmount = creditMode * amount;
+  try {
+    var r = await fetch('/api/credits', {
+      method: 'POST',
+      headers: {'x-admin-token': TOKEN, 'Content-Type': 'application/json'},
+      body: JSON.stringify({userId: creditUserId, amount: finalAmount, reason: reason, adminNote: note})
+    });
+    var d = await r.json();
+    if(!r.ok) { toast('❌ '+d.error); return; }
+    toast('✅ Crédits mis à jour — nouveau solde: '+d.newBalance);
+    closeCreditsModal();
+    await Promise.all([loadKPIs(), loadUsers()]);
+    if(currentUserId === creditUserId) loadUserDetail(creditUserId);
+  } catch(e) { toast('❌ Erreur réseau: '+e.message); }
+}
+
+function closeCreditsModal() {
+  document.getElementById('modal-credits').classList.remove('show');
+  creditUserId = null;
+}
+
+// Init au chargement
+window.onload = function() {
+  // Attacher le keydown sur le champ token
+  var tokenInput = document.getElementById('sa-token');
+  if(tokenInput) tokenInput.addEventListener('keydown', function(e){ if(e.key==='Enter') saLogin(); });
+  // Vérifier token en cache
+  if(TOKEN){
+    fetch('/api/superadmin?action=stats', {headers:{'x-admin-token':TOKEN}})
+      .then(function(r){ if(r.ok){ initSA(); } else { sessionStorage.removeItem('sa_tok'); TOKEN=''; } })
+      .catch(function(){ sessionStorage.removeItem('sa_tok'); TOKEN=''; });
+  }
+};
+</script>
+</body>
+</html>

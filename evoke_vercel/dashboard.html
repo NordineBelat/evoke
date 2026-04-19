@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>EVOKE — Mon espace</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{--bg:#f2f2f7;--white:#fff;--dark:#111118;--text:#111118;--text2:#6b6b80;--text3:#aeaec0;--green:#3ecf6a;--green2:#b8f0c8;--red:#ff6b6b;--border:rgba(0,0,0,0.07);--sh:0 4px 24px rgba(0,0,0,0.07);--sh2:0 12px 40px rgba(0,0,0,0.12);--rmd:20px;--rlg:28px;--rxl:36px;--rp:100px;}
+html,body{min-height:100vh;font-family:"Plus Jakarta Sans",sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;overflow-x:hidden;max-width:100vw;}
+nav{position:fixed;top:0;left:0;right:0;z-index:200;height:60px;background:rgba(242,242,247,0.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 1.2rem;}
+.nlogo{font-size:1.05rem;font-weight:800;color:var(--dark);letter-spacing:-.02em;}
+.nright{display:flex;align-items:center;gap:.5rem;}
+.nuser{font-size:.7rem;font-weight:700;color:var(--text2);max-width:120px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.nplan{font-size:.58rem;font-weight:800;padding:.18rem .5rem;border-radius:100px;text-transform:uppercase;letter-spacing:.06em;}
+.nplan.starter{background:rgba(99,102,241,.1);color:#6366f1;}
+.nplan.pro{background:rgba(62,207,106,.12);color:#16a34a;}
+.nplan.max{background:rgba(245,158,11,.1);color:#d97706;}
+.nplan.none{background:var(--border);color:var(--text3);}
+.btn-out{padding:.35rem .75rem;background:var(--white);border:1px solid var(--border);border-radius:var(--rp);font-family:"Plus Jakarta Sans",sans-serif;font-size:.66rem;font-weight:700;color:var(--text2);cursor:pointer;-webkit-tap-highlight-color:transparent;}
+.btn-out:hover{color:var(--dark);}
+.main{padding-top:60px;max-width:700px;margin:0 auto;padding-left:1rem;padding-right:1rem;padding-bottom:4rem;}
+/* HERO */
+.hero{background:var(--dark);border-radius:var(--rxl);padding:1.6rem;margin:1rem 0 .9rem;position:relative;overflow:hidden;}
+.hero::before{content:"";position:absolute;right:-40px;top:-40px;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,.03);}
+.htag{display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.08);border-radius:var(--rp);padding:.22rem .65rem;font-size:.58rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.55);margin-bottom:.8rem;}
+.hdot{width:5px;height:5px;border-radius:50%;background:var(--green);}
+.htitle{font-size:1.2rem;font-weight:800;color:white;line-height:1.2;margin-bottom:.3rem;}
+.hsub{font-size:.75rem;color:rgba(255,255,255,.4);line-height:1.5;}
+.hcreds{display:inline-flex;align-items:center;gap:.4rem;background:rgba(255,255,255,.08);border-radius:var(--rp);padding:.45rem 1rem;margin-top:1rem;}
+.hcredn{font-size:.95rem;font-weight:800;color:white;}
+.hcredl{font-size:.6rem;font-weight:500;color:rgba(255,255,255,.4);}
+/* TABS */
+.tabs{display:flex;gap:4px;background:var(--white);border-radius:var(--rp);padding:4px;box-shadow:var(--sh);margin-bottom:.9rem;}
+.tab{flex:1;padding:.48rem .4rem;border:none;background:transparent;font-family:"Plus Jakarta Sans",sans-serif;font-size:.66rem;font-weight:700;color:var(--text2);border-radius:var(--rp);cursor:pointer;transition:all .2s;white-space:nowrap;}
+.tab.active{background:var(--dark);color:white;}
+/* CARD */
+.card{background:var(--white);border-radius:var(--rxl);padding:1.2rem;box-shadow:var(--sh);margin-bottom:.8rem;}
+.card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;}
+.card-title{font-size:.62rem;font-weight:800;color:var(--text3);letter-spacing:.12em;text-transform:uppercase;}
+/* EVENTS */
+.ev{background:var(--bg);border-radius:var(--rlg);padding:.9rem 1.1rem;margin-bottom:7px;cursor:pointer;transition:background .15s;display:flex;align-items:center;justify-content:space-between;gap:.7rem;}
+.ev:last-child{margin-bottom:0;}
+.ev:hover{background:rgba(17,17,24,.06);}
+.ev-l{flex:1;min-width:0;}
+.ev-name{font-size:.88rem;font-weight:800;color:var(--dark);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ev-date{font-size:.65rem;color:var(--text2);margin-top:2px;}
+.ev-r{display:flex;align-items:center;gap:.4rem;flex-shrink:0;}
+.pill{font-size:.6rem;font-weight:800;border-radius:100px;padding:.18rem .55rem;}
+.pill-g{background:var(--green2);color:#1a5c2a;}
+.pill-d{background:var(--bg);color:var(--text2);border:1px solid var(--border);}
+/* FORM */
+.panel{display:none;}
+.panel.show{display:block;}
+.field{margin-bottom:.85rem;}
+.field label{display:block;font-size:.6rem;font-weight:800;color:var(--text2);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.35rem;}
+.field input,.field select,.field textarea{width:100%;background:var(--bg);border:1.5px solid transparent;border-radius:var(--rmd);padding:.8rem .95rem;font-family:"Plus Jakarta Sans",sans-serif;font-size:.88rem;color:var(--text);outline:none;transition:all .2s;}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:rgba(17,17,24,.18);background:var(--white);}
+.field input::placeholder,.field textarea::placeholder{color:var(--text3);}
+.field small{font-size:.62rem;color:var(--text3);margin-top:.28rem;display:block;}
+.f2{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;}
+@media(max-width:480px){.f2{grid-template-columns:1fr;}}
+.btn-main{width:100%;padding:1rem;background:var(--dark);border:none;border-radius:var(--rp);font-family:"Plus Jakarta Sans",sans-serif;font-size:.88rem;font-weight:800;color:white;cursor:pointer;transition:opacity .2s;margin-top:.4rem;-webkit-tap-highlight-color:transparent;}
+.btn-main:hover{opacity:.88;}
+.btn-main:disabled{opacity:.4;cursor:not-allowed;}
+.btn-sec{width:100%;padding:.85rem;background:var(--bg);border:none;border-radius:var(--rp);font-family:"Plus Jakarta Sans",sans-serif;font-size:.82rem;font-weight:700;color:var(--text2);cursor:pointer;margin-top:.5rem;}
+.btn-green{background:var(--green);color:white;}
+.btn-red{background:var(--red);color:white;}
+/* PROFILE */
+.prof-section{margin-bottom:1.2rem;}
+.prof-label{font-size:.6rem;font-weight:800;color:var(--text3);letter-spacing:.12em;text-transform:uppercase;margin-bottom:.6rem;}
+.prof-row{display:flex;align-items:center;justify-content:space-between;padding:.55rem 0;border-bottom:1px solid var(--border);}
+.prof-row:last-child{border-bottom:none;}
+.prof-key{font-size:.72rem;color:var(--text2);font-weight:600;}
+.prof-val{font-size:.8rem;font-weight:700;color:var(--dark);text-align:right;max-width:60%;}
+.prof-edit-btn{font-size:.65rem;font-weight:700;color:var(--green);background:none;border:none;cursor:pointer;padding:0;white-space:nowrap;margin-left:.5rem;}
+/* DETAIL */
+.det-header{background:var(--dark);border-radius:var(--rxl);padding:1.4rem;margin-bottom:.8rem;position:relative;overflow:hidden;}
+.det-header::before{content:"";position:absolute;right:-40px;top:-40px;width:160px;height:160px;border-radius:50%;background:rgba(255,255,255,.03);}
+.det-couple{font-size:1.1rem;font-weight:800;color:white;margin-bottom:.2rem;}
+.det-date{font-size:.72rem;color:rgba(255,255,255,.4);margin-bottom:.9rem;}
+.det-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:.9rem;}
+.ds{background:rgba(255,255,255,.07);border-radius:var(--rmd);padding:.65rem;text-align:center;}
+.ds-n{font-size:1.2rem;font-weight:800;color:white;}
+.ds-l{font-size:.56rem;font-weight:700;color:rgba(255,255,255,.38);text-transform:uppercase;letter-spacing:.07em;margin-top:.15rem;}
+.link-item{background:rgba(255,255,255,.07);border-radius:var(--rmd);padding:.65rem .85rem;display:flex;align-items:center;gap:.6rem;margin-bottom:6px;}
+.link-lbl{font-size:.58rem;font-weight:800;color:rgba(255,255,255,.38);text-transform:uppercase;letter-spacing:.08em;min-width:48px;}
+.link-url{flex:1;font-size:.65rem;color:rgba(255,255,255,.55);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.link-acts{display:flex;gap:4px;flex-shrink:0;}
+.link-btn{padding:.25rem .55rem;background:rgba(255,255,255,.1);border:none;border-radius:7px;font-size:.6rem;font-weight:700;color:white;cursor:pointer;}
+.link-btn:hover{background:rgba(255,255,255,.18);}
+/* SONGS */
+.song-card{background:var(--white);border-radius:var(--rlg);padding:1rem 1.1rem;margin-bottom:7px;box-shadow:var(--sh);}
+.song-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:.4rem;}
+.song-title{font-size:.85rem;font-weight:800;color:var(--dark);}
+.song-style{font-size:.6rem;font-weight:700;background:var(--bg);border-radius:var(--rp);padding:.18rem .55rem;color:var(--text2);}
+.song-meta{font-size:.66rem;color:var(--text2);margin-bottom:.6rem;}
+.song-msg{font-size:.76rem;font-style:italic;color:var(--text2);background:var(--bg);border-radius:var(--rmd);padding:.55rem .8rem;margin-bottom:.65rem;line-height:1.5;}
+.song-footer{display:flex;align-items:center;justify-content:space-between;}
+.song-voice{font-size:.62rem;font-weight:700;color:var(--text2);}
+.song-dl{display:inline-flex;align-items:center;gap:.3rem;padding:.35rem .75rem;background:transparent;border:1.5px solid var(--border);border-radius:var(--rp);font-family:"Plus Jakarta Sans",sans-serif;font-size:.62rem;font-weight:700;color:var(--text2);cursor:pointer;transition:all .18s;}
+.song-dl:hover{border-color:var(--dark);color:var(--dark);}
+.song-del{padding:.35rem .6rem;background:rgba(255,107,107,.08);border:none;border-radius:var(--rp);font-size:.62rem;font-weight:700;color:var(--red);cursor:pointer;}
+/* CREDITS HIST */
+.cr-item{display:flex;align-items:center;justify-content:space-between;padding:.45rem 0;border-bottom:1px solid var(--border);font-size:.72rem;}
+.cr-item:last-child{border-bottom:none;}
+.cr-add{font-weight:800;color:#2d7a47;}
+/* ALERTS */
+.alert{border-radius:var(--rmd);padding:.72rem .95rem;font-size:.75rem;font-weight:600;margin-bottom:.8rem;display:none;line-height:1.5;}
+.alert.err{background:rgba(255,107,107,.1);color:#c0392b;border:1px solid rgba(255,107,107,.2);}
+.alert.ok{background:rgba(62,207,106,.1);color:#1a5c2a;border:1px solid rgba(62,207,106,.2);}
+.alert.show{display:block;}
+/* MODALS */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;align-items:flex-end;justify-content:center;}
+.overlay.show{display:flex;}
+.modal{background:var(--white);border-radius:var(--rxl) var(--rxl) 0 0;width:100%;max-width:620px;max-height:85vh;overflow-y:auto;padding:1.4rem;}
+.modal-handle{width:36px;height:4px;background:var(--border);border-radius:100px;margin:0 auto 1.1rem;}
+.modal-title{font-size:.92rem;font-weight:800;margin-bottom:1rem;color:var(--dark);}
+.m-acts{display:flex;gap:8px;margin-top:1rem;}
+.m-cancel{flex:1;padding:.72rem;background:var(--bg);border:none;border-radius:var(--rp);font-family:"Plus Jakarta Sans",sans-serif;font-size:.75rem;font-weight:700;color:var(--text2);cursor:pointer;}
+.m-confirm{flex:2;padding:.72rem;background:var(--dark);border:none;border-radius:var(--rp);font-family:"Plus Jakarta Sans",sans-serif;font-size:.75rem;font-weight:800;color:white;cursor:pointer;}
+.m-danger{flex:2;padding:.72rem;background:var(--red);border:none;border-radius:var(--rp);font-family:"Plus Jakarta Sans",sans-serif;font-size:.75rem;font-weight:800;color:white;cursor:pointer;}
+/* QUIZ fields */
+.quiz-field{background:var(--bg);border-radius:var(--rmd);padding:.9rem;margin-bottom:.7rem;display:flex;flex-direction:column;gap:.5rem;position:relative;}
+.quiz-field input{background:white;border:1.5px solid var(--border);border-radius:var(--rmd);padding:.6rem .8rem;font-family:"Plus Jakarta Sans",sans-serif;font-size:.8rem;color:var(--text);outline:none;width:100%;box-sizing:border-box;}
+.quiz-field input:focus{border-color:var(--green);}
+.qf-opts-label{font-size:.68rem;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.04em;margin-top:.2rem;}
+.qf-opt-row{display:flex;align-items:center;gap:.5rem;}
+.qf-opt-row input[type=text]{flex:1;}
+.qf-opt-row input[type=radio]{accent-color:var(--green);width:16px;height:16px;flex-shrink:0;cursor:pointer;}
+.qf-correct-hint{font-size:.65rem;color:var(--text2);margin-top:-.2rem;}
+.qf-small{font-size:.65rem;}
+.btn-rm{position:absolute;top:.6rem;right:.6rem;padding:.35rem .55rem;background:rgba(255,107,107,.1);border:none;border-radius:8px;color:var(--red);font-size:.72rem;cursor:pointer;}
+.btn-add-q{padding:.55rem 1rem;background:var(--bg);border:1.5px solid var(--border);border-radius:var(--rp);font-family:"Plus Jakarta Sans",sans-serif;font-size:.72rem;font-weight:700;color:var(--text2);cursor:pointer;margin-top:.4rem;}
+/* TOAST */
+.toast{position:fixed;bottom:1.4rem;left:50%;transform:translateX(-50%) translateY(20px);background:var(--dark);color:white;padding:.6rem 1.2rem;border-radius:var(--rp);font-size:.74rem;font-weight:700;z-index:999;opacity:0;transition:all .25s;pointer-events:none;white-space:nowrap;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+/* back btn */
+.back{display:inline-flex;align-items:center;gap:.4rem;font-size:.72rem;font-weight:700;color:var(--text2);cursor:pointer;margin:.9rem 0 .5rem;background:none;border:none;padding:0;}
+.back:hover{color:var(--dark);}
+.send-btn{width:100%;padding:.85rem;background:var(--green);border:none;border-radius:var(--rp);font-family:"Plus Jakarta Sans",sans-serif;font-size:.82rem;font-weight:800;color:white;cursor:pointer;margin-top:.5rem;}
+.del-all-btn{padding:.4rem .9rem;background:rgba(255,107,107,.08);border:1px solid rgba(255,107,107,.2);border-radius:var(--rp);font-family:"Plus Jakarta Sans",sans-serif;font-size:.65rem;font-weight:700;color:var(--red);cursor:pointer;}
+.dl-all-btn{padding:.4rem .9rem;background:var(--dark);border:none;border-radius:var(--rp);font-family:"Plus Jakarta Sans",sans-serif;font-size:.65rem;font-weight:700;color:white;cursor:pointer;}
+/* PW strength */
+.pw-bars{display:flex;gap:3px;margin-top:.4rem;}
+.pw-bar{height:3px;flex:1;border-radius:100px;background:var(--border);transition:background .3s;}
+.pw-bar.weak{background:#ff6b6b;}.pw-bar.fair{background:var(--green);}.pw-bar.strong{background:#22c55e;}
+.pw-label{font-size:.62rem;margin-top:.2rem;}
+.pw-wrap{position:relative;}
+.pw-wrap input{padding-right:2.8rem;}
+.pw-eye{position:absolute;right:.8rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:.85rem;color:var(--text3);padding:.3rem;}
+/* Settings section */
+.settings-group{margin-bottom:1.4rem;}
+.settings-title{font-size:.6rem;font-weight:800;color:var(--text3);letter-spacing:.12em;text-transform:uppercase;margin-bottom:.8rem;padding-bottom:.5rem;border-bottom:1px solid var(--border);}
+</style>
+</head>
+<body>
+<div class="toast" id="toast"></div>
+
+<!-- OVERLAY -->
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="modal-title"></div>
+    <div id="modal-body"></div>
+    <div class="m-acts" id="modal-acts"></div>
+  </div>
+</div>
+
+<nav>
+  <div class="nlogo" style="color:var(--dark)"><svg width="116" height="32" viewBox="0 0 116 32" style="display:block;overflow:visible">
+  <defs><style>.bc1{animation:bca 1s ease-in-out infinite alternate;}.bc2{animation:bca 1s ease-in-out .25s infinite alternate;}.bc3{animation:bca 1s ease-in-out .5s infinite alternate;}@keyframes bca{0%{transform:scaleY(.15);}100%{transform:scaleY(1);}}</style></defs>
+  <text x="0" y="25" font-family="'Plus Jakarta Sans',sans-serif" font-size="22" font-weight="800" fill="currentColor" letter-spacing="-.3">EVOKE</text>
+  <g transform="translate(82,7)">
+    <rect class="bc1" x="0" y="0" width="4" height="18" rx="2" fill="currentColor" transform-origin="2 18"/>
+    <rect class="bc2" x="7" y="0" width="4" height="18" rx="2" fill="currentColor" transform-origin="9 18"/>
+    <rect class="bc3" x="14" y="0" width="4" height="18" rx="2" fill="currentColor" transform-origin="16 18"/>
+  </g>
+</svg></div>
+  <div class="nright">
+    <span class="nuser" id="nuser"></span>
+    <span class="nplan none" id="nplan">—</span>
+    <button class="btn-out" onclick="doLogout()">Déconnexion</button>
+  </div>
+</nav>
+
+<div class="main">
+
+<!-- VUE: LISTE -->
+<div id="view-list">
+  <div class="hero">
+    <div class="htag"><div class="hdot"></div>Mon espace EVOKE</div>
+    <div class="htitle" id="h-title">Bonjour !</div>
+    <div class="hsub">Gérez vos événements musicaux depuis votre espace personnel.</div>
+    <div class="hcreds">
+      <span class="hcredn" id="h-credits">—</span>
+      <span class="hcredl">crédits disponibles</span>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" id="t-events" onclick="switchTab(0)">Événements</button>
+    <button class="tab" id="t-create" onclick="switchTab(1)">+ Créer</button>
+    <button class="tab" id="t-profile" onclick="switchTab(2)">Profil</button>
+    <button class="tab" id="t-credits" onclick="switchTab(3)">Crédits</button>
+    <button class="tab" id="t-settings" onclick="switchTab(4)">Réglages</button>
+  </div>
+
+  <!-- PANEL 0: ÉVÉNEMENTS -->
+  <div id="p-events" class="panel show">
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">Mes événements</div>
+      </div>
+      <div id="ev-list"><div style="text-align:center;padding:2rem;color:var(--text2);font-size:.8rem">Chargement…</div></div>
+    </div>
+  </div>
+
+  <!-- PANEL 1: CRÉER -->
+  <div id="p-create" class="panel">
+    <div class="card">
+      <div class="card-head"><div class="card-title">Nouvel événement</div></div>
+      <div class="alert err" id="create-err"></div>
+      <div class="f2">
+        <div class="field"><label>Prénom 1 *</label><input type="text" id="np1" placeholder="Sophie"></div>
+        <div class="field"><label>Prénom 2 *</label><input type="text" id="np2" placeholder="Thomas"></div>
+      </div>
+      <div class="field"><label>Date</label><input type="date" id="ndate"></div>
+      <div class="f2">
+        <div class="field"><label>Nb invités</label><input type="number" id="nguests" placeholder="80" min="1"></div>
+        <div class="field"><label>Crédits *</label><input type="number" id="ncredits" placeholder="50" min="1"><small>= nb de musiques max</small></div>
+      </div>
+      <div class="field"><label>Email mariés</label><input type="email" id="nemail" placeholder="mariés@exemple.com"></div>
+      <div class="field">
+        <label>Mot de passe galerie <span style="font-weight:500;color:var(--text3)">(optionnel)</span></label>
+        <div class="pw-wrap">
+          <input type="password" id="ntoken-custom" placeholder="Aucun mot de passe = accès libre">
+          <button class="pw-eye" type="button" onclick="togglePw('ntoken-custom')">👁</button>
+        </div>
+        <small>Si renseigné, les invités devront entrer ce mot de passe pour accéder à la galerie. Laissez vide pour un accès libre.</small>
+      </div>
+      <div style="margin-bottom:.8rem">
+        <div class="card-title" style="margin-bottom:.6rem">Questions quiz (optionnel)</div>
+        <div id="quiz-fields-create"></div>
+        <button class="btn-add-q" onclick="addQuizField('create')">+ Ajouter une question</button>
+      </div>
+      <button class="btn-main" id="btn-create" onclick="createEvent()">Créer l'événement →</button>
+      <button class="btn-sec" onclick="switchTab(0)">Annuler</button>
+    </div>
+  </div>
+
+  <!-- PANEL 2: PROFIL -->
+  <div id="p-profile" class="panel">
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">Mes informations</div>
+        <button class="prof-edit-btn" onclick="openEditProfile()">Modifier</button>
+      </div>
+      <div id="prof-content"><div style="text-align:center;padding:1.5rem;color:var(--text2);font-size:.8rem">Chargement…</div></div>
+    </div>
+    <div class="card">
+      <div class="card-head"><div class="card-title">Abonnement & crédits</div></div>
+      <div id="plan-content"></div>
+    </div>
+  </div>
+
+  <!-- PANEL 3: CRÉDITS -->
+  <div id="p-credits" class="panel">
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">Historique des crédits</div>
+        <div id="credit-balance" style="font-size:.75rem;font-weight:800;color:var(--dark)"></div>
+      </div>
+      <div id="credit-history"><div style="text-align:center;padding:1.5rem;color:var(--text2);font-size:.8rem">Chargement…</div></div>
+    </div>
+  </div>
+
+  <!-- PANEL 4: RÉGLAGES -->
+  <div id="p-settings" class="panel">
+    <div class="card">
+      <div class="settings-group">
+        <div class="settings-title">Changer le mot de passe</div>
+        <div class="alert err" id="pwd-err"></div>
+        <div class="alert ok" id="pwd-ok"></div>
+        <div class="field"><label>Mot de passe actuel</label><div class="pw-wrap"><input type="password" id="opwd" placeholder="Mot de passe actuel"><button class="pw-eye" onclick="togglePw('opwd')">👁</button></div></div>
+        <div class="field"><label>Nouveau mot de passe</label><div class="pw-wrap"><input type="password" id="npwd" placeholder="Minimum 8 caractères" oninput="checkStrength(this.value)"><button class="pw-eye" onclick="togglePw('npwd')">👁</button></div>
+          <div class="pw-bars"><div class="pw-bar" id="b1"></div><div class="pw-bar" id="b2"></div><div class="pw-bar" id="b3"></div><div class="pw-bar" id="b4"></div></div>
+          <div class="pw-label" id="pw-label"></div>
+        </div>
+        <div class="field"><label>Confirmer</label><div class="pw-wrap"><input type="password" id="cpwd" placeholder="Répéter le nouveau"><button class="pw-eye" onclick="togglePw('cpwd')">👁</button></div></div>
+        <button class="btn-main" onclick="changePwd()">Mettre à jour</button>
+      </div>
+      <div class="settings-group">
+        <div class="settings-title">Modifier l'email</div>
+        <div class="alert err" id="email-err"></div>
+        <div class="alert ok" id="email-ok"></div>
+        <div class="field"><label>Nouvel email</label><input type="email" id="new-email" placeholder="nouveau@exemple.com"></div>
+        <div class="field"><label>Mot de passe actuel (confirmation)</label><div class="pw-wrap"><input type="password" id="email-pwd" placeholder="Votre mot de passe"><button class="pw-eye" onclick="togglePw('email-pwd')">👁</button></div></div>
+        <button class="btn-main" onclick="changeEmail()">Demander la modification →</button>
+        <small style="display:block;margin-top:.5rem;color:var(--text3)">Un email de confirmation sera envoyé à votre adresse actuelle.</small>
+      </div>
+      <div class="settings-group" style="border-top:1px solid var(--border);padding-top:1.2rem">
+        <button class="btn-main btn-red" onclick="confirmDeleteAccount()">Supprimer mon compte</button>
+        <small style="display:block;margin-top:.5rem;color:var(--text3)">Cette action est irréversible. Tous vos événements et musiques seront supprimés.</small>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- VUE: DÉTAIL ÉVÉNEMENT -->
+<div id="view-detail" style="display:none">
+  <button class="back" onclick="showList()">← Mes événements</button>
+  <div id="det-header"></div>
+  <div class="card">
+    <div class="card-head">
+      <div class="card-title" id="det-songs-count">Musiques</div>
+      <div style="display:flex;gap:6px">
+        <button class="dl-all-btn" id="btn-dl-all" onclick="downloadAll()">
+          <svg width="10" height="12" viewBox="0 0 10 12" fill="none"><path d="M5 1v7M1 5.5L5 9.5l4-4M1 11h8" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Tout télécharger
+        </button>
+        <button class="del-all-btn" onclick="delAllSongs()">Tout supprimer</button>
+      </div>
+    </div>
+    <div id="det-songs"></div>
+  </div>
+</div>
+
+</div><!-- /main -->
+
+<script>
+function esc(s){ return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+function toast(msg){ var t=document.getElementById("toast"); t.textContent=msg; t.classList.add("show"); setTimeout(function(){t.classList.remove("show");},2800); }
+function fmt(iso){ try{ return new Date(iso).toLocaleDateString("fr-FR",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"}); }catch{ return "—"; } }
+function fmtDate(iso){ try{ return new Date(iso).toLocaleDateString("fr-FR",{day:"numeric",month:"long",year:"numeric"}); }catch{ return "—"; } }
+function togglePw(id){ var i=document.getElementById(id); if(i) i.type=i.type==="password"?"text":"password"; }
+
+// ── SESSION & SÉCURITÉ ────────────────────────────────────────────────────
+var SESSION = null;
+var USER = null;
+var events = [];
+var currentEvId = null;
+var currentEv = null;
+var SESSION_DURATION = 8 * 60 * 60 * 1000; // 8h comme lancien admin
+
+function loadSession() {
+  try {
+    var s = localStorage.getItem("evoke_session");
+    if (!s) return false;
+    SESSION = JSON.parse(s);
+    if (!SESSION.token || !SESSION.user) return false;
+    // Vérifier expiration session
+    if (SESSION.loginAt && Date.now() - SESSION.loginAt > SESSION_DURATION) {
+      localStorage.removeItem("evoke_session");
+      return false;
+    }
+    USER = SESSION.user;
+    return true;
+  } catch(e) { return false; }
+}
+
+function saveSession() {
+  localStorage.setItem("evoke_session", JSON.stringify(SESSION));
+}
+
+function doLogout() {
+  localStorage.removeItem("evoke_session");
+  window.location.href = "/login";
+}
+
+// Renouveler le timestamp de session à chaque action
+function touchSession() {
+  if (SESSION) { SESSION.loginAt = Date.now(); saveSession(); }
+}
+
+// Vérifier session toutes les minutes
+setInterval(function() {
+  if (!loadSession()) window.location.href = "/login?expired=1";
+}, 60000);
+
+// ── INIT ──────────────────────────────────────────────────────────────────
+window.onload = function() {
+  if (!loadSession()) { window.location.href = "/login"; return; }
+  document.getElementById("nuser").textContent = USER.firstName + " " + USER.lastName;
+  var planEl = document.getElementById("nplan");
+  planEl.textContent = USER.plan || "Sans plan";
+  planEl.className = "nplan " + (USER.plan || "none");
+  document.getElementById("h-title").textContent = "Bonjour, " + USER.firstName + " !";
+  document.getElementById("h-credits").textContent = Math.max(0, (USER.credits||0) - (USER.creditsUsed||0));
+  loadEvents();
+};
+
+// ── TABS ──────────────────────────────────────────────────────────────────
+var TAB_IDS = ["p-events","p-create","p-profile","p-credits","p-settings"];
+var TAB_BTNS = ["t-events","t-create","t-profile","t-credits","t-settings"];
+
+function switchTab(n) {
+  touchSession();
+  TAB_IDS.forEach(function(id,i) {
+    var el = document.getElementById(id);
+    if(el) el.classList.toggle("show", i===n);
+  });
+  TAB_BTNS.forEach(function(id,i) {
+    var el = document.getElementById(id);
+    if(el) el.classList.toggle("active", i===n);
+  });
+  if(n===2) loadProfile();
+  if(n===3) loadCreditHistory();
+  if(n===4) {} // settings ready
+}
+
+// ── EVENTS ────────────────────────────────────────────────────────────────
+async function loadEvents() {
+  try {
+    var r = await fetch("/api/events", { headers: { "Authorization": "Bearer " + SESSION.token } });
+    if (r.status === 401) { doLogout(); return; }
+    var data = await r.json();
+    if (!Array.isArray(data)) {
+      var msg = data.error || data.message || JSON.stringify(data);
+      document.getElementById("ev-list").innerHTML = "<div style='padding:1rem;color:#c0392b;font-size:.8rem;font-weight:600'>❌ Erreur Supabase : " + msg + "</div>";
+      return;
+    }
+    events = data;
+    renderEvents();
+  } catch(e) {
+    document.getElementById("ev-list").innerHTML = "<div style='padding:1rem;color:#c0392b;font-size:.8rem;font-weight:600'>❌ Erreur réseau : " + e.message + "</div>";
+  }
+}
+
+function renderEvents() {
+  var el = document.getElementById("ev-list");
+  if (!events.length) {
+    el.innerHTML = "<div style='text-align:center;padding:2rem'><div style='font-size:2rem;opacity:.25;margin-bottom:.7rem'>💍</div><div style='font-size:.82rem;color:var(--text2)'>Aucun événement — créez le premier !</div></div>";
+    return;
+  }
+  el.innerHTML = events.map(function(e) {
+    var songs = e.songs || [];
+    var cr = (e.credits||0) - (e.usedCredits||0);
+    var d = e.date ? new Date(e.date+"T00:00:00").toLocaleDateString("fr-FR",{day:"numeric",month:"long",year:"numeric"}) : "Date non définie";
+    return "<div class='ev' onclick='openEvent(&quot;'+e.id+'&quot;)'>" +
+      "<div class='ev-l'><div class='ev-name'>"+esc(e.couple||"—")+"</div><div class='ev-date'>"+d+"</div></div>" +
+      "<div class='ev-r'><span class='pill pill-d'>🎵 "+songs.length+"</span><span class='pill pill-g'>"+cr+" crédits</span></div>" +
+      "</div>";
+  }).join("");
+}
+
+// ── CREATE EVENT ──────────────────────────────────────────────────────────
+async function createEvent() {
+  touchSession();
+  var p1 = document.getElementById("np1").value.trim();
+  var p2 = document.getElementById("np2").value.trim();
+  var date = document.getElementById("ndate").value;
+  var guests = parseInt(document.getElementById("nguests").value)||80;
+  var credits = parseInt(document.getElementById("ncredits").value)||0;
+  var email = document.getElementById("nemail").value.trim();
+  var tokenCustom = document.getElementById("ntoken-custom").value.trim();
+  var errEl = document.getElementById("create-err");
+  errEl.classList.remove("show");
+
+  // ── VALIDATION avec messages explicites ──
+  if(!p1||!p2) {
+    errEl.textContent = "Les deux prénoms sont requis.";
+    errEl.classList.add("show"); return;
+  }
+  if(!date) {
+    errEl.textContent = "La date du mariage est obligatoire.";
+    errEl.classList.add("show"); return;
+  }
+  if(credits < 1) {
+    errEl.textContent = "Le champ Crédits est vide ou vaut 0 — entrez un nombre minimum de 1.";
+    errEl.classList.add("show"); return;
+  }
+  if(!SESSION || !SESSION.token) {
+    errEl.textContent = "Session expirée — reconnectez-vous.";
+    errEl.classList.add("show"); return;
+  }
+  if(!USER || !USER.id) {
+    errEl.textContent = "Utilisateur non chargé — rechargez la page.";
+    errEl.classList.add("show"); return;
+  }
+
+  var btn = document.getElementById("btn-create");
+  btn.disabled = true; btn.textContent = "Création…";
+
+  var token = tokenCustom || null;
+  var id = Date.now().toString(36) + Math.random().toString(36).substring(2);
+  var quiz = getQuizFields("create");
+
+  var ev = {
+    id: id, couple: p1+" & "+p2, p1: p1, p2: p2,
+    date: date, guests: guests, credits: credits,
+    email: email, usedCredits: 0, songs: [],
+    token: token, quiz: quiz,
+    user_id: USER.id
+  };
+
+  try {
+    var r = await fetch("/api/event", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Authorization": "Bearer "+SESSION.token },
+      body: JSON.stringify(ev)
+    });
+
+    // Lire le body dans tous les cas pour avoir le détail de l'erreur
+    var responseText = await r.text();
+    if(!r.ok) {
+      var detail = "";
+      try { detail = JSON.parse(responseText).error || responseText; } catch(x) { detail = responseText; }
+      throw new Error("HTTP " + r.status + " — " + detail.substring(0, 300));
+    }
+
+    toast("✦ Événement créé !");
+    ["np1","np2","ndate","nguests","ncredits","nemail","ntoken-custom"].forEach(function(x){ document.getElementById(x).value=""; });
+    document.getElementById("quiz-fields-create").innerHTML = "";
+    await loadEvents();
+    switchTab(0);
+  } catch(e) {
+    errEl.textContent = "❌ " + e.message;
+    errEl.classList.add("show");
+  }
+  btn.disabled = false; btn.textContent = "Créer l'événement →";
+}
+
+// ── OPEN EVENT DETAIL ─────────────────────────────────────────────────────
+async function openEvent(id) {
+  touchSession();
+  // Recharger depuis Supabase pour avoir les données fraîches
+  try {
+    var r = await fetch("/api/event?id="+id, { headers: { "Authorization": "Bearer "+SESSION.token } });
+    if(r.ok) {
+      var fresh = await r.json();
+      var idx = events.findIndex(function(e){ return e.id===id; });
+      if(idx>=0) events[idx] = fresh;
+    }
+  } catch(e) {}
+
+  currentEv = events.find(function(e){ return e.id===id; });
+  if(!currentEv) return;
+  currentEvId = id;
+
+  switchTab(0);
+  document.getElementById("view-list").style.display = "none";
+  document.getElementById("view-detail").style.display = "block";
+  renderDetail();
+}
+
+function showList() {
+  document.getElementById("view-detail").style.display = "none";
+  document.getElementById("view-list").style.display = "block";
+  currentEvId = null; currentEv = null;
+  loadEvents();
+}
+
+function renderDetail() {
+  var e = currentEv;
+  if(!e) return;
+  var base = window.location.origin;
+  var gLink = base+"/mariage/"+e.id;
+  var galLink = base+"/galerie/"+e.id+"?token="+e.token;
+  var songs = e.songs || [];
+  var cr = (e.credits||0) - (e.usedCredits||0);
+  var d = e.date ? new Date(e.date+"T00:00:00").toLocaleDateString("fr-FR",{day:"numeric",month:"long",year:"numeric"}) : "Date non définie";
+
+  document.getElementById("det-header").innerHTML =
+    "<div class='det-header'>" +
+    "<div class='det-couple'>"+esc(e.couple||"—")+"</div>" +
+    "<div class='det-date'>"+d+"</div>" +
+    "<div class='det-stats'>" +
+      "<div class='ds'><div class='ds-n'>"+songs.length+"</div><div class='ds-l'>Musiques</div></div>" +
+      "<div class='ds'><div class='ds-n'>"+cr+"</div><div class='ds-l'>Crédits restants</div></div>" +
+      "<div class='ds'><div class='ds-n'>"+(e.credits||0)+"</div><div class='ds-l'>Crédits total</div></div>" +
+    "</div>" +
+    "<div class='link-item'><span class='link-lbl'>Invités</span><span class='link-url'>"+gLink+"</span><div class='link-acts'>" +
+      "<button class='link-btn' onclick='copyText(&quot;'+gLink+'&quot;)'>Copier</button>" +
+      "<button class='link-btn' onclick='window.open(&quot;'+gLink+'&quot;,&quot;_blank&quot;)'>↗</button>" +
+    "</div></div>" +
+    "<div class='link-item'><span class='link-lbl'>Galerie</span><span class='link-url'>"+galLink+"</span><div class='link-acts'>" +
+      "<button class='link-btn' onclick='copyText(&quot;'+galLink+'&quot;)'>Copier</button>" +
+      "<button class='link-btn' onclick='window.open(&quot;'+galLink+'&quot;,&quot;_blank&quot;)'>↗</button>" +
+    "</div></div>" +
+    (e.email ? "<button class='send-btn' onclick='sendInvite()'>✉️ Envoyer les liens par email</button>" : "") +
+    "<div style='display:flex;gap:6px;margin-top:.6rem'>" +
+      "<button onclick='editEvent()' style='flex:1;padding:.6rem;background:rgba(255,255,255,.1);border:none;border-radius:var(--rp);font-family:Plus Jakarta Sans,sans-serif;font-size:.7rem;font-weight:700;color:white;cursor:pointer'>✏️ Modifier</button>" +
+      "<button onclick='confirmDelEv()' style='flex:1;padding:.6rem;background:rgba(255,107,107,.2);border:none;border-radius:var(--rp);font-family:Plus Jakarta Sans,sans-serif;font-size:.7rem;font-weight:700;color:#ffaaaa;cursor:pointer'>🗑 Supprimer</button>" +
+    "</div>" +
+    "</div>";
+
+  document.getElementById("det-songs-count").textContent = songs.length + " musique"+(songs.length!==1?"s":"");
+
+  if(!songs.length) {
+    document.getElementById("det-songs").innerHTML = "<div style='text-align:center;padding:2rem;color:var(--text2);font-size:.8rem'>Aucune musique pour cet événement.</div>";
+    return;
+  }
+
+  document.getElementById("det-songs").innerHTML = [...songs].reverse().map(function(s,i) {
+    var ri = songs.length - 1 - i;
+    return "<div class='song-card'>" +
+      "<div class='song-head'><div class='song-title'>"+esc(s.title||"Mélodie")+"</div><span class='song-style'>"+esc(s.style||"—")+"</span></div>" +
+      "<div class='song-meta'>par "+esc(s.author||"—")+" · "+fmt(s.createdAt)+"</div>" +
+      (s.message?"<div class='song-msg'>"+esc(s.message.substring(0,120))+(s.message.length>120?"…":"")+"</div>":"")+
+      (s.url?"<audio controls src='"+s.url+"' style='width:100%;margin-bottom:.6rem;accent-color:#3ecf6a'></audio>":"")+
+      "<div class='song-footer'>" +
+        "<span class='song-voice'>"+(s.voice==="female"?"👩 Voix féminine":"👨 Voix masculine")+"</span>" +
+        "<div style='display:flex;gap:5px'>" +
+          (s.url?"<button class='song-dl' onclick='dlSong(&quot;'+s.url+'&quot;,&quot;'+esc(s.author||'evoke')+'&quot;)'>"+
+            "<svg width='10' height='12' viewBox='0 0 10 12' fill='none'><path d='M5 1v7M1 5.5L5 9.5l4-4M1 11h8' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/></svg> Télécharger</button>":"")+
+          "<button class='song-del' onclick='delSong("+ri+")'>✕</button>" +
+        "</div>" +
+      "</div>" +
+    "</div>";
+  }).join("");
+}
+
+// ── EDIT EVENT ────────────────────────────────────────────────────────────
+function editEvent() {
+  var e = currentEv;
+  showModal("Modifier l'événement", [
+    "<div class='field'><label>Prénom 1</label><input id='ep1' value='"+esc(e.p1||"")+"' style='width:100%;background:var(--bg);border:1.5px solid transparent;border-radius:var(--rmd);padding:.8rem .95rem;font-family:Plus Jakarta Sans,sans-serif;font-size:.88rem;color:var(--text);outline:none'></div>",
+    "<div class='field'><label>Prénom 2</label><input id='ep2' value='"+esc(e.p2||"")+"' style='width:100%;background:var(--bg);border:1.5px solid transparent;border-radius:var(--rmd);padding:.8rem .95rem;font-family:Plus Jakarta Sans,sans-serif;font-size:.88rem;color:var(--text);outline:none'></div>",
+    "<div class='field'><label>Date</label><input id='edate' type='date' value='"+( e.date||"")+"' style='width:100%;background:var(--bg);border:1.5px solid transparent;border-radius:var(--rmd);padding:.8rem .95rem;font-family:Plus Jakarta Sans,sans-serif;font-size:.88rem;color:var(--text);outline:none'></div>",
+    "<div class='field'><label>Email</label><input id='eemail' type='email' value='"+esc(e.email||"")+"' style='width:100%;background:var(--bg);border:1.5px solid transparent;border-radius:var(--rmd);padding:.8rem .95rem;font-family:Plus Jakarta Sans,sans-serif;font-size:.88rem;color:var(--text);outline:none'></div>" +
+    "<div class='field'><label>Mot de passe galerie <small style='font-weight:500;color:var(--text3);text-transform:none'>(laisser vide = accès libre)</small></label><div style='position:relative'><input type='password' id='etoken' value='"+esc(e.token||"")+"' placeholder='Aucun mot de passe' style='width:100%;background:var(--bg);border:1.5px solid transparent;border-radius:var(--rmd);padding:.8rem 2.8rem .8rem .95rem;font-family:Plus Jakarta Sans,sans-serif;font-size:.88rem;color:var(--text);outline:none'><button type='button' onclick='toggleEyeEdit()' style='position:absolute;right:.8rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:.85rem'>👁</button></div></div>"
+  ].join(""),
+  [
+    {label:"Annuler",cls:"m-cancel",fn:"closeModal()"},
+    {label:"Enregistrer",cls:"m-confirm",fn:"saveEditEvent()"}
+  ]);
+}
+
+async function saveEditEvent() {
+  var p1 = document.getElementById("ep1")?.value.trim();
+  var p2 = document.getElementById("ep2")?.value.trim();
+  var date = document.getElementById("edate")?.value;
+  var email = document.getElementById("eemail")?.value.trim();
+  if(!p1||!p2) { toast("Les prénoms sont requis"); return; }
+  var etoken = document.getElementById("etoken")?.value.trim() || null;
+  var updates = { id: currentEvId, couple: p1+" & "+p2, p1:p1, p2:p2, date:date, email:email, token:etoken };
+  Object.assign(currentEv, updates);
+  try {
+    await fetch("/api/event", {
+      method:"POST",
+      headers:{"Content-Type":"application/json","Authorization":"Bearer "+SESSION.token},
+      body:JSON.stringify(currentEv)
+    });
+    toast("✦ Événement mis à jour");
+    closeModal();
+    renderDetail();
+  } catch(e) { toast("Erreur lors de la mise à jour"); }
+}
+
+// ── DELETE EVENT ──────────────────────────────────────────────────────────
+function confirmDelEv() {
+  showDanger("Supprimer cet événement ?",
+    "L'événement '" + esc(currentEv.couple||"") + "' et toutes ses musiques seront définitivement supprimées.",
+    "doDelEv()");
+}
+
+async function doDelEv() {
+  closeModal();
+  try {
+    // Supprimer les fichiers audio Supabase
+    var songs = currentEv.songs || [];
+    await Promise.allSettled(songs.filter(function(s){ return s.url&&s.url.includes("supabase"); }).map(function(s){
+      return fetch("/api/delete-file",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({url:s.url})});
+    }));
+    await fetch("/api/event?id="+currentEvId, { method:"DELETE", headers:{"Authorization":"Bearer "+SESSION.token} });
+    toast("Événement supprimé");
+    showList();
+  } catch(e) { toast("Erreur lors de la suppression"); }
+}
+
+// ── DELETE SONG ───────────────────────────────────────────────────────────
+function delSong(idx) {
+  var song = currentEv.songs[idx];
+  showDanger("Supprimer cette musique ?",
+    "'" + esc((song?.title||"cette musique")) + "' sera définitivement supprimée.",
+    "doDelSong("+idx+")");
+}
+
+async function doDelSong(idx) {
+  closeModal();
+  var song = currentEv.songs[idx];
+  currentEv.songs.splice(idx,1);
+  if(currentEv.usedCredits>0) currentEv.usedCredits--;
+  try {
+    await fetch("/api/event",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+SESSION.token},body:JSON.stringify(currentEv)});
+    if(song?.url&&song.url.includes("supabase")) {
+      fetch("/api/delete-file",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({url:song.url})}).catch(function(){});
+    }
+    toast("Musique supprimée");
+    renderDetail();
+  } catch(e) { toast("Erreur"); }
+}
+
+// ── DELETE ALL SONGS ──────────────────────────────────────────────────────
+function delAllSongs() {
+  var count = (currentEv.songs||[]).length;
+  if(!count) { toast("Aucune musique"); return; }
+  showDanger("Supprimer toutes les musiques ?",
+    count+" musique"+(count>1?"s":"")+" sera"+(count>1?"nt":"")+" définitivement supprimée"+(count>1?"s":"")+". Cette action est irréversible.",
+    "doDelAllSongs()");
+}
+
+async function doDelAllSongs() {
+  closeModal();
+  var songs = [...(currentEv.songs||[])];
+  currentEv.songs = []; currentEv.usedCredits = 0;
+  try {
+    await fetch("/api/event",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+SESSION.token},body:JSON.stringify(currentEv)});
+    await Promise.allSettled(songs.filter(function(s){ return s.url&&s.url.includes("supabase"); }).map(function(s){
+      return fetch("/api/delete-file",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({url:s.url})});
+    }));
+    toast("Toutes les musiques supprimées");
+    renderDetail();
+  } catch(e) { toast("Erreur"); }
+}
+
+// ── DOWNLOAD ──────────────────────────────────────────────────────────────
+async function dlSong(url, author) {
+  try {
+    var r = await fetch(url);
+    var blob = await r.blob();
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "evoke-"+String(author).replace(/[^a-z0-9]/gi,"_").toLowerCase()+".mp3";
+    a.click();
+  } catch(e) { window.open(url,"_blank"); }
+}
+
+async function downloadAll() {
+  var songs = (currentEv?.songs||[]).filter(function(s){ return s.url; });
+  if(!songs.length) { toast("Aucune musique à télécharger"); return; }
+  var btn = document.getElementById("btn-dl-all");
+  btn.textContent = "Préparation…"; btn.disabled = true;
+  try {
+    var zip = new JSZip();
+    await Promise.all(songs.map(async function(s,i) {
+      try {
+        var r = await fetch(s.url);
+        var buf = await r.arrayBuffer();
+        var fname = String(i+1).padStart(2,"0")+"-"+String(s.author||"evoke").replace(/[^a-z0-9]/gi,"_").toLowerCase()+".mp3";
+        zip.file(fname, buf);
+      } catch(e) {}
+    }));
+    var blob = await zip.generateAsync({type:"blob"});
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "evoke-"+String(currentEv.couple||"evenement").replace(/[^a-z0-9]/gi,"-").toLowerCase()+".zip";
+    a.click();
+    toast("✓ Téléchargement en cours");
+  } catch(e) { toast("Erreur ZIP"); }
+  btn.innerHTML = "<svg width='11' height='13' viewBox='0 0 11 13' fill='none'><path d='M5.5 1v8M1 6l4.5 4.5L10 6M1 12h9' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/></svg> Tout télécharger";
+  btn.disabled = false;
+}
+
+// ── SEND INVITE ───────────────────────────────────────────────────────────
+async function sendInvite() {
+  if(!currentEv?.email) { toast("Aucun email configuré pour cet événement"); return; }
+  toast("📧 Envoi en cours…");
+  var base = window.location.origin;
+  try {
+    var r = await fetch("/api/send-invite",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({
+        to:currentEv.email, p1:currentEv.p1, p2:currentEv.p2, date:currentEv.date,
+        guestLink:base+"/mariage/"+currentEv.id,
+        galleryLink:base+"/galerie/"+currentEv.id+"?token="+currentEv.token
+      })
+    });
+    toast(r.ok ? "✅ Email envoyé !" : "❌ Erreur envoi");
+  } catch(e) { toast("❌ Erreur réseau"); }
+}
+
+// ── QUIZ ─────────────────────────────────────────────────────────────────
+function addQuizField(ctx, existing) {
+  var container = document.getElementById("quiz-fields-"+ctx);
+  if(!container) return;
+  var idx = container.children.length;
+  if(idx>=5) { toast("Maximum 5 questions"); return; }
+  var q = existing || {q:"", a:"", wrong:["",""]};
+  var div = document.createElement("div");
+  div.className = "quiz-field";
+  div.innerHTML =
+    "<button class='btn-rm' onclick='this.parentElement.remove()'>✕</button>" +
+    "<div class='qf-opts-label'>Question "+(idx+1)+"</div>" +
+    "<input placeholder='La question…' class='qf-q' data-role='q' value='"+esc(q.q||"")+"'>" +
+    "<div class='qf-opts-label' style='margin-top:.3rem'>✓ Bonne réponse</div>" +
+    "<input placeholder='La bonne réponse…' data-role='a' value='"+esc(q.a||"")+"' style='border-color:rgba(62,207,106,.5);'>" +
+    "<div class='qf-opts-label' style='margin-top:.3rem'>✗ Mauvaises réponses (2)</div>" +
+    "<input placeholder='Mauvaise réponse 1…' data-role='w0' value='"+esc((q.wrong&&q.wrong[0])||"")+"'>" +
+    "<input placeholder='Mauvaise réponse 2…' data-role='w1' value='"+esc((q.wrong&&q.wrong[1])||"")+"'>";
+  container.appendChild(div);
+}
+
+function getQuizFields(ctx) {
+  var container = document.getElementById("quiz-fields-"+ctx);
+  if(!container) return [];
+  var fields = [];
+  Array.from(container.children).forEach(function(row) {
+    var get = function(role){ var el = row.querySelector("[data-role='"+role+"']"); return el ? el.value.trim() : ""; };
+    var q = get("q"), a = get("a"), w0 = get("w0"), w1 = get("w1");
+    if(q && a) fields.push({ q:q, a:a, wrong:[w0, w1] });
+  });
+  return fields;
+}
+
+// ── PROFILE ───────────────────────────────────────────────────────────────
+async function loadProfile() {
+  touchSession();
+  try {
+    var r = await fetch("/api/auth-profile", { headers: {"Authorization":"Bearer "+SESSION.token} });
+    if(!r.ok) return;
+    var u = await r.json();
+    // Mettre à jour USER local
+    USER = Object.assign(USER, u);
+    SESSION.user = USER;
+    saveSession();
+
+    document.getElementById("prof-content").innerHTML =
+      profRow("Prénom", u.firstName) +
+      profRow("Nom", u.lastName) +
+      profRow("Email", u.email) +
+      (u.phone ? profRow("Téléphone", u.phone) : "") +
+      profRow("Type", u.accountType==="professional"?"Professionnel":"Particulier") +
+      (u.company ? profRow("Société", u.company) : "") +
+      (u.siret ? profRow("SIRET", u.siret) : "") +
+      (u.city ? profRow("Ville", (u.zip||"")+" "+(u.city||"")) : "") +
+      profRow("Inscrit le", fmtDate(u.createdAt));
+
+    var cr = Math.max(0,(u.credits||0)-(u.creditsUsed||0));
+    document.getElementById("plan-content").innerHTML =
+      profRow("Plan actuel", u.plan||"Aucun plan") +
+      profRow("Crédits disponibles", cr) +
+      profRow("Crédits consommés", u.creditsUsed||0) +
+      profRow("Crédits alloués total", u.credits||0);
+
+    document.getElementById("h-credits").textContent = cr;
+  } catch(e) {}
+}
+
+async function loadCreditHistory() {
+  var el = document.getElementById("credit-history");
+  var balEl = document.getElementById("credit-balance");
+  if(!el) return;
+  el.innerHTML = "<div style='text-align:center;padding:1.5rem;color:var(--text2);font-size:.8rem'>Chargement…</div>";
+  try {
+    var r = await fetch("/api/credits", { headers: {"Authorization":"Bearer "+SESSION.token} });
+    if(!r.ok) throw new Error("Erreur");
+    var rows = await r.json();
+    // Afficher le solde
+    var available = Math.max(0, (USER.credits||0)-(USER.creditsUsed||0));
+    if(balEl) balEl.textContent = available + " crédits disponibles";
+    if(!rows.length) {
+      el.innerHTML = "<div style='text-align:center;padding:2rem;color:var(--text2);font-size:.8rem'>Aucun mouvement de crédits</div>";
+      return;
+    }
+    el.innerHTML = rows.map(function(row) {
+      var isAdd = row.amount > 0;
+      var dateStr = fmt(row.created_at);
+      var amountStr = (isAdd?"+":"")+row.amount;
+      return "<div style='display:flex;align-items:flex-start;justify-content:space-between;padding:.75rem 0;border-bottom:1px solid var(--border);gap:.8rem'>" +
+        "<div style='flex:1;min-width:0'>" +
+          "<div style='font-size:.78rem;font-weight:700;color:var(--dark);margin-bottom:.15rem'>"+esc(row.reason)+"</div>" +
+          (row.admin_note?"<div style='font-size:.65rem;color:var(--text2);font-style:italic'>"+esc(row.admin_note)+"</div>":"") +
+          "<div style='font-size:.62rem;color:var(--text3);margin-top:.15rem'>"+dateStr+" · Solde après : "+row.balance_after+"</div>" +
+        "</div>" +
+        "<div style='font-size:.88rem;font-weight:800;color:"+(isAdd?"#16a34a":"var(--red)")+"'>"+amountStr+"</div>" +
+      "</div>";
+    }).join("");
+  } catch(e) {
+    el.innerHTML = "<div style='text-align:center;padding:1.5rem;color:var(--text2);font-size:.8rem'>Erreur de chargement</div>";
+  }
+}
+
+function profRow(k, v) {
+  return "<div class='prof-row'><span class='prof-key'>"+esc(k)+"</span><span class='prof-val'>"+esc(String(v||"—"))+"</span></div>";
+}
+
+function openEditProfile() {
+  var u = USER;
+  showModal("Modifier mes informations", [
+    "<div class='f2'>" +
+      "<div class='field'><label>Prénom</label><input id='ef-first' value='"+esc(u.firstName||"")+"' style='width:100%;background:var(--bg);border:1.5px solid transparent;border-radius:var(--rmd);padding:.8rem .95rem;font-family:Plus Jakarta Sans,sans-serif;font-size:.88rem;color:var(--text);outline:none'></div>" +
+      "<div class='field'><label>Nom</label><input id='ef-last' value='"+esc(u.lastName||"")+"' style='width:100%;background:var(--bg);border:1.5px solid transparent;border-radius:var(--rmd);padding:.8rem .95rem;font-family:Plus Jakarta Sans,sans-serif;font-size:.88rem;color:var(--text);outline:none'></div>" +
+    "</div>" +
+    "<div class='field'><label>Téléphone</label><input id='ef-phone' value='"+esc(u.phone||"")+"' style='width:100%;background:var(--bg);border:1.5px solid transparent;border-radius:var(--rmd);padding:.8rem .95rem;font-family:Plus Jakarta Sans,sans-serif;font-size:.88rem;color:var(--text);outline:none'></div>" +
+    "<div class='field'><label>Société</label><input id='ef-company' value='"+esc(u.company||"")+"' style='width:100%;background:var(--bg);border:1.5px solid transparent;border-radius:var(--rmd);padding:.8rem .95rem;font-family:Plus Jakarta Sans,sans-serif;font-size:.88rem;color:var(--text);outline:none'></div>" +
+    "<div class='field'><label>SIRET</label><input id='ef-siret' value='"+esc(u.siret||"")+"' style='width:100%;background:var(--bg);border:1.5px solid transparent;border-radius:var(--rmd);padding:.8rem .95rem;font-family:Plus Jakarta Sans,sans-serif;font-size:.88rem;color:var(--text);outline:none'></div>" +
+    "<div class='field'><label>Ville</label><input id='ef-city' value='"+esc(u.city||"")+"' style='width:100%;background:var(--bg);border:1.5px solid transparent;border-radius:var(--rmd);padding:.8rem .95rem;font-family:Plus Jakarta Sans,sans-serif;font-size:.88rem;color:var(--text);outline:none'></div>"
+  ].join(""),
+  [
+    {label:"Annuler",cls:"m-cancel",fn:"closeModal()"},
+    {label:"Enregistrer",cls:"m-confirm",fn:"saveProfile()"}
+  ]);
+}
+
+async function saveProfile() {
+  var updates = {
+    firstName: document.getElementById("ef-first")?.value.trim(),
+    lastName: document.getElementById("ef-last")?.value.trim(),
+    phone: document.getElementById("ef-phone")?.value.trim(),
+    company: document.getElementById("ef-company")?.value.trim(),
+    siret: document.getElementById("ef-siret")?.value.replace(/\D/g,"").substring(0,14),
+    city: document.getElementById("ef-city")?.value.trim()
+  };
+  if(!updates.firstName||!updates.lastName) { toast("Prénom et nom requis"); return; }
+  try {
+    var r = await fetch("/api/auth-profile",{
+      method:"PATCH",
+      headers:{"Content-Type":"application/json","Authorization":"Bearer "+SESSION.token},
+      body:JSON.stringify(updates)
+    });
+    if(!r.ok) throw new Error("Erreur");
+    Object.assign(USER, updates);
+    SESSION.user = USER;
+    saveSession();
+    toast("✅ Profil mis à jour");
+    closeModal();
+    loadProfile();
+  } catch(e) { toast("Erreur lors de la mise à jour"); }
+}
+
+// ── SETTINGS ──────────────────────────────────────────────────────────────
+function togglePw(id) {
+  var el = document.getElementById(id);
+  if(el) el.type = el.type==="password"?"text":"password";
+}
+function toggleEyeEdit() {
+  var el = document.getElementById("etoken");
+  if(el) el.type = el.type==="password"?"text":"password";
+}
+
+function checkStrength(val) {
+  var bars = ["b1","b2","b3","b4"].map(function(id){ return document.getElementById(id); });
+  var label = document.getElementById("pw-label");
+  bars.forEach(function(b){ if(b) b.className="pw-bar"; });
+  if(!val||!label) return;
+  var score = 0;
+  if(val.length>=8) score++;
+  if(/[A-Z]/.test(val)) score++;
+  if(/[0-9]/.test(val)) score++;
+  if(/[^A-Za-z0-9]/.test(val)) score++;
+  var cls = score<=1?"weak":score<=2?"fair":"strong";
+  var labels = ["","Faible","Moyen","Fort","Très fort"];
+  for(var i=0;i<score;i++) if(bars[i]) bars[i].classList.add(cls);
+  label.textContent = val.length>=8 ? labels[score] : "Trop court";
+  label.style.color = score<=1?"#ff6b6b":score<=2?"#f59e0b":"#2d7a47";
+}
+
+async function changePwd() {
+  var old = document.getElementById("opwd").value;
+  var np = document.getElementById("npwd").value;
+  var cp = document.getElementById("cpwd").value;
+  var errEl = document.getElementById("pwd-err");
+  var okEl = document.getElementById("pwd-ok");
+  errEl.classList.remove("show"); okEl.classList.remove("show");
+  if(!old||!np||!cp) { errEl.textContent="Tous les champs sont requis."; errEl.classList.add("show"); return; }
+  if(np.length<8) { errEl.textContent="Le mot de passe doit faire au moins 8 caractères."; errEl.classList.add("show"); return; }
+  if(np!==cp) { errEl.textContent="Les mots de passe ne correspondent pas."; errEl.classList.add("show"); return; }
+  // Vérifier ancien mot de passe en se reconnectant
+  try {
+    var verif = await fetch("/api/auth-login",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email:USER.email,password:old})});
+    if(!verif.ok) { errEl.textContent="Mot de passe actuel incorrect."; errEl.classList.add("show"); return; }
+    // Changer le mot de passe via Supabase Auth
+    var r = await fetch("/api/auth-change-pwd",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+SESSION.token},body:JSON.stringify({newPassword:np})});
+    if(!r.ok) throw new Error("Erreur");
+    okEl.textContent="✅ Mot de passe mis à jour avec succès.";
+    okEl.classList.add("show");
+    ["opwd","npwd","cpwd"].forEach(function(id){ document.getElementById(id).value=""; });
+    checkStrength("");
+  } catch(e) { errEl.textContent="Erreur lors du changement."; errEl.classList.add("show"); }
+}
+
+async function changeEmail() {
+  var newEmail = document.getElementById("new-email").value.trim();
+  var pwd = document.getElementById("email-pwd").value;
+  var errEl = document.getElementById("email-err");
+  var okEl = document.getElementById("email-ok");
+  errEl.classList.remove("show"); okEl.classList.remove("show");
+  if(!newEmail||!pwd) { errEl.textContent="Email et mot de passe requis."; errEl.classList.add("show"); return; }
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newEmail)) { errEl.textContent="Email invalide."; errEl.classList.add("show"); return; }
+  if(newEmail===USER.email) { errEl.textContent="C'est déjà votre email actuel."; errEl.classList.add("show"); return; }
+  try {
+    var verif = await fetch("/api/auth-login",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email:USER.email,password:pwd})});
+    if(!verif.ok) { errEl.textContent="Mot de passe incorrect."; errEl.classList.add("show"); return; }
+    var r = await fetch("/api/auth-change-email",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+SESSION.token},body:JSON.stringify({newEmail:newEmail})});
+    if(!r.ok) throw new Error("Erreur");
+    okEl.textContent="✅ Un email de confirmation a été envoyé à votre adresse actuelle.";
+    okEl.classList.add("show");
+    document.getElementById("new-email").value="";
+    document.getElementById("email-pwd").value="";
+  } catch(e) { errEl.textContent="Erreur lors de la demande."; errEl.classList.add("show"); }
+}
+
+function confirmDeleteAccount() {
+  showDanger("Supprimer mon compte ?",
+    "Toutes vos données (événements, musiques, profil) seront définitivement supprimées. Cette action est irréversible.",
+    "doDeleteAccount()");
+}
+
+async function doDeleteAccount() {
+  closeModal();
+  try {
+    await fetch("/api/auth-delete",{method:"DELETE",headers:{"Authorization":"Bearer "+SESSION.token}});
+    localStorage.removeItem("evoke_session");
+    window.location.href="/register";
+  } catch(e) { toast("Erreur lors de la suppression"); }
+}
+
+// ── MODALS ────────────────────────────────────────────────────────────────
+function showModal(title, bodyHtml, actions) {
+  document.getElementById("modal-title").textContent = title;
+  document.getElementById("modal-body").innerHTML = bodyHtml;
+  document.getElementById("modal-acts").innerHTML = actions.map(function(a) {
+    return "<button class='"+a.cls+"' onclick='"+a.fn+"'>"+a.label+"</button>";
+  }).join("");
+  document.getElementById("overlay").classList.add("show");
+}
+
+function showDanger(title, msg, fn) {
+  showModal(title, "<p style='font-size:.8rem;color:var(--text2);line-height:1.6'>"+msg+"</p>", [
+    {label:"Annuler",cls:"m-cancel",fn:"closeModal()"},
+    {label:"Supprimer définitivement",cls:"m-danger",fn:fn}
+  ]);
+}
+
+function closeModal() {
+  document.getElementById("overlay").classList.remove("show");
+}
+
+// Fermer modal en cliquant dehors
+window.addEventListener("load", function() {
+  var overlay = document.getElementById("overlay");
+  if(overlay) overlay.addEventListener("click", function(e) {
+    if(e.target===this) closeModal();
+  });
+});
+
+// ── UTILS ─────────────────────────────────────────────────────────────────
+function copyText(text) {
+  navigator.clipboard.writeText(text).then(function(){ toast("✓ Lien copié !"); }).catch(function(){ toast("Copiez manuellement"); });
+}
+
+function fmt(iso){ try{ return new Date(iso).toLocaleDateString("fr-FR",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"}); }catch{ return "—"; } }
+function fmtDate(iso){ try{ return new Date(iso).toLocaleDateString("fr-FR",{day:"numeric",month:"long",year:"numeric"}); }catch{ return "—"; } }
+function esc(s){ return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+function toast(msg){ var t=document.getElementById("toast"); t.textContent=msg; t.classList.add("show"); setTimeout(function(){t.classList.remove("show");},2800); }
+</script>
+</body>
+</html>
