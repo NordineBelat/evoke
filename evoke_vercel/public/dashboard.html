@@ -1023,8 +1023,11 @@ function closeModal() {
 }
 
 // Fermer modal en cliquant dehors
-document.getElementById("overlay").addEventListener("click", function(e) {
-  if(e.target===this) closeModal();
+window.addEventListener("load", function() {
+  var overlay = document.getElementById("overlay");
+  if(overlay) overlay.addEventListener("click", function(e) {
+    if(e.target===this) closeModal();
+  });
 });
 
 // ── UTILS ─────────────────────────────────────────────────────────────────
