@@ -10,6 +10,47 @@ async function getUserIdFromToken(token, url, key) {
   } catch { return null; }
 }
 
+// Convertit une row snake_case Supabase en camelCase pour le frontend
+function normalize(row) {
+  if (!row) return row;
+  return {
+    id: row.id,
+    couple: row.couple,
+    p1: row.p1,
+    p2: row.p2,
+    date: row.date,
+    guests: row.guests,
+    credits: row.credits,
+    email: row.email,
+    usedCredits: row.used_credits,
+    songs: row.songs,
+    token: row.token,
+    quiz: row.quiz,
+    createdAt: row.created_at,
+    user_id: row.user_id
+  };
+}
+
+// Convertit les champs camelCase du frontend en snake_case pour Supabase
+function toSnake(body) {
+  const ev = {};
+  if (body.id !== undefined)          ev.id           = body.id;
+  if (body.couple !== undefined)      ev.couple       = body.couple;
+  if (body.p1 !== undefined)          ev.p1           = body.p1;
+  if (body.p2 !== undefined)          ev.p2           = body.p2;
+  if (body.date !== undefined)        ev.date         = body.date;
+  if (body.guests !== undefined)      ev.guests       = body.guests;
+  if (body.credits !== undefined)     ev.credits      = body.credits;
+  if (body.email !== undefined)       ev.email        = body.email;
+  if (body.usedCredits !== undefined) ev.used_credits = body.usedCredits;
+  if (body.songs !== undefined)       ev.songs        = body.songs;
+  if (body.token !== undefined)       ev.token        = body.token;
+  if (body.quiz !== undefined)        ev.quiz         = body.quiz;
+  if (body.createdAt !== undefined)   ev.created_at   = body.createdAt;
+  if (body.user_id !== undefined)     ev.user_id      = body.user_id;
+  return ev;
+}
+
 export default async function handler(req, res) {
   const SB_URL = process.env.SUPABASE_URL;
   const SB_KEY = process.env.SUPABASE_SERVICE_KEY;
@@ -29,7 +70,7 @@ export default async function handler(req, res) {
       const r = await fetch(`${SB_URL}/rest/v1/events?id=eq.${encodeURIComponent(id)}&select=*`, { headers: h });
       const rows = await r.json();
       if (!rows || rows.length === 0) return res.status(404).json({ error: 'not_found' });
-      return res.status(200).json(rows[0]);
+      return res.status(200).json(normalize(rows[0]));
     } catch (e) { return res.status(500).json({ error: e.message }); }
   }
 
@@ -38,28 +79,27 @@ export default async function handler(req, res) {
     const body = req.body;
     if (!body || !body.id) return res.status(400).json({ error: 'event invalide' });
 
-    // Construire l'objet avec uniquement les champs connus de la table
     const ev = {
-      id: body.id,
-      couple: body.couple || '',
-      p1: body.p1 || '',
-      p2: body.p2 || '',
-      date: body.date || null,
-      guests: body.guests || 0,
-      credits: body.credits || 0,
-      email: body.email || null,
-      usedCredits: body.usedCredits || 0,
-      songs: body.songs || [],
-      token: body.token || null,       // null = pas de mot de passe galerie
-      quiz: body.quiz || [],
-      createdAt: body.createdAt || new Date().toISOString(),
-      user_id: body.user_id || null
+      id:           body.id,
+      couple:       body.couple      || '',
+      p1:           body.p1          || '',
+      p2:           body.p2          || '',
+      date:         body.date        || null,
+      guests:       body.guests      || 0,
+      credits:      body.credits     || 0,
+      email:        body.email       || null,
+      used_credits: body.usedCredits || 0,
+      songs:        body.songs       || [],
+      token:        body.token       || null,
+      quiz:         body.quiz        || [],
+      created_at:   body.createdAt   || new Date().toISOString(),
+      user_id:      body.user_id     || null
     };
 
     try {
       const r = await fetch(`${SB_URL}/rest/v1/events`, {
         method: 'POST',
-        headers: { ...h, 'Prefer': 'resolution=merge-duplicates' },
+        headers: { ...h, 'Prefer': 'resolution=merge-duplicates,return=minimal' },
         body: JSON.stringify(ev)
       });
       if (!r.ok) {
@@ -76,10 +116,11 @@ export default async function handler(req, res) {
     const { id, ...updates } = req.body || {};
     if (!id) return res.status(400).json({ error: 'id requis' });
     try {
+      const snakeUpdates = toSnake(updates);
       const r = await fetch(`${SB_URL}/rest/v1/events?id=eq.${encodeURIComponent(id)}`, {
         method: 'PATCH',
         headers: h,
-        body: JSON.stringify(updates)
+        body: JSON.stringify(snakeUpdates)
       });
       if (!r.ok) { const t = await r.text(); return res.status(502).json({ error: t }); }
       return res.status(200).json({ ok: true });

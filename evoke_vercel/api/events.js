@@ -12,6 +12,27 @@ async function getUserIdFromToken(token, url, key) {
   } catch { return null; }
 }
 
+// Convertit une row snake_case Supabase en camelCase pour le frontend
+function normalize(row) {
+  if (!row) return row;
+  return {
+    id: row.id,
+    couple: row.couple,
+    p1: row.p1,
+    p2: row.p2,
+    date: row.date,
+    guests: row.guests,
+    credits: row.credits,
+    email: row.email,
+    usedCredits: row.used_credits,
+    songs: row.songs,
+    token: row.token,
+    quiz: row.quiz,
+    createdAt: row.created_at,
+    user_id: row.user_id
+  };
+}
+
 export default async function handler(req, res) {
   if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' });
 
@@ -27,7 +48,7 @@ export default async function handler(req, res) {
       { headers: { 'Authorization': `Bearer ${key}`, 'apikey': key } }
     );
     const rows = await r.json();
-    return res.status(200).json(rows || []);
+    return res.status(200).json((rows || []).map(normalize));
   } catch (e) {
     return res.status(500).json({ error: e.message });
   }

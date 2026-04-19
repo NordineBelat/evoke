@@ -447,16 +447,28 @@ async function createEvent() {
   var errEl = document.getElementById("create-err");
   errEl.classList.remove("show");
 
-  if(!p1||!p2) { errEl.textContent="Les deux prénoms sont requis."; errEl.classList.add("show"); return; }
-  if(credits < 1) { errEl.textContent="Entrez un nombre de crédits valide (minimum 1)."; errEl.classList.add("show"); return; }
-
-  // Info crédits disponibles (non bloquant)
-  var available = Math.max(0, (USER.credits||0) - (USER.creditsUsed||0));
+  // ── VALIDATION avec messages explicites ──
+  if(!p1||!p2) {
+    errEl.textContent = "Les deux prénoms sont requis.";
+    errEl.classList.add("show"); return;
+  }
+  if(credits < 1) {
+    errEl.textContent = "Le champ Crédits est vide ou vaut 0 — entrez un nombre minimum de 1.";
+    errEl.classList.add("show"); return;
+  }
+  if(!SESSION || !SESSION.token) {
+    errEl.textContent = "Session expirée — reconnectez-vous.";
+    errEl.classList.add("show"); return;
+  }
+  if(!USER || !USER.id) {
+    errEl.textContent = "Utilisateur non chargé — rechargez la page.";
+    errEl.classList.add("show"); return;
+  }
 
   var btn = document.getElementById("btn-create");
   btn.disabled = true; btn.textContent = "Création…";
 
-  var token = tokenCustom || null; // null = pas de mot de passe requis pour la galerie
+  var token = tokenCustom || null;
   var id = Date.now().toString(36) + Math.random().toString(36).substring(2);
   var quiz = getQuizFields("create");
 
@@ -475,14 +487,22 @@ async function createEvent() {
       headers: { "Content-Type": "application/json", "Authorization": "Bearer "+SESSION.token },
       body: JSON.stringify(ev)
     });
-    if(!r.ok) { var d = await r.json(); throw new Error(d.error||"Erreur serveur"); }
+
+    // Lire le body dans tous les cas pour avoir le détail de l'erreur
+    var responseText = await r.text();
+    if(!r.ok) {
+      var detail = "";
+      try { detail = JSON.parse(responseText).error || responseText; } catch(x) { detail = responseText; }
+      throw new Error("HTTP " + r.status + " — " + detail.substring(0, 300));
+    }
+
     toast("✦ Événement créé !");
     ["np1","np2","ndate","nguests","ncredits","nemail","ntoken-custom"].forEach(function(x){ document.getElementById(x).value=""; });
     document.getElementById("quiz-fields-create").innerHTML = "";
     await loadEvents();
     switchTab(0);
   } catch(e) {
-    errEl.textContent = "Erreur: " + e.message;
+    errEl.textContent = "❌ " + e.message;
     errEl.classList.add("show");
   }
   btn.disabled = false; btn.textContent = "Créer l'événement →";
