@@ -57,3 +57,23 @@ CREATE POLICY "users_own_profile" ON public.users
 SELECT 'Table users créée' as status WHERE EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'users');
 SELECT 'Table email_verifications créée' as status WHERE EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'email_verifications');
 SELECT 'Colonne user_id dans events' as status WHERE EXISTS (SELECT FROM information_schema.columns WHERE table_name = 'events' AND column_name = 'user_id');
+
+-- ============================================================
+-- CORRECTIF — Colonnes manquantes dans la table events
+-- À exécuter si la table events existe déjà sans ces colonnes
+-- ============================================================
+ALTER TABLE public.events ADD COLUMN IF NOT EXISTS p1 TEXT;
+ALTER TABLE public.events ADD COLUMN IF NOT EXISTS p2 TEXT;
+ALTER TABLE public.events ADD COLUMN IF NOT EXISTS couple TEXT;
+ALTER TABLE public.events ADD COLUMN IF NOT EXISTS date TEXT;
+ALTER TABLE public.events ADD COLUMN IF NOT EXISTS guests INTEGER;
+ALTER TABLE public.events ADD COLUMN IF NOT EXISTS email TEXT;
+ALTER TABLE public.events ADD COLUMN IF NOT EXISTS token TEXT;
+ALTER TABLE public.events ADD COLUMN IF NOT EXISTS quiz JSONB DEFAULT '[]';
+ALTER TABLE public.events ADD COLUMN IF NOT EXISTS songs JSONB DEFAULT '[]';
+ALTER TABLE public.events ADD COLUMN IF NOT EXISTS "usedCredits" INTEGER DEFAULT 0;
+ALTER TABLE public.events ADD COLUMN IF NOT EXISTS "createdAt" TIMESTAMPTZ;
+ALTER TABLE public.events ADD COLUMN IF NOT EXISTS credits INTEGER DEFAULT 0;
+
+-- Vérification
+SELECT column_name FROM information_schema.columns WHERE table_name = 'events' ORDER BY column_name;
