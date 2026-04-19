@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>EVOKE — Connexion</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{--bg:#f2f2f7;--white:#fff;--dark:#111118;--text:#111118;--text2:#6b6b80;--text3:#aeaec0;--green:#b8f0c8;--green2:#3ecf6a;--red:#ff6b6b;--border:rgba(0,0,0,0.07);--sh:0 4px 24px rgba(0,0,0,0.07);--rmd:24px;--rlg:32px;--rxl:40px;--rp:100px;}
+html,body{min-height:100vh;font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;overflow-x:hidden;max-width:100vw;}
+body{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem 1rem;}@media(max-width:480px){body{padding:1.5rem .75rem;}}
+.logo{margin-bottom:1.8rem;text-align:center;display:flex;flex-direction:column;align-items:center;gap:.5rem;}
+.logo-sub{font-size:.65rem;font-weight:600;color:var(--text3);letter-spacing:.12em;text-transform:uppercase;}
+@media(max-width:480px){.logo{margin-bottom:1.2rem;}}
+.card{background:var(--white);border-radius:var(--rxl);padding:2rem;width:100%;max-width:420px;box-shadow:var(--sh);}@media(max-width:480px){.card{padding:1.4rem;border-radius:var(--rlg);}}
+.card-title{font-size:1.2rem;font-weight:800;color:var(--dark);margin-bottom:.3rem;}
+.card-sub{font-size:.8rem;color:var(--text2);margin-bottom:1.6rem;}
+.field{margin-bottom:1rem;}
+.field label{display:block;font-size:.68rem;font-weight:800;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.4rem;}
+.field input{width:100%;background:var(--bg);border:none;border-radius:var(--rmd);padding:.85rem 1.1rem;font-family:'Plus Jakarta Sans',sans-serif;font-size:.9rem;color:var(--text);outline:none;transition:box-shadow .2s;}
+.field input:focus{box-shadow:0 0 0 2.5px rgba(17,17,24,.15);}@media(max-width:480px){.field input{font-size:16px;padding:.78rem .9rem;}}
+.field input::placeholder{color:var(--text3);}
+.pw-wrap{position:relative;}
+.pw-wrap input{padding-right:2.8rem;}
+.pw-toggle{position:absolute;right:.8rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:.85rem;color:var(--text3);padding:.3rem;}
+.btn{width:100%;padding:1rem;background:var(--dark);border:none;border-radius:var(--rxl);font-family:'Plus Jakarta Sans',sans-serif;font-size:.88rem;font-weight:800;color:white;cursor:pointer;transition:all .2s;margin-top:.5rem;}
+.btn:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(17,17,24,.25);}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none;}
+.btn-green{background:var(--green2);}
+.divider{text-align:center;font-size:.72rem;color:var(--text3);margin:1.2rem 0;position:relative;}
+.divider::before,.divider::after{content:'';position:absolute;top:50%;width:42%;height:1px;background:var(--border);}
+.divider::before{left:0;}.divider::after{right:0;}
+.link-row{text-align:center;font-size:.78rem;color:var(--text2);margin-top:1.2rem;}
+.link-row a{color:var(--dark);font-weight:700;text-decoration:none;}
+.link-row a:hover{text-decoration:underline;}
+.alert{border-radius:var(--rmd);padding:.8rem 1rem;font-size:.78rem;font-weight:600;margin-bottom:1rem;display:none;}
+.alert.error{background:rgba(255,107,107,.1);color:#c0392b;border:1px solid rgba(255,107,107,.3);}
+.alert.success{background:rgba(62,207,106,.1);color:#1a5c2a;border:1px solid rgba(62,207,106,.3);}
+.alert.show{display:block;}
+</style>
+</head>
+<body>
+<div class="logo">
+  <svg width="116" height="32" viewBox="0 0 116 32" style="display:block;overflow:visible;color:var(--dark)">
+    <defs><style>.bc1{animation:bca 1s ease-in-out infinite alternate;}.bc2{animation:bca 1s ease-in-out .25s infinite alternate;}.bc3{animation:bca 1s ease-in-out .5s infinite alternate;}@keyframes bca{0%{transform:scaleY(.15);}100%{transform:scaleY(1);}}</style></defs>
+    <text x="0" y="25" font-family="'Plus Jakarta Sans',sans-serif" font-size="22" font-weight="800" fill="currentColor" letter-spacing="-.3">EVOKE</text>
+    <g transform="translate(82,7)">
+      <rect class="bc1" x="0" y="0" width="4" height="18" rx="2" fill="currentColor" transform-origin="2 18"/>
+      <rect class="bc2" x="7" y="0" width="4" height="18" rx="2" fill="currentColor" transform-origin="9 18"/>
+      <rect class="bc3" x="14" y="0" width="4" height="18" rx="2" fill="currentColor" transform-origin="16 18"/>
+    </g>
+  </svg>
+  <div class="logo-sub">Génération musicale pour événements</div>
+</div>
+
+<div class="card">
+  <div class="card-title">Connexion</div>
+  <div class="card-sub">Accédez à votre espace professionnel</div>
+
+  <div class="alert error" id="alert-error"></div>
+  <div class="alert success" id="alert-success"></div>
+
+  <div class="field">
+    <label>Adresse email</label>
+    <input type="email" id="email" placeholder="vous@exemple.com" autocomplete="email">
+  </div>
+  <div class="field">
+    <label>Mot de passe</label>
+    <div class="pw-wrap">
+      <input type="password" id="password" placeholder="Votre mot de passe" autocomplete="current-password">
+      <button class="pw-toggle" onclick="togglePw('password')">👁</button>
+    </div>
+  </div>
+
+  <button class="btn" id="btn-login" onclick="doLogin()">Se connecter →</button>
+
+  <div class="link-row" style="margin-top:.8rem">
+    <a href="/reset-password">Mot de passe oublié ?</a>
+  </div>
+
+  <div class="divider">ou</div>
+
+  <button class="btn btn-green" onclick="window.location='/register'">Créer un compte</button>
+</div>
+
+<script>
+// Vérifier si déjà connecté
+const stored = localStorage.getItem('evoke_session');
+if (stored) {
+  try {
+    const s = JSON.parse(stored);
+    if (s.token) window.location = '/dashboard';
+  } catch(e) {}
+}
+
+// Message de succès si email vérifié
+const params = new URLSearchParams(window.location.search);
+if (params.get('verified') === '1') {
+  const a = document.getElementById('alert-success');
+  a.textContent = '✅ Email confirmé ! Vous pouvez maintenant vous connecter.';
+  a.classList.add('show');
+}
+if (params.get('expired') === '1') {
+  const a = document.getElementById('alert-error');
+  a.textContent = 'Votre session a expiré. Veuillez vous reconnecter.';
+  a.classList.add('show');
+}
+
+function togglePw(id) {
+  const el = document.getElementById(id);
+  el.type = el.type === 'password' ? 'text' : 'password';
+}
+
+document.getElementById('password').addEventListener('keydown', e => {
+  if (e.key === 'Enter') doLogin();
+});
+
+async function doLogin() {
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value;
+  const btn = document.getElementById('btn-login');
+  const errEl = document.getElementById('alert-error');
+  errEl.classList.remove('show');
+
+  if (!email || !password) {
+    errEl.textContent = 'Veuillez remplir tous les champs.';
+    errEl.classList.add('show');
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Connexion…';
+
+  try {
+    const r = await fetch('/api/auth-login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+    const data = await r.json();
+
+    if (!r.ok) {
+      errEl.textContent = data.error || 'Erreur de connexion';
+      errEl.classList.add('show');
+      btn.disabled = false;
+      btn.textContent = 'Se connecter →';
+      return;
+    }
+
+    // Sauvegarder la session
+    localStorage.setItem('evoke_session', JSON.stringify({
+      token: data.token,
+      refreshToken: data.refresh_token,
+      user: data.user,
+      loginAt: Date.now()
+    }));
+
+    window.location = '/dashboard';
+
+  } catch (e) {
+    errEl.textContent = 'Erreur réseau. Vérifiez votre connexion.';
+    errEl.classList.add('show');
+    btn.disabled = false;
+    btn.textContent = 'Se connecter →';
+  }
+}
+</script>
+</body>
+</html>

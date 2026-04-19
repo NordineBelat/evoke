@@ -1,0 +1,1687 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>EVOKE</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{--bg:#f2f2f7;--white:#fff;--dark:#111118;--text:#111118;--text2:#6b6b80;--text3:#aeaec0;--green:#b8f0c8;--green2:#3ecf6a;--red:#ff6b6b;--border:rgba(0,0,0,0.07);--sh:0 4px 24px rgba(0,0,0,0.07);--sh2:0 12px 40px rgba(0,0,0,0.12);--rmd:24px;--rlg:32px;--rxl:40px;--rp:100px;}
+
+html{scroll-behavior:smooth;overflow-x:hidden;max-width:100vw;}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;max-width:100vw;-webkit-font-smoothing:antialiased;}
+nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;height:64px;background:rgba(242,242,247,0.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
+
+
+
+.nlogo{display:flex;align-items:center;}
+.nright{display:flex;align-items:center;gap:.5rem;background:var(--white);border-radius:var(--rp);padding:.4rem .9rem;box-shadow:var(--sh);}
+.ndot{width:8px;height:8px;border-radius:50%;background:var(--green2);}
+.ncred{font-size:.72rem;font-weight:700;color:var(--dark);}
+
+
+.page{display:none;padding-top:64px;min-height:100vh;}
+.page.active{display:block;}
+/* HERO */
+.hs{padding:2.5rem 1.5rem 1rem;max-width:520px;margin:0 auto;}
+.hc{background:var(--dark);border-radius:var(--rxl);padding:2.2rem 1.8rem 2rem;position:relative;overflow:hidden;margin-bottom:1rem;}
+.hcd{position:absolute;right:-40px;top:-40px;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,.04);}
+.hcd2{position:absolute;right:20px;top:20px;width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,.04);}
+.htag{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.1);border-radius:var(--rp);padding:.3rem .8rem;font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.7);margin-bottom:1.2rem;}
+.htdot{width:6px;height:6px;border-radius:50%;background:var(--green2);}
+.hc h1{font-size:clamp(1.8rem,5vw,2.8rem);font-weight:800;line-height:1.1;color:white;margin-bottom:.6rem;letter-spacing:-.02em;}
+.hc h1 em{font-style:normal;background:linear-gradient(135deg,#b8f0c8,#5dd8a0);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.hc p{font-size:.85rem;color:rgba(255,255,255,.55);line-height:1.6;max-width:280px;}
+.sp{display:inline-flex;align-items:center;gap:.4rem;background:rgba(255,255,255,.08);border-radius:var(--rp);padding:.5rem 1rem;margin-top:1.5rem;}
+.spn{font-size:.92rem;font-weight:800;color:white;}
+.spl{font-size:.65rem;font-weight:500;color:rgba(255,255,255,.5);}
+/* FORM */
+.fs{padding:0 1.5rem 6rem;max-width:520px;margin:0 auto;}
+.fc{background:var(--white);border-radius:var(--rlg);padding:1.4rem;margin-bottom:10px;box-shadow:var(--sh);animation:ci .4s ease both;}
+.fc:nth-child(1){animation-delay:.05s;}.fc:nth-child(2){animation-delay:.1s;}.fc:nth-child(3){animation-delay:.15s;}
+@keyframes ci{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:none;}}
+.cl{font-size:.65rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);margin-bottom:.9rem;display:flex;align-items:center;gap:.5rem;}
+.cli{width:24px;height:24px;border-radius:8px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:.75rem;}
+.fta,.fin{width:100%;background:var(--bg);border:none;font-family:'Plus Jakarta Sans',sans-serif;font-size:.9rem;color:var(--text);padding:.85rem 1.1rem;outline:none;transition:box-shadow .2s;caret-color:var(--dark);}
+.fta{border-radius:var(--rmd);resize:none;min-height:90px;line-height:1.65;}
+.fin{border-radius:var(--rp);margin-top:.6rem;}
+.fta:focus,.fin:focus{box-shadow:0 0 0 2.5px rgba(17,17,24,.15);}
+.fta::placeholder,.fin::placeholder{color:var(--text3);}
+.chips{display:flex;flex-wrap:wrap;gap:7px;}
+.cin{display:none;}
+.clb{display:inline-block;padding:.5rem 1.1rem;background:var(--bg);border:none;border-radius:var(--rp);font-family:'Plus Jakarta Sans',sans-serif;font-size:.76rem;font-weight:600;color:var(--text2);cursor:pointer;transition:all .18s;}
+.clb:hover{background:rgba(17,17,24,.07);}
+.cin:checked+.clb{background:var(--dark);color:white;}
+.style-chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:.6rem;}
+.style-chip{display:none;}
+.style-chip+label{padding:.5rem 1rem;background:var(--bg);border:1.5px solid var(--border);border-radius:var(--rp);font-size:.75rem;font-weight:700;color:var(--text2);cursor:pointer;transition:all .18s;user-select:none;}
+.style-chip+label:hover{border-color:var(--dark);color:var(--dark);}
+.style-chip:checked+label{background:var(--dark);color:white;border-color:var(--dark);}
+.vg{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.vin{display:none;}
+.vlb{display:block;background:var(--bg);border-radius:var(--rmd);padding:1.1rem;cursor:pointer;transition:all .18s;border:2px solid transparent;}
+.vlb:hover{background:rgba(17,17,24,.05);}
+.vin:checked+.vlb{background:var(--dark);border-color:var(--dark);}
+.vi{width:40px;height:40px;border-radius:var(--rmd);background:white;display:flex;align-items:center;justify-content:center;font-size:1.2rem;margin-bottom:.7rem;}
+.vin:checked+.vlb .vi{background:rgba(255,255,255,.12);}
+.vn{font-size:.85rem;font-weight:800;color:var(--text);margin-bottom:.15rem;}
+.vs{font-size:.72rem;color:var(--text2);}
+.vin:checked+.vlb .vn{color:white;}
+.vin:checked+.vlb .vs{color:rgba(255,255,255,.55);}
+.bcta{width:100%;padding:1.1rem;background:var(--dark);border:none;border-radius:var(--rxl);font-family:'Plus Jakarta Sans',sans-serif;font-size:.88rem;font-weight:800;color:white;cursor:pointer;transition:all .25s;display:flex;align-items:center;justify-content:center;gap:.7rem;box-shadow:0 8px 24px rgba(17,17,24,.25);margin-top:10px;}
+.bcta:hover{transform:translateY(-2px);box-shadow:0 14px 32px rgba(17,17,24,.3);}
+.bcta:disabled{opacity:.35;cursor:not-allowed;transform:none;box-shadow:none;}
+.bctai{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;transition:transform .2s;}
+.bcta:hover .bctai{transform:translateX(4px);}
+.ldg{display:none;padding:2.5rem 1.5rem;text-align:center;max-width:520px;margin:0 auto;}
+.ldg.active{display:block;}
+.ldc{background:var(--white);border-radius:var(--rxl);padding:2.5rem 2rem;box-shadow:var(--sh2);}
+.wr{display:flex;align-items:center;justify-content:center;gap:5px;height:52px;margin-bottom:1.4rem;}
+.wb{background:var(--dark);border-radius:100px;width:5px;animation:wb 1.2s ease-in-out infinite;}
+.wb:nth-child(1){animation-delay:0s;}.wb:nth-child(2){animation-delay:.08s;}.wb:nth-child(3){animation-delay:.16s;}.wb:nth-child(4){animation-delay:.24s;}.wb:nth-child(5){animation-delay:.32s;}.wb:nth-child(6){animation-delay:.4s;}.wb:nth-child(7){animation-delay:.48s;}.wb:nth-child(8){animation-delay:.4s;}.wb:nth-child(9){animation-delay:.32s;}
+@keyframes wb{0%,100%{height:6px;opacity:.15;}50%{height:44px;opacity:1;}}
+.ldt{font-size:1.15rem;font-weight:800;color:var(--dark);margin-bottom:.4rem;}
+.lds{font-size:.8rem;color:var(--text2);}
+.queue-info{margin-top:.8rem;background:rgba(255,193,7,.1);border:1px solid rgba(255,193,7,.3);border-radius:var(--rmd);padding:.7rem 1rem;font-size:.78rem;color:#b8860b;font-weight:600;text-align:center;}
+.quiz-wrap{margin-top:2rem;text-align:center;background:linear-gradient(135deg,#111118 0%,#1e1e2e 100%);border-radius:var(--rxl);padding:1.6rem;box-shadow:0 20px 60px rgba(17,17,24,.35);animation:quizIn .5s cubic-bezier(.34,1.56,.64,1) both;}
+@keyframes quizIn{from{opacity:0;transform:translateY(20px) scale(.96);}to{opacity:1;transform:translateY(0) scale(1);}}
+.quiz-header{font-size:.58rem;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:.6rem;}
+.quiz-intro{font-size:.9rem;font-weight:800;color:white;margin-bottom:1.2rem;line-height:1.5;}
+.quiz-prog-bar{height:3px;background:rgba(255,255,255,.1);border-radius:100px;margin-bottom:1.2rem;overflow:hidden;}
+.quiz-prog-fill{height:3px;background:linear-gradient(90deg,#3ecf6a,#22c55e);border-radius:100px;transition:width .6s cubic-bezier(.34,1.56,.64,1);}
+.quiz-q{font-size:.95rem;font-weight:800;color:white;margin-bottom:1rem;line-height:1.45;animation:fadeUp .3s ease both;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+.quiz-opts{display:flex;flex-direction:column;gap:8px;margin-bottom:.8rem;}
+.quiz-opts{text-align:left;}.quiz-opt{padding:.8rem 1.1rem;background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.1);border-radius:var(--rmd);font-size:.82rem;font-weight:700;color:rgba(255,255,255,.8);cursor:pointer;transition:all .2s cubic-bezier(.34,1.56,.64,1);text-align:left;animation:fadeUp .3s ease both;}
+.quiz-opt:nth-child(1){animation-delay:.05s;}
+.quiz-opt:nth-child(2){animation-delay:.1s;}
+.quiz-opt:nth-child(3){animation-delay:.15s;}
+.quiz-opt:hover{background:rgba(255,255,255,.13);border-color:rgba(255,255,255,.3);transform:translateX(4px);}
+.quiz-opt.correct{background:rgba(62,207,106,.2);border-color:#3ecf6a;color:#3ecf6a;transform:translateX(4px);}
+.quiz-opt.wrong{background:rgba(239,68,68,.15);border-color:#ef4444;color:#ef4444;}
+.quiz-opt:disabled{cursor:default;transform:none;}
+.quiz-nav{display:flex;justify-content:space-between;align-items:center;margin-top:.4rem;}
+.quiz-progress{font-size:.65rem;color:rgba(255,255,255,.3);font-weight:700;letter-spacing:.05em;}
+.quiz-pts{font-size:.65rem;color:rgba(255,255,255,.4);font-weight:700;}
+.quiz-result{text-align:center;padding:.8rem 0;animation:quizIn .5s cubic-bezier(.34,1.56,.64,1) both;}
+.quiz-result-emoji{font-size:2.5rem;margin-bottom:.7rem;animation:bounce .6s cubic-bezier(.34,1.56,.64,1) both;}
+@keyframes bounce{from{transform:scale(0);}to{transform:scale(1);}}
+@keyframes quizOut{from{opacity:1;transform:scale(1);}to{opacity:0;transform:scale(.95);}}
+.quiz-result-title{font-size:1rem;font-weight:800;color:white;margin-bottom:.5rem;line-height:1.3;}
+.quiz-result-sub{font-size:.78rem;color:rgba(255,255,255,.45);line-height:1.6;}
+.quiz-patience{margin-top:1.2rem;padding:.85rem 1.1rem;background:rgba(62,207,106,.1);border:1px solid rgba(62,207,106,.25);border-radius:var(--rmd);font-size:.8rem;font-weight:700;color:rgba(62,207,106,.9);line-height:1.5;animation:fadeUp .4s ease both;display:none;}
+.quiz-rating{margin-top:1.2rem;animation:fadeUp .4s ease both;}
+.quiz-rating-label{font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:.5rem;}
+.quiz-stars{display:flex;justify-content:center;gap:.3rem;}
+.quiz-star{font-size:1.6rem;line-height:1;filter:grayscale(1) opacity(.25);}
+.quiz-star.active{filter:none;}
+.quiz-score-num{margin-top:.5rem;font-size:.8rem;font-weight:800;color:rgba(255,255,255,.6);}
+.quiz-intro-emoji{font-size:2.8rem;margin:.4rem 0 .8rem;animation:bounce 1s cubic-bezier(.34,1.56,.64,1) both .3s;}
+.quiz-intro-title{font-size:.95rem;font-weight:800;color:white;line-height:1.4;margin-bottom:.5rem;}
+.quiz-intro-sub{font-size:.8rem;color:rgba(255,255,255,.5);margin-bottom:1.3rem;line-height:1.5;}
+.quiz-start-btn{width:100%;padding:.9rem;background:linear-gradient(135deg,#3ecf6a,#22c55e);border:none;border-radius:var(--rmd);font-family:'Plus Jakarta Sans',sans-serif;font-size:.85rem;font-weight:800;color:white;cursor:pointer;transition:all .2s cubic-bezier(.34,1.56,.64,1);box-shadow:0 8px 24px rgba(62,207,106,.3);}
+.quiz-start-btn:hover{transform:scale(1.02);box-shadow:0 12px 32px rgba(62,207,106,.4);}
+.quiz-start-btn:active{transform:scale(.98);}
+.gdl-btn{display:inline-flex;align-items:center;gap:.4rem;background:transparent;color:var(--text2);border:1.5px solid var(--border);border-radius:var(--rp);padding:.45rem 1rem;font-size:.68rem;font-weight:700;cursor:pointer;transition:all .18s;}
+.gdl-btn:hover{background:var(--bg);color:var(--text);border-color:var(--text3);}
+.gdl-btn:disabled{opacity:.4;cursor:not-allowed;}
+.gdl-btn svg,.gdl-all svg{display:block;flex-shrink:0;}
+.res{display:none;padding:0 1.5rem 1rem;max-width:520px;margin:0 auto;animation:ci .4s ease both;}
+.res.active{display:block;}
+.resc{background:var(--dark);border-radius:var(--rxl);padding:1.8rem;position:relative;overflow:hidden;}
+.resc::before{content:'';position:absolute;top:-60px;right:-60px;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,.03);}
+.rp2{display:inline-flex;align-items:center;background:var(--green);border-radius:var(--rp);padding:.3rem .8rem;margin-bottom:1rem;}
+.rp2 span{font-size:.65rem;font-weight:800;color:#1a5c2a;letter-spacing:.08em;text-transform:uppercase;}
+.rt{font-size:1.25rem;font-weight:800;color:white;margin-bottom:.2rem;}
+.rm{font-size:.75rem;color:rgba(255,255,255,.45);margin-bottom:1.2rem;}
+audio{width:100%;margin-bottom:1.2rem;accent-color:var(--green2);}
+.rbs{display:grid;grid-template-columns:1fr 2fr;gap:8px;}
+.bow{padding:.75rem;background:rgba(255,255,255,.08);border:none;border-radius:var(--rxl);font-family:'Plus Jakarta Sans',sans-serif;font-size:.72rem;font-weight:700;color:rgba(255,255,255,.7);cursor:pointer;transition:all .18s;}
+.bow:hover{background:rgba(255,255,255,.14);}
+.conf{display:none;padding:0 1.5rem 1rem;max-width:520px;margin:0 auto;animation:ci .4s ease both;}
+.conf.active{display:block;}
+.confc{background:var(--dark);border-radius:var(--rxl);padding:2rem 1.8rem;text-align:center;position:relative;overflow:hidden;}
+.confc::before{content:'';position:absolute;top:-60px;right:-60px;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,.03);}
+.conf-icon{font-size:2.2rem;margin-bottom:1rem;}
+.conf-title{font-size:1.15rem;font-weight:800;color:white;margin-bottom:.5rem;line-height:1.3;}
+.conf-sub{font-size:.8rem;color:rgba(255,255,255,.45);margin-bottom:1.6rem;line-height:1.5;}
+.conf-name{color:var(--green);font-weight:800;}
+.bnew{width:100%;padding:.85rem;background:var(--green2);border:none;border-radius:var(--rxl);font-family:'Plus Jakarta Sans',sans-serif;font-size:.8rem;font-weight:800;color:white;cursor:pointer;transition:opacity .18s;}
+.bnew:hover{opacity:.85;}
+.noc{display:none;padding:0 1.5rem 1rem;max-width:520px;margin:0 auto;animation:ci .4s ease both;}
+.noc.active{display:block;}
+.nocc{background:var(--dark);border-radius:var(--rxl);padding:2rem 1.8rem;text-align:center;position:relative;overflow:hidden;}
+.nocc::before{content:'';position:absolute;top:-60px;right:-60px;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,.03);}
+.noc-icon{font-size:2.2rem;margin-bottom:1rem;}
+.noc-title{font-size:1.1rem;font-weight:800;color:white;margin-bottom:.5rem;line-height:1.3;}
+.noc-sub{font-size:.8rem;color:rgba(255,255,255,.45);line-height:1.6;}
+.bgr{padding:.75rem;background:var(--green2);border:none;border-radius:var(--rxl);font-family:'Plus Jakarta Sans',sans-serif;font-size:.72rem;font-weight:800;color:white;cursor:pointer;transition:opacity .18s;}
+.bgr:hover{opacity:.85;}
+/* GALERIE */
+.gt{padding:1.5rem 1rem 1rem;max-width:680px;margin:0 auto;}
+.ghc{background:var(--dark);border-radius:var(--rxl);padding:1.6rem 1.4rem;margin-bottom:1rem;display:flex;flex-direction:column;gap:1rem;}
+.ghc-top{display:flex;align-items:flex-start;justify-content:space-between;gap:.5rem;}
+.ghc-bottom{display:flex;align-items:center;gap:.7rem;}
+.ghct{background:rgba(255,255,255,.1);border-radius:var(--rp);padding:.4rem .9rem;font-size:.78rem;font-weight:800;color:white;white-space:nowrap;}
+.ght{font-size:1.4rem;font-weight:800;color:white;line-height:1.2;}
+.ght em{font-style:normal;color:var(--green2);}
+
+.gg{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px;padding:0 1rem 5rem;max-width:680px;margin:0 auto;}
+.gca{background:var(--white);border-radius:var(--rxl);padding:1.4rem;box-shadow:var(--sh);animation:ci .4s ease both;}
+.gct{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:.7rem;}
+.gcn{font-size:.6rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--text3);}
+.gcs{background:var(--bg);border-radius:var(--rp);padding:.25rem .7rem;font-size:.62rem;font-weight:700;color:var(--text2);}
+.gcti{font-size:1.05rem;font-weight:800;color:var(--dark);margin-bottom:.1rem;}
+.gca2{font-size:.7rem;font-weight:500;color:var(--text2);margin-bottom:.8rem;}
+.gcm{font-size:.82rem;font-style:italic;color:var(--text2);line-height:1.6;margin-bottom:1rem;background:var(--bg);border-radius:var(--rmd);padding:.75rem .9rem;}
+.gf{display:flex;justify-content:space-between;align-items:center;}
+.gvp{display:flex;align-items:center;gap:.4rem;background:var(--bg);border-radius:var(--rp);padding:.3rem .7rem;font-size:.65rem;font-weight:700;color:var(--text2);}
+.gdl{display:inline-flex;align-items:center;gap:.35rem;background:var(--dark);color:white;border-radius:var(--rp);padding:.45rem 1rem;font-size:.68rem;font-weight:700;text-decoration:none;transition:opacity .15s;}
+.gdl:hover{opacity:.8;}
+.gdl-all{display:inline-flex;align-items:center;gap:.4rem;background:rgba(255,255,255,.12);color:white;border:1.5px solid rgba(255,255,255,.2);border-radius:var(--rp);padding:.5rem 1.1rem;font-size:.72rem;font-weight:700;cursor:pointer;transition:all .18s;}
+.gdl-all:hover{background:rgba(255,255,255,.2);}
+.gdl-all:disabled{opacity:.4;cursor:not-allowed;}
+.ge{grid-column:1/-1;text-align:center;padding:4rem 2rem;background:var(--white);border-radius:var(--rxl);}
+.gei{font-size:2.5rem;margin-bottom:.8rem;opacity:.3;}
+.get{font-size:.95rem;font-weight:600;color:var(--text2);}
+/* ADMIN */
+.ao{padding:2rem 1.5rem 6rem;max-width:620px;margin:0 auto;}
+.ah{background:var(--dark);border-radius:var(--rxl);padding:1.8rem;margin-bottom:10px;}
+.aht{font-size:1.6rem;font-weight:800;color:white;margin-bottom:.2rem;}
+.ahs{font-size:.8rem;color:rgba(255,255,255,.45);}
+.lc,.ab{background:var(--white);border-radius:var(--rxl);padding:1.4rem;box-shadow:var(--sh);margin-bottom:10px;}
+.abt{font-size:.65rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--text3);margin-bottom:1.1rem;}
+.ats{display:flex;gap:4px;background:var(--white);border-radius:var(--rp);padding:4px;box-shadow:var(--sh);margin-bottom:10px;}
+.at{flex:1;padding:.5rem;border:none;background:transparent;font-family:'Plus Jakarta Sans',sans-serif;font-size:.68rem;font-weight:700;color:var(--text2);border-radius:var(--rp);cursor:pointer;transition:all .2s;}
+.at.active{background:var(--dark);color:white;}
+.el{display:flex;flex-direction:column;gap:8px;}
+.er{background:var(--bg);border-radius:var(--rlg);padding:1rem 1.2rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;cursor:pointer;transition:all .18s;}
+.er:hover{background:rgba(17,17,24,.06);}
+.er.aev{background:var(--dark);}
+.erl{flex:1;min-width:0;}
+.ern{font-size:.92rem;font-weight:800;color:var(--dark);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.er.aev .ern{color:white;}
+.erd{font-size:.68rem;font-weight:500;color:var(--text2);margin-top:2px;}
+.er.aev .erd{color:rgba(255,255,255,.5);}
+.err{display:flex;align-items:center;gap:6px;flex-shrink:0;}
+.ecp{background:var(--green);border-radius:var(--rp);padding:.2rem .6rem;font-size:.62rem;font-weight:800;color:#1a5c2a;}
+.er.aev .ecp{background:rgba(184,240,200,.2);color:var(--green2);}
+.edb{width:28px;height:28px;border-radius:50%;background:rgba(255,107,107,.1);border:none;color:var(--red);font-size:.7rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.edb:hover{background:rgba(255,107,107,.25);}
+.lb2{background:var(--bg);border-radius:var(--rlg);padding:1rem;margin-top:8px;}
+.lr{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.lr:last-child{margin-bottom:0;}
+.ll{font-size:.6rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);min-width:60px;flex-shrink:0;}
+.lv{flex:1;font-size:.72rem;font-weight:500;color:var(--dark);background:var(--white);border-radius:var(--rp);padding:.4rem .8rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.lcp{background:var(--dark);color:white;border:none;border-radius:var(--rp);padding:.4rem .8rem;font-size:.62rem;font-weight:700;cursor:pointer;flex-shrink:0;transition:opacity .15s;}
+.lcp:hover{opacity:.8;}
+.lop{background:transparent;color:var(--dark);border:none;padding:.3rem .3rem;font-size:.85rem;font-weight:700;cursor:pointer;flex-shrink:0;transition:opacity .15s;line-height:1;-webkit-appearance:none;appearance:none;-webkit-tap-highlight-color:transparent;outline:none;}
+.lsend{width:100%;padding:.75rem;background:linear-gradient(135deg,#111118,#2d2d3a);border:none;border-radius:var(--rp);font-family:'Plus Jakarta Sans',sans-serif;font-size:.75rem;font-weight:800;color:white;cursor:pointer;transition:opacity .15s;display:flex;align-items:center;justify-content:center;gap:.5rem;margin-top:8px;}
+.lsend:hover{opacity:.85;}
+.lsend:disabled{opacity:.4;cursor:not-allowed;}
+.email-input-wrap{margin-top:8px;}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;align-items:center;justify-content:center;}
+.modal-overlay.active{display:flex;}
+.modal-box{background:white;border-radius:var(--rxl);padding:2rem;max-width:380px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,.2);}
+.modal-title{font-size:1rem;font-weight:800;color:var(--dark);margin-bottom:.5rem;}
+.modal-sub{font-size:.82rem;color:var(--text2);margin-bottom:1.4rem;line-height:1.5;}
+.modal-actions{display:flex;gap:8px;}
+.modal-cancel{flex:1;padding:.75rem;background:var(--bg);border:none;border-radius:var(--rp);font-family:'Plus Jakarta Sans',sans-serif;font-size:.75rem;font-weight:700;color:var(--text2);cursor:pointer;}
+.modal-confirm{flex:2;padding:.75rem;background:var(--dark);border:none;border-radius:var(--rp);font-family:'Plus Jakarta Sans',sans-serif;font-size:.75rem;font-weight:800;color:white;cursor:pointer;}
+.send-hist{margin-top:.6rem;display:flex;flex-direction:column;gap:4px;}
+.send-hist-item{display:flex;justify-content:space-between;align-items:center;background:var(--bg);border-radius:var(--rp);padding:.4rem .7rem;font-size:.68rem;}
+.send-hist-email{font-weight:700;color:var(--dark);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:180px;}
+.send-hist-date{color:var(--text2);flex-shrink:0;}
+.lop:hover{opacity:.6;}
+.sg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:1rem;}
+.sc{background:var(--bg);border-radius:var(--rmd);padding:1rem .8rem;text-align:center;}
+.sn{font-size:1.6rem;font-weight:800;color:var(--dark);display:block;line-height:1;}
+.sl{font-size:.6rem;font-weight:600;color:var(--text2);margin-top:3px;}
+.pb{height:10px;background:var(--bg);border-radius:100px;margin:.8rem 0 .3rem;border:1px solid var(--border);overflow:hidden;}
+.pf{height:10px;border-radius:100px;transition:width .6s ease, background-color .6s ease;}
+.pl{font-size:.68rem;color:var(--text2);}
+.f2c{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;}
+.fb{display:flex;flex-direction:column;gap:5px;margin-bottom:8px;}
+.fl{font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);}
+.fi{width:100%;background:var(--bg);border:none;border-radius:var(--rp);font-family:'Plus Jakarta Sans',sans-serif;font-size:.85rem;color:var(--text);padding:.65rem .9rem;outline:none;transition:box-shadow .15s;}
+.fi:focus{box-shadow:0 0 0 2px rgba(17,17,24,.18);}
+.fi::placeholder{color:var(--text3);}
+.pw{position:relative;}
+.pb2{position:absolute;right:.8rem;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text3);cursor:pointer;font-size:.75rem;}
+.mr{display:flex;align-items:center;justify-content:space-between;padding:.8rem 0;border-bottom:1px solid var(--bg);}
+.mr:last-child{border-bottom:none;}
+.mt{font-size:.85rem;font-weight:700;color:var(--dark);}
+.mm{font-size:.68rem;color:var(--text2);margin-top:2px;}
+.mb2{display:inline;font-size:.6rem;font-weight:700;background:var(--bg);border-radius:var(--rp);padding:.15rem .5rem;margin-left:.4rem;color:var(--text2);}
+.db{width:32px;height:32px;border-radius:50%;background:var(--bg);border:none;font-size:.75rem;color:var(--text2);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.edit-form{background:var(--bg);border-radius:var(--rmd);padding:1rem;margin-top:.5rem;}
+.edit-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;}
+.edit-row.full{grid-template-columns:1fr;}
+.efl{font-size:.6rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:.3rem;}
+.efi{width:100%;background:var(--white);border:1.5px solid var(--border);border-radius:var(--rp);font-family:'Plus Jakarta Sans',sans-serif;font-size:.82rem;color:var(--text);padding:.5rem .7rem;outline:none;transition:border-color .15s;box-sizing:border-box;}
+.efi:focus{border-color:var(--dark);}
+.esb{width:100%;padding:.7rem;background:var(--dark);border:none;border-radius:var(--rp);font-family:'Plus Jakarta Sans',sans-serif;font-size:.75rem;font-weight:800;color:white;cursor:pointer;margin-top:4px;transition:opacity .15s;}
+.esb:hover{opacity:.85;}
+.cr-hist{margin-top:.6rem;display:flex;flex-direction:column;gap:4px;}
+.cr-hist-item{display:flex;justify-content:space-between;align-items:center;background:var(--white);border-radius:var(--rp);padding:.4rem .7rem;font-size:.68rem;}
+.cr-hist-add{font-weight:800;color:#1a5c2a;}
+.cr-hist-date{color:var(--text2);}
+.db:hover{background:#ffe0e0;color:#c03030;}
+.ba{width:100%;padding:.8rem;background:var(--dark);border:none;border-radius:var(--rxl);font-family:'Plus Jakarta Sans',sans-serif;font-size:.75rem;font-weight:800;color:white;cursor:pointer;transition:opacity .15s;margin-top:8px;}
+.ba:hover{opacity:.8;}
+.es{text-align:center;padding:1.5rem 1rem;}
+.esi{font-size:2rem;margin-bottom:.5rem;opacity:.3;}
+.est{font-size:.85rem;font-weight:600;color:var(--text2);}
+.nf{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:80vh;padding:2rem;text-align:center;gap:.8rem;}
+.nfi{font-size:3rem;opacity:.3;}
+.nft{font-size:1.2rem;font-weight:800;}
+.nfs{font-size:.85rem;color:var(--text2);}
+.toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(20px);background:var(--dark);color:white;padding:.7rem 1.4rem;border-radius:var(--rp);font-size:.75rem;font-weight:700;z-index:999;opacity:0;transition:all .25s;pointer-events:none;white-space:nowrap;box-shadow:var(--sh2);}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+@media(max-width:380px){.rbs,.f2c{grid-template-columns:1fr;}.nright{display:none!important;}}
+
+/* dark nav */
+
+
+/* dark: style chips — visibles sur fond sombre */
+
+
+/* dark: chips style musical classiques (.clb) */
+
+
+/* dark: voice selector */
+
+
+
+
+
+
+/* dark: bouton CTA lisible */
+
+
+
+/* dark: waveform */
+
+
+
+
+/* dark: quiz fond — bleu très désaturé, discret */
+
+/* dark: bouton télécharger individuel */
+
+
+/* dark: textarea et inputs */
+
+
+
+
+/* FOOTER LÉGAL */
+.legal-footer{background:#f8f8fb;border-top:1px solid var(--border);padding:2.5rem 1.5rem 3rem;margin-top:2rem;}
+.legal-footer-inner{max-width:680px;margin:0 auto;}
+.legal-footer-logo{font-size:.9rem;font-weight:800;color:var(--dark);letter-spacing:-.02em;margin-bottom:.3rem;}
+.legal-footer-tagline{font-size:.68rem;color:var(--text3);margin-bottom:1.5rem;}
+.legal-links{display:flex;flex-wrap:wrap;gap:.5rem .4rem;margin-bottom:1.5rem;}
+.legal-link{font-size:.68rem;font-weight:700;color:var(--text2);background:var(--white);border:1px solid var(--border);border-radius:var(--rp);padding:.3rem .75rem;cursor:pointer;transition:all .15s;text-decoration:none;}
+.legal-link:hover{color:var(--dark);border-color:var(--dark);}
+.legal-copy{font-size:.62rem;color:var(--text3);line-height:1.6;}
+
+/* MODAL LÉGAL */
+.legal-modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:600;align-items:flex-end;justify-content:center;}
+.legal-modal-overlay.active{display:flex;}
+.legal-modal-box{background:white;border-radius:var(--rxl) var(--rxl) 0 0;width:100%;max-width:680px;max-height:85vh;display:flex;flex-direction:column;box-shadow:0 -8px 40px rgba(0,0,0,.2);}
+.legal-modal-header{display:flex;align-items:center;justify-content:space-between;padding:1.2rem 1.5rem;border-bottom:1px solid var(--border);flex-shrink:0;}
+.legal-modal-title{font-size:.95rem;font-weight:800;color:var(--dark);}
+.legal-modal-close{width:32px;height:32px;border-radius:50%;background:var(--bg);border:none;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text2);}
+.legal-modal-body{overflow-y:auto;padding:1.5rem;flex:1;}
+.legal-modal-body h2{font-size:.82rem;font-weight:800;color:var(--dark);margin:1.2rem 0 .4rem;letter-spacing:.02em;text-transform:uppercase;}
+.legal-modal-body h2:first-child{margin-top:0;}
+.legal-modal-body p{font-size:.78rem;color:var(--text2);line-height:1.7;margin-bottom:.6rem;}
+.legal-modal-body strong{color:var(--dark);font-weight:700;}
+.legal-modal-body ul{padding-left:1.1rem;margin-bottom:.6rem;}
+.legal-modal-body ul li{font-size:.78rem;color:var(--text2);line-height:1.7;margin-bottom:.2rem;}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+</head>
+<body>
+<div class="toast" id="toast"></div>
+<nav>
+  <div class="nlogo">
+    <svg width="116" height="32" viewBox="0 0 116 32" style="display:block;overflow:visible">
+      <defs><style>.bc1{animation:bca 1s ease-in-out infinite alternate;}.bc2{animation:bca 1s ease-in-out .25s infinite alternate;}.bc3{animation:bca 1s ease-in-out .5s infinite alternate;}@keyframes bca{0%{transform:scaleY(.15);}100%{transform:scaleY(1);}}</style></defs>
+      <text x="0" y="25" font-family="'Plus Jakarta Sans',sans-serif" font-size="22" font-weight="800" fill="var(--text)" letter-spacing="-.3">EVOKE</text>
+      <g transform="translate(82,7)">
+        <rect class="bc1" x="0" y="0" width="4" height="18" rx="2" fill="var(--text)" transform-origin="2 18"/>
+        <rect class="bc2" x="7" y="0" width="4" height="18" rx="2" fill="var(--text)" transform-origin="9 18"/>
+        <rect class="bc3" x="14" y="0" width="4" height="18" rx="2" fill="var(--text)" transform-origin="16 18"/>
+      </g>
+    </svg>
+  </div>
+  <div class="nright" id="nright" style="display:none"><div class="ndot"></div><span class="ncred" id="ncred"></span></div>
+</nav>
+
+<!-- INVITÉS -->
+<div class="page" id="page-guest">
+  <div class="hs">
+    <div class="hc">
+      <div class="hcd"></div><div class="hcd2"></div>
+      <div class="htag"><div class="htdot"></div>Cadeau musical unique</div>
+      <h1>Composez pour<br><em id="couple-display">…</em></h1>
+      <p>Vos mots transformés en mélodie. Votre mélodie prend vie en quelques secondes.</p>
+      <div class="sp"><span class="spn" id="credits-hero">—</span><span class="spl">crédits restants</span></div>
+    </div>
+  </div>
+  <div class="fs">
+    <div class="fc">
+      <div class="cl"><div class="cli">✍️</div>Votre message</div>
+      <textarea class="fta" id="input-message" placeholder="Un vœu, une anecdote, un souvenir… écrivez ce qui vous vient du cœur ✨"></textarea>
+      <input class="fin" id="input-name" type="text" placeholder="Votre prénom ou « La famille Martin »">
+    </div>
+    <div class="fc">
+      <div class="cl"><div class="cli">🎵</div>Style musical</div>
+      <div class="style-chips">
+        <input type="radio" name="music_style" id="ms1" value="Pop romantique" class="style-chip"><label for="ms1">Pop romantique</label>
+        <input type="radio" name="music_style" id="ms2" value="Jazz" class="style-chip"><label for="ms2">Jazz</label>
+        <input type="radio" name="music_style" id="ms3" value="Blues" class="style-chip"><label for="ms3">Blues</label>
+        <input type="radio" name="music_style" id="ms4" value="Soul & R&B" class="style-chip"><label for="ms4">Soul & R&B</label>
+        <input type="radio" name="music_style" id="ms7" value="Gospel" class="style-chip"><label for="ms7">Gospel</label>
+        <input type="radio" name="music_style" id="ms8" value="Rap" class="style-chip"><label for="ms8">Rap</label>
+        <input type="radio" name="music_style" id="ms8b" value="Hip-hop" class="style-chip"><label for="ms8b">Hip-hop</label>
+        <input type="radio" name="music_style" id="ms9" value="Reggae" class="style-chip"><label for="ms9">Reggae</label>
+        <input type="radio" name="music_style" id="ms10" value="Rock acoustique" class="style-chip"><label for="ms10">Rock acoustique</label>
+        <input type="radio" name="music_style" id="ms11" value="Électro doux" class="style-chip"><label for="ms11">Électro doux</label>
+        <input type="radio" name="music_style" id="ms12" value="Variété française" class="style-chip"><label for="ms12">Variété française</label>
+        <input type="radio" name="music_style" id="ms13" value="Classique orchestral" class="style-chip"><label for="ms13">Classique</label>
+        <input type="radio" name="music_style" id="ms14" value="Afrobeat" class="style-chip"><label for="ms14">Afrobeat</label>
+        <input type="radio" name="music_style" id="ms15" value="Country" class="style-chip"><label for="ms15">Country</label>
+        <input type="radio" name="music_style" id="ms16" value="Lo-fi chill" class="style-chip"><label for="ms16">Lo-fi chill</label>
+      </div>
+    </div>
+
+    <div class="fc">
+      <div class="cl"><div class="cli">🎤</div>Voix</div>
+      <div class="vg">
+        <input type="radio" name="voice" id="v1" value="female" class="vin" checked>
+        <label for="v1" class="vlb"><div class="vi">👩</div><div class="vn">Féminine</div></label>
+        <input type="radio" name="voice" id="v2" value="male" class="vin">
+        <label for="v2" class="vlb"><div class="vi">👨</div><div class="vn">Masculine</div></label>
+      </div>
+    </div>
+    <button class="bcta" id="btn-cta" onclick="generateMusic()"><span>Composer ma mélodie</span><div class="bctai">→</div></button>
+  </div>
+  <div class="ldg" id="loading">
+    <div class="ldc">
+      <div class="wr"><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div></div>
+      <p class="ldt">Composition en cours…</p>
+      <p class="lds"></p>
+      <div class="queue-info" id="queue-info" style="display:none"></div>
+      <div class="quiz-wrap" id="quiz-wrap" style="display:none">
+        <!-- Écran d'intro -->
+        <div id="quiz-intro-screen">
+          <div class="quiz-header">⏳ &nbsp;En attendant votre mélodie</div>
+          <div class="quiz-intro-emoji" id="quiz-intro-emoji">🎯</div>
+          <div class="quiz-intro-title">Il est temps de voir si vous méritez vraiment votre place ici…</div>
+          <div class="quiz-intro-sub">Quelques questions sur les mariés vous attendent 😏</div>
+          <button class="quiz-start-btn" onclick="launchQuiz()">On commence le test ! →</button>
+        </div>
+        <!-- Questions -->
+        <div id="quiz-question-screen" style="display:none">
+          <div class="quiz-prog-bar"><div class="quiz-prog-fill" id="quiz-score-fill" style="width:0%"></div></div>
+          <div class="quiz-q" id="quiz-q"></div>
+          <div class="quiz-opts" id="quiz-opts"></div>
+          <div class="quiz-nav">
+            <span class="quiz-progress" id="quiz-progress"></span>
+            <span class="quiz-pts" id="quiz-score"></span>
+          </div>
+        </div>
+        <!-- Résultat -->
+        <div id="quiz-result-wrap" class="quiz-result" style="display:none">
+          <div class="quiz-result-emoji" id="quiz-result-emoji"></div>
+          <div class="quiz-result-title" id="quiz-result-title"></div>
+          <div class="quiz-result-sub" id="quiz-result-sub"></div>
+          <div class="quiz-rating" id="quiz-rating" style="display:none">
+            <div class="quiz-rating-label">Ton score</div>
+            <div class="quiz-stars" id="quiz-stars">
+              <span class="quiz-star" id="qs1">⭐</span>
+              <span class="quiz-star" id="qs2">⭐</span>
+              <span class="quiz-star" id="qs3">⭐</span>
+              <span class="quiz-star" id="qs4">⭐</span>
+              <span class="quiz-star" id="qs5">⭐</span>
+            </div>
+            <div class="quiz-score-num" id="quiz-score-num"></div>
+          </div>
+          <div class="quiz-patience" id="quiz-patience">⏳ &nbsp;Encore un peu de patience… ta musique arrive !</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="res" id="result-wrap">
+    <div class="resc">
+      <div class="rp2"><span>✦ Mélodie prête</span></div>
+      <div class="rt" id="result-title"></div>
+      <div class="rm" id="result-meta"></div>
+      <audio id="result-audio" controls></audio>
+      <div class="rbs">
+        <button class="bow" onclick="regenerate()">↺ Refaire</button>
+        <button class="bgr" onclick="saveToGallery()">Envoyer à la galerie →</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="conf" id="conf-wrap">
+    <div class="confc">
+      <div class="conf-icon">✦</div>
+      <div class="conf-title">Merci <span class="conf-name" id="conf-name"></span> —<br>ton œuvre est en route vers les mariés.</div>
+      <div class="conf-sub">Ta mélodie a rejoint la galerie du mariage.</div>
+      <button class="bnew" onclick="newComposition()">♪ &nbsp;Composer une nouvelle mélodie</button>
+    </div>
+  </div>
+
+  <div class="noc" id="noc-wrap">
+    <div class="nocc">
+      <div class="noc-icon">✦</div>
+      <div class="noc-title">Toutes les mélodies ont été composées.</div>
+      <div class="noc-sub">Le nombre de créations pour ce mariage est atteint.<br>Merci d'avoir participé à cette belle journée.</div>
+    </div>
+  </div>
+</div>
+
+<div class="page" id="page-gallery">
+  <div class="gt">
+    <div class="ghc">
+      <div class="ghc-top">
+        <div class="ght" id="gal-title">La <em>Galerie</em></div>
+      </div>
+      <div class="ghc-bottom">
+        <div class="ghct" id="gal-count">0 mélodie</div>
+        <button class="gdl-all" id="btn-dl-all" onclick="downloadAll()" style="display:none"><svg width="11" height="13" viewBox="0 0 11 13" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5.5 1v8M1 6l4.5 4.5L10 6M1 12h9" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Tout télécharger</button>
+      </div>
+    </div>
+  </div>
+  <div class="gg" id="gal-grid"></div>
+</div>
+
+<!-- ADMIN -->
+<div class="page" id="page-admin">
+  <div class="ao">
+    <div class="ah"><div class="aht">Backstage ✦</div><div class="ahs">Panel organisateur · Tous vos événements</div></div>
+    <div class="lc" id="admin-login-card">
+      <div class="abt">Accès organisateur</div>
+      <div class="pw" style="margin-bottom:8px">
+        <input class="fi" type="password" id="admin-pwd" placeholder="Mot de passe" style="padding-right:2.4rem">
+        <button class="pb2" onclick="tpwd('admin-pwd')">👁</button>
+      </div>
+      <button class="ba" onclick="adminLogin()">Accéder →</button>
+    </div>
+    <div id="admin-panel" style="display:none">
+      <div class="ats">
+        <button class="at active" id="tb-ev" onclick="stab('events',this)">Événements</button>
+        <button class="at" id="tb-cr" onclick="stab('create',this)">+ Créer</button>
+        <button class="at" id="tb-st" onclick="stab('settings',this)">Réglages</button>
+      </div>
+      <div id="tab-events">
+        <div class="ab"><div class="abt">Vos événements</div><div class="el" id="event-list"></div></div>
+        <div id="event-detail" style="display:none">
+          <div class="ab">
+            <div class="abt">Liens à partager</div>
+            <div class="lb2">
+              <div class="lr"><span class="ll">Invités</span><span class="lv" id="link-guests"></span><button class="lcp" onclick="copyLink('link-guests')">Copier</button><button class="lop" onclick="openLink('link-guests')"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 8L8 2M8 2H4M8 2V6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+              <div class="lr"><span class="ll">Galerie</span><span class="lv" id="link-gallery"></span><button class="lcp" onclick="copyLink('link-gallery')">Copier</button><button class="lop" onclick="openLink('link-gallery')"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 8L8 2M8 2H4M8 2V6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+              <div class="email-input-wrap">
+                <button class="lsend" id="btn-send-invite" onclick="sendInvite()">✉️ &nbsp;Envoyer les liens par email</button>
+                <div class="send-hist" id="send-history"></div>
+              </div>
+            </div>
+          </div>
+          <div class="ab">
+            <div class="abt">Statistiques</div>
+            <div class="sg">
+              <div class="sc"><span class="sn" id="d-gen">0</span><span class="sl">Générées</span></div>
+              <div class="sc"><span class="sn" id="d-rem">—</span><span class="sl">Restants</span></div>
+              <div class="sc" id="d-act-card" style="cursor:pointer" onclick="openGalleryLink()" title="Voir la galerie"><span class="sn" id="d-act">0</span><span class="sl">En galerie ↗</span></div>
+            </div>
+            <div class="pb"><div class="pf" id="d-prog" style="width:0%"></div></div>
+            <div class="pl" id="d-lbl"></div>
+          </div>
+          <div class="ab">
+            <div class="abt" style="display:flex;align-items:center;justify-content:space-between">
+              Modifier l'événement
+              <button style="background:none;border:none;font-size:.7rem;font-weight:700;color:var(--text2);cursor:pointer;padding:.2rem .6rem;border-radius:var(--rp);background:var(--bg)" onclick="toggleEdit()">✏️ Modifier</button>
+            </div>
+            <div id="edit-form" style="display:none">
+              <div class="edit-form">
+                <div class="edit-row">
+                  <div><div class="efl">Prénom 1</div><input class="efi" id="edit-p1" type="text"></div>
+                  <div><div class="efl">Prénom 2</div><input class="efi" id="edit-p2" type="text"></div>
+                </div>
+                <div class="edit-row">
+                  <div><div class="efl">Date</div><input class="efi" id="edit-date" type="date"></div>
+                  <div><div class="efl">Nb invités</div><input class="efi" id="edit-guests" type="number" min="1"></div>
+                </div>
+                <div class="edit-row">
+                  <div><div class="efl">Crédits de départ</div><input class="efi" id="edit-credits-base" type="number" min="1" placeholder="Ex: 50"></div>
+                  <div style="display:flex;align-items:flex-end;padding-bottom:2px"><div style="font-size:.7rem;color:var(--text2);line-height:1.4;">Modifie le total initial.<br>Utilise "Ajouter des crédits" pour en rajouter.</div></div>
+                </div>
+                <div class="edit-row full">
+                  <div><div class="efl">Email des mariés</div><input class="efi" id="edit-email" type="email" placeholder="contact@email.com"></div>
+                </div>
+                <div class="edit-row full">
+                  <div>
+                    <div class="efl" style="margin-bottom:.5rem">Quiz <span style="font-weight:400;color:var(--text2)">(pendant la génération)</span></div>
+                    <div id="quiz-fields-edit"></div>
+                    <button type="button" onclick="addQuizField('edit')" style="background:var(--white);border:1px solid var(--border);border-radius:var(--rp);padding:.4rem .9rem;font-size:.72rem;font-weight:700;color:var(--text2);cursor:pointer;margin-top:4px">+ Ajouter une question</button>
+                  </div>
+                </div>
+                <button class="esb" onclick="saveEdit()">✦ Enregistrer les modifications</button>
+              </div>
+            </div>
+          </div>
+          <div class="ab">
+            <div class="abt">Ajouter des crédits</div>
+            <div style="padding:.2rem 0">
+              <div class="efl" style="margin-bottom:.4rem">Total crédits fournis : <span id="d-credits-total" style="font-weight:800;color:var(--dark)">—</span> crédits</div>
+              <div style="display:flex;gap:8px;align-items:center">
+                <input class="efi" id="add-credits-input" type="number" min="1" placeholder="Ex: 10" style="width:100px">
+                <button class="esb" style="width:auto;padding:.5rem 1rem" onclick="addCredits()">+ Ajouter</button>
+              </div>
+              <div class="cr-hist" id="credits-history"></div>
+            </div>
+              </div>
+            </div>
+          </div>
+          <div class="ab">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.8rem">
+              <div class="abt" style="margin-bottom:0">En galerie</div>
+              <button class="esb" style="background:#e53e3e;width:auto;padding:.4rem .9rem;font-size:.65rem" onclick="delAllSongs()">Tout supprimer</button>
+            </div>
+            <div id="d-songs"></div>
+          </div>
+        </div>
+      </div>
+      <div id="tab-create" style="display:none">
+        <div class="ab">
+          <div class="abt">Nouvel événement</div>
+          <div class="f2c">
+            <div class="fb"><label class="fl">Prénom 1</label><input class="fi" id="np1" type="text" placeholder="Sophie"></div>
+            <div class="fb"><label class="fl">Prénom 2</label><input class="fi" id="np2" type="text" placeholder="Thomas"></div>
+          </div>
+          <div class="f2c">
+            <div class="fb"><label class="fl">Date</label><input class="fi" id="ndate" type="date"></div>
+            <div class="fb"><label class="fl">Invités</label><input class="fi" id="nguests" type="number" placeholder="80" min="1"></div>
+          </div>
+          <div class="fb"><label class="fl">Crédits (= nb max de musiques)</label><input class="fi" id="ncredits" type="number" placeholder="50" min="1"></div>
+          <div class="fb"><label class="fl">Email des mariés</label><input class="fi" id="nemail" type="email" placeholder="contact@email.com"></div>
+          <div class="fb"><label class="fl" style="margin-bottom:.5rem">Quiz pendant la génération <span style="font-weight:400;color:var(--text2)">(optionnel — 5 questions sur les mariés)</span></label>
+            <div id="quiz-fields-create"></div>
+            <button type="button" onclick="addQuizField('create')" style="background:var(--bg);border:1px solid var(--border);border-radius:var(--rp);padding:.4rem .9rem;font-size:.72rem;font-weight:700;color:var(--text2);cursor:pointer;margin-top:4px">+ Ajouter une question</button>
+          </div>
+          <button class="ba" onclick="newEvent()">Créer l'événement →</button>
+        </div>
+      </div>
+      <div id="tab-settings" style="display:none">
+        <div class="ab">
+          <div class="abt">Changer le mot de passe</div>
+          <div class="fb"><label class="fl">Mot de passe actuel</label><div class="pw"><input class="fi" type="password" id="opwd" placeholder="Votre mot de passe actuel" style="padding-right:2.4rem"><button class="pb2" onclick="tpwd('opwd')">👁</button></div></div>
+          <div class="fb"><label class="fl">Nouveau mot de passe</label><div class="pw"><input class="fi" type="password" id="npwd" placeholder="Minimum 8 caractères" style="padding-right:2.4rem"><button class="pb2" onclick="tpwd('npwd')">👁</button></div></div>
+          <div class="fb"><label class="fl">Confirmer</label><div class="pw"><input class="fi" type="password" id="cpwd" placeholder="Répétez le nouveau" style="padding-right:2.4rem"><button class="pb2" onclick="tpwd('cpwd')">👁</button></div></div>
+          <button class="ba" onclick="changePwd()">Mettre à jour</button>
+        </div>
+        <div class="ab">
+          <div class="abt">Connexion API</div>
+          <div style="background:var(--bg);border-radius:var(--rmd);padding:1rem;font-size:.82rem;color:var(--text2);line-height:1.6">
+            🔒 Les clés API sont dans les variables d'environnement Vercel — jamais visibles ici.<br><br>
+            Pour les modifier : <strong style="color:var(--dark)">vercel.com</strong> → votre projet → <strong style="color:var(--dark)">Settings → Environment Variables</strong>.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- LIEN INVALIDE -->
+<div class="page" id="page-notfound">
+  <div class="nf"><div class="nfi">🔒</div><div class="nft">Lien non reconnu</div><div class="nfs">Ce lien est invalide ou a expiré.<br>Contactez l'organisateur.</div></div>
+</div>
+
+<div class="modal-overlay" id="modal-send">
+  <div class="modal-box">
+    <div class="modal-title">Envoyer les liens par email ?</div>
+    <div class="modal-sub" id="modal-send-text"></div>
+    <div class="modal-actions">
+      <button class="modal-cancel" onclick="closeModal()">Annuler</button>
+      <button class="modal-confirm" id="modal-confirm-btn" onclick="confirmSendInvite()">✉️ Envoyer</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-danger">
+  <div class="modal-box">
+    <div class="modal-title" id="modal-danger-title">Confirmer la suppression</div>
+    <div class="modal-sub" id="modal-danger-sub"></div>
+    <div class="modal-actions">
+      <button class="modal-cancel" onclick="closeDangerModal()">Annuler</button>
+      <button class="modal-confirm" id="modal-danger-btn" style="background:#e53e3e">Supprimer définitivement</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const DB={adminPwd:'admin123',events:{},adminLoggedIn:false,curEv:null,guestEv:null,galEv:null};
+function loadDB(){try{const s=localStorage.getItem('evoke_v3');if(s){const p=JSON.parse(s);DB.adminPwd=p.adminPwd||'admin123';DB.events=p.events||{};DB.adminLoggedIn=p.adminLoggedIn||false;DB.adminLoginAt=p.adminLoginAt||0;}}catch(e){}}
+async function syncEventsFromSupabase(){
+  try{
+    const r=await fetch('/api/events');
+    if(!r.ok)return;
+    const evs=await r.json();
+    if(!Array.isArray(evs))return;
+    // Remplacer entièrement les événements locaux par ceux de Supabase
+    // Ainsi les suppressions faites sur un autre appareil sont propagées
+    DB.events={};
+    evs.forEach(ev=>{DB.events[ev.id]=ev;});
+    saveDB();
+  }catch(e){console.warn('Sync Supabase failed:',e);}
+}
+function saveDB(){localStorage.setItem('evoke_v3',JSON.stringify({adminPwd:DB.adminPwd,events:DB.events,adminLoggedIn:DB.adminLoggedIn,adminLoginAt:DB.adminLoginAt||0,darkMode:DB.darkMode||false}));}
+function sp(n){stopAudio();document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-'+n).classList.add('active');}
+async function route(){
+  const path=window.location.pathname,params=new URLSearchParams(window.location.search);
+  const mm=path.match(/\/mariage\/([^\/]+)/);
+  if(mm){
+    const id=mm[1];
+    // Toujours recharger depuis Supabase pour avoir les crédits à jour
+    let ev=null;
+    try{
+      const r=await fetch('/api/event?id='+encodeURIComponent(id));
+      if(r.ok){ev=await r.json();DB.events[id]=ev;saveDB();}
+    }catch(e){}
+    // Fallback localStorage si Supabase inaccessible
+    if(!ev)ev=DB.events[id];
+    if(!ev){sp('notfound');return;}
+    DB.guestEv=id;initGuest(ev);sp('guest');return;
+  }
+  const gm=path.match(/\/galerie\/([^\/]+)/);
+  if(gm){
+    const id=gm[1],tok=params.get('token');
+    // Toujours recharger depuis Supabase pour avoir les chansons à jour
+    let ev=null;
+    try{
+      const r=await fetch('/api/event?id='+encodeURIComponent(id));
+      if(r.ok){ev=await r.json();DB.events[id]=ev;saveDB();}
+    }catch(e){}
+    // Fallback localStorage si Supabase inaccessible
+    if(!ev)ev=DB.events[id];
+    if(!ev||ev.token!==tok){sp('notfound');return;}
+    DB.galEv=id;initGal(ev);sp('gallery');return;
+  }
+  sp('admin');
+  // Restaurer la session si déjà connecté et < 24h
+  const sessionAge=Date.now()-(DB.adminLoginAt||0);
+  if(DB.adminLoggedIn && sessionAge < 24*60*60*1000){
+    document.getElementById('admin-login-card').style.display='none';
+    document.getElementById('admin-panel').style.display='block';
+    syncEventsFromSupabase().then(()=>renderEL());
+  } else if(DB.adminLoggedIn && sessionAge >= 24*60*60*1000){
+    DB.adminLoggedIn=false;saveDB();
+  }
+}
+function initGuest(ev){showLegalFooter();
+  // Stocker le quiz globalement pour y accéder pendant la génération
+  window._evQuiz = (ev.quiz||[]).filter(q=>q.q&&q.a);
+  const rem=ev.credits-ev.usedCredits;
+  document.getElementById('couple-display').textContent=ev.couple;
+  document.getElementById('credits-hero').textContent=rem;
+  document.getElementById('nright').style.display='flex';
+  document.getElementById('ncred').textContent=rem+' crédits';
+  document.title='EVOKE — '+ev.couple;
+  if(rem<=0){document.getElementById('btn-cta').disabled=true;document.querySelector('.fs').style.display='none';document.querySelector('.hs').style.display='none';document.getElementById('noc-wrap').classList.add('active');}
+}
+async function generateMusic(){
+  const ev=DB.events[DB.guestEv];if(!ev)return;
+  const msg=document.getElementById('input-message').value.trim(),name=document.getElementById('input-name').value.trim()||'Un invité';
+  const styleChip=document.querySelector('input[name="music_style"]:checked');
+  const voice=document.querySelector('input[name="voice"]:checked')?.value||'female';
+  if(!msg){toast('Écrivez votre message d\'abord');return;}
+  if(msg.length>500){toast('Message trop long (500 caractères max)');return;}
+  if(!styleChip){toast('Choisissez un style musical');return;}
+  const styleVal=styleChip.value;
+  // Concaténer le style au message — transparent pour l'invité
+  const endsWithPunct=/[.!?…]$/.test(msg);
+  const fullMsg=msg+(endsWithPunct?'':'. ')+'. Dans un style '+styleVal;
+  const style=styleVal;
+  if(ev.credits-ev.usedCredits<=0){document.querySelector('.fs').style.display='none';document.querySelector('.hs').style.display='none';document.getElementById('noc-wrap').classList.add('active');return;}
+  // ── Débit immédiat du crédit au clic ─────────────────────────────────────
+  ev.usedCredits++;
+  const remAfter=ev.credits-ev.usedCredits;
+  document.getElementById('credits-hero').textContent=remAfter;
+  document.getElementById('ncred').textContent=remAfter+' crédits';
+  saveDB();
+  // Sync immédiat dans Supabase
+  fetch('/api/event',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...ev,lastGenerated:undefined})}).catch(()=>{});
+  // ─────────────────────────────────────────────────────────────────────────
+  document.getElementById('btn-cta').disabled=true;
+  document.querySelector('.fs').style.display='none';document.querySelector('.hs').style.display='none';
+  document.getElementById('loading').classList.add('active');document.getElementById('result-wrap').classList.remove('active');
+  // Quiz apparaît 1s après le clic
+  setTimeout(()=>startQuiz(), 1000);
+
+  // ── File d'attente ────────────────────────────────────────────────────────
+  const queueId=Date.now().toString(36)+Math.random().toString(36).substring(2);
+  const MAX_PARALLEL=8; // max simultané sur cet événement
+  let queueJoined=false;
+  try{
+    // Vérifier combien de générations sont en cours
+    const qr=await fetch('/api/queue?event_id='+encodeURIComponent(DB.guestEv));
+    if(qr.ok){
+      const qd=await qr.json();
+      if(qd.active>=MAX_PARALLEL){
+        // File d'attente — attendre que ça se libère
+        const qinfo=document.getElementById('queue-info');
+        qinfo.style.display='block';
+        qinfo.textContent='⏳ Plusieurs mélodies en cours… Tu passeras dans quelques instants.';
+        // Attendre jusqu'à ce qu'une place se libère (max 3 min)
+        let waited=0;
+        while(waited<180){
+          await new Promise(r=>setTimeout(r,5000));
+          waited+=5;
+          const qr2=await fetch('/api/queue?event_id='+encodeURIComponent(DB.guestEv));
+          if(qr2.ok){const qd2=await qr2.json();if(qd2.active<MAX_PARALLEL)break;}
+          const pos=Math.max(1,qd.active-Math.floor(waited/5));
+          qinfo.textContent=`⏳ ${pos} mélodie${pos>1?'s':''} avant toi — encore quelques secondes…`;
+        }
+        qinfo.style.display='none';
+      }
+    }
+    // Rejoindre la file
+    await fetch('/api/queue',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({queue_id:queueId,event_id:DB.guestEv})});
+    queueJoined=true;
+  }catch(e){} // Si la file échoue on continue quand même
+  // ─────────────────────────────────────────────────────────────────────────
+  try{
+    // ÉTAPE 1 — Lancer la génération, récupérer task_id
+    let task_id=null,cleanN=name;
+    const r=await fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:fullMsg,name,style,voice,event_id:DB.guestEv})});
+    if(r.status===403){document.getElementById('loading').classList.remove('active');document.querySelector('.fs').style.display='none';document.querySelector('.hs').style.display='none';document.getElementById('noc-wrap').classList.add('active');document.getElementById('btn-cta').disabled=false;if(queueJoined)fetch('/api/queue?queue_id='+queueId,{method:'DELETE'}).catch(()=>{});return;}
+    if(!r.ok){const errD=await r.json().catch(()=>({}));toast('Erreur : '+(errD.error||r.status));rForm();document.getElementById('loading').classList.remove('active');document.getElementById('btn-cta').disabled=false;if(queueJoined)fetch('/api/queue?queue_id='+queueId,{method:'DELETE'}).catch(()=>{});return;}
+    {const d=await r.json();task_id=d.task_id;cleanN=d.name||name;}
+    // Message qui s'affiche dès le début et reste jusqu'à la fin
+    document.querySelector('.lds').textContent='Votre mélodie prend vie…';
+
+    let url=null;
+    if(task_id){
+      // ÉTAPE 2 — Polling côté frontend : premier appel après 2s puis toutes les 4s
+      const maxAttempts=45;
+      for(let i=0;i<maxAttempts;i++){
+        await new Promise(res=>setTimeout(res,i===0?2000:4000));
+        try{
+          const pr=await fetch(`/api/poll?task_id=${task_id}`);
+          if(pr.ok){
+            const pd=await pr.json();
+            if(pd.audioUrl){url=pd.audioUrl;break;}
+            if(pd.status==='FAILED'){toast('Erreur lors de la composition');rForm();document.getElementById('loading').classList.remove('active');document.getElementById('btn-cta').disabled=false;return;}
+          }
+        }catch(e){}
+      }
+    }
+
+    // Pas d'URL après polling → erreur propre, pas de fallback
+    if(!url){
+      toast('La composition a pris trop de temps. Réessaie.');
+      rForm();
+      document.getElementById('loading').classList.remove('active');
+      document.getElementById('btn-cta').disabled=false;
+      if(queueJoined)fetch('/api/queue?queue_id='+queueId,{method:'DELETE'}).catch(()=>{});
+      return;
+    }
+
+  ev.lastGenerated={name:cleanN,msg,style,voice,url};
+    document.getElementById('result-title').textContent='Mélodie de '+cleanN;
+    document.getElementById('result-meta').textContent=style+' · '+(voice==='female'?'Voix féminine':'Voix masculine')+' · 1 min 30';
+    document.getElementById('result-audio').src=url;
+    document.getElementById('result-wrap').classList.add('active');
+  }catch(e){console.error(e);toast('Erreur lors de la composition');rForm();if(typeof queueJoined!=='undefined'&&queueJoined)fetch('/api/queue?queue_id='+queueId,{method:'DELETE'}).catch(()=>{});}
+  document.getElementById('loading').classList.remove('active');
+  document.getElementById('btn-cta').disabled=false;
+}
+function stopAudio(){const a=document.getElementById('result-audio');a.pause();a.currentTime=0;a.src='';}
+function rForm(){stopAudio();document.querySelector('.fs').style.display='';document.querySelector('.hs').style.display='';document.getElementById('quiz-wrap').style.display='none';document.getElementById('quiz-score-fill').style.width='0%';}
+async function saveToGallery(){
+  const ev=DB.events[DB.guestEv];if(!ev||!ev.lastGenerated)return;
+  const{name,msg,style,voice,url}=ev.lastGenerated;let finalUrl=url;
+  try{const r=await fetch('/api/upload',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({audioUrl:url,author:name,style})});if(r.ok){const d=await r.json();finalUrl=d.publicUrl||url;}}catch(e){}
+  if(!ev.songs||!Array.isArray(ev.songs))ev.songs=[];
+  const newSong={id:Date.now().toString(),title:'Mélodie de '+name,author:name,message:msg,style,voice,url:finalUrl,createdAt:new Date().toISOString()};
+  ev.songs.unshift(newSong);
+  ev.lastGenerated=null;saveDB();
+  // Sync l'événement complet (avec nouvelles chansons) vers Supabase
+  const evToSync={...ev};
+  delete evToSync.lastGenerated;
+  fetch('/api/event',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(evToSync)})
+    .then(r=>{if(!r.ok)r.text().then(t=>console.error('[GALLERY] Sync failed:',t));})
+    .catch(e=>console.error('[GALLERY] Sync error:',e.message));
+  stopAudio();document.getElementById('result-wrap').classList.remove('active');
+  document.getElementById('conf-name').textContent=name;
+  document.getElementById('conf-wrap').classList.add('active');
+  document.getElementById('btn-cta').disabled=false;
+}
+function newComposition(){document.getElementById('conf-wrap').classList.remove('active');rForm();document.getElementById('btn-cta').disabled=false;if(DB.guestEv&&DB.events[DB.guestEv])DB.events[DB.guestEv].lastGenerated=null;}
+function regenerate(){document.getElementById('result-wrap').classList.remove('active');rForm();document.getElementById('btn-cta').disabled=false;if(DB.guestEv&&DB.events[DB.guestEv])DB.events[DB.guestEv].lastGenerated=null;}
+function initGal(ev){showLegalFooter();
+  const songs=ev.songs||[];
+  document.getElementById('gal-title').innerHTML='Galerie de <em>'+esc(ev.couple)+'</em>';
+  document.getElementById('gal-count').textContent=songs.length+' mélodie'+(songs.length>1?'s':'');
+  const btnDlAll=document.getElementById('btn-dl-all');
+  if(btnDlAll)btnDlAll.style.display=songs.length>0?'inline-flex':'none';
+  document.title='EVOKE — Galerie '+ev.couple;
+  const g=document.getElementById('gal-grid');
+  if(!songs.length){g.innerHTML='<div class="ge"><div class="gei">🎵</div><p class="get">Aucune mélodie pour l\'instant…</p></div>';return;}
+  g.innerHTML=songs.map((s,i)=>`
+    <div class="gca" style="animation-delay:${i*.05}s">
+      <div class="gct"><span class="gcn">Track ${String(songs.length-i).padStart(2,'0')}</span><span class="gcs">${esc(s.style)}</span></div>
+      <div class="gcti">${esc(s.title)}</div>
+      <div class="gca2">par ${esc(s.author)} · ${fmt(s.createdAt)}</div>
+      <div class="gcm">"${esc(s.message.substring(0,100))}${s.message.length>100?'…':''}"</div>
+      ${s.url?`<audio controls src="${s.url}" style="width:100%;margin-bottom:.8rem;accent-color:#3ecf6a"></audio>`:''}
+      <div class="gf">
+        <div class="gvp">${s.voice==='female'?'👩 Voix féminine':'👨 Voix masculine'}</div>
+        ${s.url?`<button class="gdl-btn" onclick="downloadSong('${s.url}','${s.author.replace(/'/g,"\\'")}',${i})"><svg width="10" height="12" viewBox="0 0 10 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 1v7M1 5.5L5 9.5l4-4M1 11h8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Télécharger</button>`:''}
+      </div>
+    </div>`).join('');
+}
+function adminLogin(){
+  if(document.getElementById('admin-pwd').value===DB.adminPwd){
+    DB.adminLoggedIn=true;DB.adminLoginAt=Date.now();saveDB();document.getElementById('admin-login-card').style.display='none';document.getElementById('admin-panel').style.display='block';
+    syncEventsFromSupabase().then(()=>{renderEL();});toast('✦ Accès accordé');
+  }else toast('Mot de passe incorrect');
+}
+function stab(n,btn){
+  document.querySelectorAll('.at').forEach(t=>t.classList.remove('active'));btn.classList.add('active');
+  ['events','create','settings'].forEach(x=>document.getElementById('tab-'+x).style.display=x===n?'block':'none');
+}
+function renderEL(){
+  const list=document.getElementById('event-list');
+  const evs=Object.values(DB.events).sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));
+  if(!evs.length){list.innerHTML='<div class="es"><div class="esi">💍</div><div class="est">Aucun événement — créez-en un !</div></div>';document.getElementById('event-detail').style.display='none';return;}
+  list.innerHTML=evs.map(e=>`
+    <div class="er ${DB.curEv===e.id?'aev':''}" onclick="selEv('${e.id}')">
+      <div class="erl"><div class="ern">${esc(e.couple)}</div><div class="erd">${e.date?fmtD(e.date):'Date non définie'}</div></div>
+      <div class="err">
+        <span class="ecp">${e.credits-e.usedCredits} crédits</span>
+        <button class="edb" onclick="(function(ev){ev.stopPropagation();delEv('${e.id}');})(event)">✕</button>
+      </div>
+    </div>`).join('');
+}
+function selEv(id){
+  DB.curEv=id;renderEL();
+  // Recharger l'événement depuis Supabase pour avoir les dernières chansons/crédits
+  fetch('/api/event?id='+encodeURIComponent(id)).then(r=>r.ok?r.json():null).then(ev=>{
+    if(ev){DB.events[id]=ev;saveDB();renderEL();renderDet(id);}
+    else renderDet(id);
+  }).catch(()=>renderDet(id));
+}
+function renderDet(id){
+  const ev=DB.events[id];if(!ev)return;
+  const songs=ev.songs||[],used=ev.usedCredits,total=ev.credits,pct=total>0?Math.round(used/total*100):0;
+  const base=window.location.origin;
+  document.getElementById('event-detail').style.display='block';
+  document.getElementById('link-guests').textContent=base+'/mariage/'+id;
+  document.getElementById('link-gallery').textContent=base+'/galerie/'+id+'?token='+ev.token;
+  document.getElementById('d-gen').textContent=used;document.getElementById('d-rem').textContent=total-used;
+  document.getElementById('d-act').textContent=songs.length;
+  const prog=document.getElementById('d-prog');
+  // Jauge = % restant (pleine = vert, vide = rouge)
+  const rem100=total>0?Math.round((total-used)/total*100):0;
+  prog.style.width=rem100+'%';
+  let barColor;
+  if(rem100>60)barColor='#3ecf6a';        // vert — plus de 60% restant
+  else if(rem100>35)barColor='#f59e0b';   // jaune — 35-60% restant
+  else if(rem100>15)barColor='#f97316';   // orange — 15-35% restant
+  else barColor='#ef4444';                // rouge — moins de 15% restant
+  prog.style.backgroundColor=barColor;
+  document.getElementById('d-lbl').textContent=used+' / '+total+' crédits ('+(total-used)+' restants)';
+  // Pré-remplir le formulaire d'édition
+  document.getElementById('edit-p1').value=ev.p1||'';
+  document.getElementById('edit-p2').value=ev.p2||'';
+  document.getElementById('edit-date').value=ev.date||'';
+  document.getElementById('edit-guests').value=ev.guests||'';
+  document.getElementById('edit-form').style.display='none';
+  const editEmailEl=document.getElementById('edit-email');if(editEmailEl)editEmailEl.value=ev.email||'';
+  const editCredEl=document.getElementById('edit-credits-base');if(editCredEl)editCredEl.value=ev.credits||'';
+  // Pré-remplir quiz
+  const qfe=document.getElementById('quiz-fields-edit');
+  if(qfe){qfe.innerHTML='';(ev.quiz||[]).forEach((q,i)=>addQuizField('edit',q));}
+  // Afficher total crédits et historique
+  // Historique envois email
+  const sendHistEl=document.getElementById('send-history');
+  if(sendHistEl){
+    const slog=ev.sendLog||[];
+    if(!slog.length)sendHistEl.innerHTML='';
+    else sendHistEl.innerHTML=slog.map(l=>`<div class="send-hist-item"><span class="send-hist-email">✉️ ${esc(l.to)}</span><span class="send-hist-date">${fmt(l.date)}</span></div>`).join('');
+  }
+  const credTotalEl=document.getElementById('d-credits-total');
+  if(credTotalEl)credTotalEl.textContent=ev.credits||0;
+  const hist=document.getElementById('credits-history');
+  if(hist){
+    const log=ev.creditsLog||[];
+    if(!log.length){hist.innerHTML='<div style="font-size:.68rem;color:var(--text2);padding:.3rem 0">Aucun ajout pour l\'instant</div>';}
+    else{hist.innerHTML=log.map(l=>`<div class="cr-hist-item"><span class="cr-hist-add">+${l.amount} crédits</span><span class="cr-hist-date">${fmt(l.date)}</span></div>`).join('');}
+  }
+  const ml=document.getElementById('d-songs');
+  if(!songs.length){ml.innerHTML='<div class="es"><div class="esi">🎵</div><div class="est">Aucune musique pour l\'instant</div></div>';return;}
+  ml.innerHTML=songs.map(s=>`
+    <div class="mr">
+      <div><div class="mt">${esc(s.title)}<span class="mb2">${esc(s.style)}</span></div><div class="mm">${fmt(s.createdAt)} · ${s.voice==='female'?'👩':'👨'}</div></div>
+      <button class="db" onclick="delSong('${id}','${s.id}')">✕</button>
+    </div>`).join('');
+}
+async function downloadAll(){
+  const ev=DB.events[DB.galEv];if(!ev)return;
+  const songs=(ev.songs||[]).filter(s=>s.url);
+  if(!songs.length){toast('Aucune mélodie à télécharger');return;}
+  const btn=document.getElementById('btn-dl-all');
+  btn.disabled=true;btn.textContent='⏳ Téléchargement…';
+  // Télécharger une par une avec un petit délai pour ne pas bloquer le navigateur
+  for(let i=0;i<songs.length;i++){
+    const s=songs[i];
+    try{
+      const resp=await fetch(s.url);
+      const blob=await resp.blob();
+      const a=document.createElement('a');
+      a.href=URL.createObjectURL(blob);
+      a.download='evoke_'+(s.author||'invité').replace(/\s/g,'_')+'_'+(i+1)+'.mp3';
+      document.body.appendChild(a);a.click();document.body.removeChild(a);
+      URL.revokeObjectURL(a.href);
+      // Petit délai entre chaque téléchargement
+      if(i<songs.length-1)await new Promise(r=>setTimeout(r,800));
+    }catch(e){console.warn('Download failed for',s.title);}
+  }
+  btn.disabled=false;btn.innerHTML='<svg width="11" height="13" viewBox="0 0 11 13" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5.5 1v8M1 6l4.5 4.5L10 6M1 12h9" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Tout télécharger';
+  toast('✦ '+songs.length+' mélodie'+(songs.length>1?'s':'')+' téléchargée'+(songs.length>1?'s':'')+'!');
+}
+function sendInvite(){
+  const id=DB.curEv;if(!id)return;
+  const ev=DB.events[id];if(!ev)return;
+  const to=ev.email||'';
+  if(!to||!to.includes('@')){toast('Ajoutez l\'email des mariés dans "Modifier l\'événement"');return;}
+  document.getElementById('modal-send-text').textContent='Un email avec les liens sera envoyé à '+to+' ('+ev.couple+').';
+  document.getElementById('modal-send').classList.add('active');
+}
+function closeModal(){document.getElementById('modal-send').classList.remove('active');}
+function showDangerModal(title,sub,onConfirm){
+  document.getElementById('modal-danger-title').textContent=title;
+  document.getElementById('modal-danger-sub').textContent=sub;
+  const btn=document.getElementById('modal-danger-btn');
+  btn.onclick=function(){closeDangerModal();onConfirm();};
+  document.getElementById('modal-danger').classList.add('active');
+}
+function closeDangerModal(){document.getElementById('modal-danger').classList.remove('active');}
+
+async function confirmSendInvite(){
+  closeModal();
+  const id=DB.curEv;if(!id)return;
+  const ev=DB.events[id];if(!ev)return;
+  const to=ev.email;
+  const base=window.location.origin;
+  const guestLink=base+'/mariage/'+id;
+  const galleryLink=base+'/galerie/'+id+'?token='+ev.token;
+  const btn=document.getElementById('btn-send-invite');
+  btn.disabled=true;btn.innerHTML='⏳ &nbsp;Envoi en cours…';
+  try{
+    const r=await fetch('/api/send-invite',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({to,p1:ev.p1,p2:ev.p2,date:ev.date,guestLink,galleryLink})
+    });
+    const d=await r.json();
+    if(r.ok){
+      // Ajouter à l'historique
+      if(!ev.sendLog)ev.sendLog=[];
+      ev.sendLog.unshift({to,date:new Date().toISOString()});
+      saveDB();
+      fetch('/api/event',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(ev)}).catch(()=>{});
+      renderDet(id);
+      toast('✦ Email envoyé à '+to+' !');
+    }else toast('Erreur : '+(d.error||'envoi échoué'));
+  }catch(e){toast('Erreur réseau');}
+  btn.disabled=false;btn.innerHTML='✉️ &nbsp;Envoyer les liens par email';
+}
+// ── Téléchargement individuel via fetch+blob ──────────────────────────────
+async function downloadSong(url, author, idx){
+  const btn=event.target;
+  btn.disabled=true;btn.textContent='⏳';
+  try{
+    const resp=await fetch(url);
+    const blob=await resp.blob();
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    const safeName=(author||'invité').replace(/[^a-zA-ZÀ-ÿ0-9]/g,'_');
+    a.download='Evoke_'+safeName+'_'+(idx+1)+'.mp3';
+    document.body.appendChild(a);a.click();document.body.removeChild(a);
+    URL.revokeObjectURL(a.href);
+    btn.textContent='✓';
+    setTimeout(()=>{btn.disabled=false;btn.textContent='⬇ Télécharger';},2000);
+  }catch(e){
+    btn.disabled=false;btn.textContent='⬇ Télécharger';
+    toast('Erreur téléchargement');
+  }
+}
+
+// ── Tout télécharger en ZIP ───────────────────────────────────────────────
+async function downloadAll(){
+  const ev=DB.events[DB.galEv];if(!ev)return;
+  const songs=(ev.songs||[]).filter(s=>s.url);
+  if(!songs.length){toast('Aucune mélodie à télécharger');return;}
+  const btn=document.getElementById('btn-dl-all');
+  btn.disabled=true;btn.textContent='⏳ Préparation…';
+  try{
+    const zip=new JSZip();
+    const dateStr=ev.date?new Date(ev.date).toLocaleDateString('fr-FR').replace(/\//g,'-'):'';
+    const folderName='Evoke — Mariage de '+ev.couple+(dateStr?' du '+dateStr:'');
+    const folder=zip.folder(folderName);
+    for(let i=0;i<songs.length;i++){
+      const s=songs[i];
+      btn.textContent='⏳ '+(i+1)+'/'+songs.length+'…';
+      try{
+        const resp=await fetch(s.url);
+        const blob=await resp.blob();
+        const safeName=(s.author||'invité').replace(/[^a-zA-ZÀ-ÿ0-9]/g,'_');
+        folder.file('Track_'+String(i+1).padStart(2,'0')+'_'+safeName+'.mp3',blob);
+      }catch(e){console.warn('Failed:',s.title);}
+    }
+    const zipBlob=await zip.generateAsync({type:'blob'});
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(zipBlob);
+    a.download=folderName+'.zip';
+    document.body.appendChild(a);a.click();document.body.removeChild(a);
+    URL.revokeObjectURL(a.href);
+    toast('✦ ZIP téléchargé !');
+  }catch(e){toast('Erreur ZIP');}
+  btn.disabled=false;btn.innerHTML='<svg width="11" height="13" viewBox="0 0 11 13" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5.5 1v8M1 6l4.5 4.5L10 6M1 12h9" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Tout télécharger';
+}
+
+// ── Gestion du quiz ───────────────────────────────────────────────────────
+let quizState={questions:[],current:0,score:0,answered:false};
+
+function addQuizField(ctx, existing){
+  const container=document.getElementById('quiz-fields-'+ctx);
+  if(!container)return;
+  const idx=container.children.length;
+  if(idx>=5){toast('Maximum 5 questions');return;}
+  const q=existing||{q:'',a:'',wrong:['','']};
+  const div=document.createElement('div');
+  div.style.cssText='background:var(--bg);border-radius:var(--rmd);padding:.8rem;margin-bottom:6px;';
+  div.innerHTML=`
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem">
+      <span style="font-size:.65rem;font-weight:800;color:var(--text3);text-transform:uppercase;letter-spacing:.1em">Question ${idx+1}</span>
+      <button onclick="this.parentElement.parentElement.remove()" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:.8rem">✕</button>
+    </div>
+    <input class="efi" placeholder="La question" value="${esc(q.q)}" style="margin-bottom:4px" data-role="q">
+    <input class="efi" placeholder="✓ Bonne réponse" value="${esc(q.a)}" style="margin-bottom:4px;border-color:#3ecf6a" data-role="a">
+    <input class="efi" placeholder="Mauvaise réponse 1" value="${esc(q.wrong[0]||'')}" style="margin-bottom:4px" data-role="w0">
+    <input class="efi" placeholder="Mauvaise réponse 2" value="${esc(q.wrong[1]||'')}" data-role="w1">
+  `;
+  container.appendChild(div);
+}
+
+function getQuizFields(ctx){
+  const container=document.getElementById('quiz-fields-'+ctx);
+  if(!container)return[];
+  return Array.from(container.children).map(div=>{
+    const inputs=div.querySelectorAll('input');
+    const get=role=>div.querySelector('[data-role="'+role+'"]')?.value.trim()||'';
+    return{q:get('q'),a:get('a'),wrong:[get('w0'),get('w1')]};
+  }).filter(q=>q.q&&q.a);
+}
+
+function startQuiz(){
+  const questions=window._evQuiz||[];
+  if(!questions.length){document.getElementById('quiz-wrap').style.display='none';return;}
+  const shuffled=[...questions].sort(()=>Math.random()-.5);
+  quizState={questions:shuffled,current:0,score:0,answered:false};
+  // Montrer d'abord l'écran d'intro
+  document.getElementById('quiz-wrap').style.display='block';
+  document.getElementById('quiz-intro-screen').style.display='block';
+  document.getElementById('quiz-question-screen').style.display='none';
+  document.getElementById('quiz-result-wrap').style.display='none';
+  var p=document.getElementById('quiz-patience');if(p){p.style.display='none';}
+  document.querySelectorAll('.quiz-star').forEach(s=>s.classList.remove('active'));
+  var qr=document.getElementById('quiz-rating');if(qr)qr.style.display='none';
+  var sn=document.getElementById('quiz-score-num');if(sn)sn.textContent='';
+  // Animer l'emoji d'intro
+  const emojis=['🎯','🤔','😏','🧐','🎪'];
+  document.getElementById('quiz-intro-emoji').textContent=emojis[Math.floor(Math.random()*emojis.length)];
+}
+function launchQuiz(){
+  // Transition de l'intro vers les questions
+  const intro=document.getElementById('quiz-intro-screen');
+  intro.style.animation='quizOut .3s ease forwards';
+  setTimeout(()=>{
+    intro.style.display='none';
+    intro.style.animation='';
+    document.getElementById('quiz-question-screen').style.display='block';
+    showQuizQuestion();
+  },300);
+}
+
+function showQuizQuestion(){
+  const {questions,current,score}=quizState;
+  if(current>=questions.length){
+    document.getElementById('quiz-question-screen').style.display='none';
+    document.getElementById('quiz-result-wrap').style.display='block';
+    document.getElementById('quiz-progress').textContent='';
+    document.getElementById('quiz-score').textContent='';
+    const total=questions.length,pct=Math.round(score/total*100);
+    let emoji,title,sub;
+    if(pct===100){emoji='🏆';title='Parfait ! Tu n’as pas été invité pour rien !';sub='Tu connais les mariés sur le bout des doigts. Ils ont bien choisi leurs invités 😄';}
+    else if(pct>=60){emoji='😎';title='Pas mal du tout !';sub='Tu t’en sors bien… ou tu es doué pour deviner. Les mariés apprécient quand même 😉';}
+    else if(pct>=40){emoji='🤔';title='Hmm… tu les connais vraiment ?';sub='Entre deux gâteaux, ce serait peut-être l’occasion d’aller leur dire bonjour 😅';}
+    else{emoji='😂';title='Tu es sûr d’avoir la bonne invitation ?';sub='On plaisante ! Merci d’être là, l’essentiel c’est de fêter avec eux 🎉';}
+    document.getElementById('quiz-result-emoji').textContent=emoji;
+    document.getElementById('quiz-result-title').textContent=title;
+    document.getElementById('quiz-result-sub').textContent=sub;
+    document.getElementById('quiz-score-fill').style.width='100%';
+    // Afficher la note sur 5 calculée depuis le score
+    var starsOut=Math.max(1,Math.round(score/total*5));
+    for(var i=1;i<=5;i++){var s=document.getElementById('qs'+i);if(s)s.classList.toggle('active',i<=starsOut);}
+    var sn=document.getElementById('quiz-score-num');if(sn)sn.textContent=starsOut+' / 5';
+    var qr=document.getElementById('quiz-rating');if(qr)qr.style.display='block';
+    // Afficher le message de patience en même temps que la conclusion
+    var p=document.getElementById('quiz-patience');
+    if(p){p.style.display='block';}
+    return;
+  }
+  document.getElementById('quiz-question-screen').style.display='block';
+  document.getElementById('quiz-result-wrap').style.display='none';
+  const q=questions[current];
+  document.getElementById('quiz-q').textContent=q.q;
+  document.getElementById('quiz-progress').textContent='Question '+(current+1)+' / '+questions.length;
+  document.getElementById('quiz-score').textContent=score+' ✓';
+  const progPct=questions.length>0?Math.round(current/questions.length*100):0;
+  document.getElementById('quiz-score-fill').style.width=progPct+'%';
+  const opts=[{text:q.a,correct:true},...(q.wrong||[]).filter(w=>w).map(w=>({text:w,correct:false}))].sort(()=>Math.random()-.5);
+  const optsEl=document.getElementById('quiz-opts');
+  optsEl.innerHTML=opts.map((o,i)=>`<button class="quiz-opt" onclick="answerQuiz(${i},${o.correct})">${o.text}</button>`).join('');
+  quizState.answered=false;
+}
+
+function answerQuiz(idx,correct){
+  if(quizState.answered)return;
+  quizState.answered=true;
+  const btns=document.querySelectorAll('.quiz-opt');
+  btns.forEach(b=>{b.disabled=true;});
+  btns[idx].classList.add(correct?'correct':'wrong');
+  if(correct)quizState.score++;
+  // Jauge = progression (questions répondues / total)
+  const progPct=Math.round((quizState.current+1)/quizState.questions.length*100);
+  document.getElementById('quiz-score-fill').style.width=progPct+'%';
+  document.getElementById('quiz-score').textContent=quizState.score+' ✓';
+  setTimeout(()=>{quizState.current++;showQuizQuestion();},1400);
+}
+
+function adminLogout(){
+  DB.adminLoggedIn=false;saveDB();
+  document.getElementById('admin-login-card').style.display='block';
+  document.getElementById('admin-panel').style.display='none';
+  document.getElementById('admin-pwd').value='';
+  toast('Déconnecté');
+}
+async function refreshEvent(){
+  const id=DB.curEv;if(!id)return;
+  try{
+    const r=await fetch('/api/event?id='+encodeURIComponent(id));
+    if(r.ok){const ev=await r.json();DB.events[id]=ev;saveDB();renderEL();renderDet(id);toast('✦ Données mises à jour');}
+    else toast('Erreur lors du rafraîchissement');
+  }catch(e){toast('Erreur réseau');}
+}
+async function addCredits(){
+  const id=DB.curEv;if(!id)return;
+  const ev=DB.events[id];if(!ev)return;
+  const amount=parseInt(document.getElementById('add-credits-input').value);
+  if(!amount||amount<1){toast('Entrez un nombre valide');return;}
+  if(!ev.creditsLog)ev.creditsLog=[];
+  ev.credits=(ev.credits||0)+amount;
+  ev.creditsLog.unshift({amount,date:new Date().toISOString()});
+  saveDB();
+  // Sync Supabase
+  try{
+    await fetch('/api/event',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(ev)});
+    await fetch('/api/init-credits',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({event_id:id,credits:ev.credits})});
+  }catch(e){}
+  document.getElementById('add-credits-input').value='';
+  renderEL();renderDet(id);
+  toast('✦ +'+amount+' crédits ajoutés !');
+}
+function openGalleryLink(){
+  const id=DB.curEv;if(!id)return;
+  const ev=DB.events[id];if(!ev)return;
+  const base=window.location.origin;
+  window.open(base+'/galerie/'+id+'?token='+ev.token,'_blank');
+}
+function toggleEdit(){
+  const f=document.getElementById('edit-form');
+  f.style.display=f.style.display==='none'?'block':'none';
+}
+async function saveEdit(){
+  const id=DB.curEv;if(!id)return;
+  const ev=DB.events[id];if(!ev)return;
+  const p1=document.getElementById('edit-p1').value.trim();
+  const p2=document.getElementById('edit-p2').value.trim();
+  const date=document.getElementById('edit-date').value;
+  const guests=parseInt(document.getElementById('edit-guests').value)||ev.guests;
+  const email=document.getElementById('edit-email').value.trim();
+  const creditsBase=parseInt(document.getElementById('edit-credits-base').value);
+  if(!p1||!p2){toast('Les prénoms sont requis');return;}
+  ev.p1=p1;ev.p2=p2;ev.couple=p1+' & '+p2;ev.date=date;ev.guests=guests;
+  if(email)ev.email=email;
+  if(creditsBase&&creditsBase>0)ev.credits=creditsBase;
+  const quizEdit=getQuizFields('edit');if(quizEdit.length)ev.quiz=quizEdit;
+  saveDB();
+  // Sync Supabase
+  try{
+    await fetch('/api/event',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(ev)});
+    if(creditsBase&&creditsBase>0)await fetch('/api/init-credits',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({event_id:id,credits:creditsBase})});
+  }catch(e){}
+  document.getElementById('edit-form').style.display='none';
+  renderEL();renderDet(id);toast('✦ Événement mis à jour !');
+}
+function newEvent(){
+  const p1=document.getElementById('np1').value.trim(),p2=document.getElementById('np2').value.trim();
+  const date=document.getElementById('ndate').value,guests=parseInt(document.getElementById('nguests').value)||80,credits=parseInt(document.getElementById('ncredits').value)||50,email=document.getElementById('nemail').value.trim(),quiz=getQuizFields('create');
+  if(!p1||!p2){toast('Entrez les deux prénoms');return;}
+  const slug=(p1+'-'+p2).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,'-').replace(/-+/g,'-');
+  const id=slug+'-'+Date.now().toString(36),token=Math.random().toString(36).substring(2)+Math.random().toString(36).substring(2);
+  const evObj={id,couple:p1+' & '+p2,p1,p2,date,guests,credits,email,quiz,usedCredits:0,token,songs:[],sendLog:[],createdAt:new Date().toISOString()};
+  DB.events[id]=evObj;
+  saveDB();
+  // Sauvegarder dans Supabase pour accès multi-appareils
+  fetch('/api/event',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(evObj)}).catch(()=>{});
+  // Sync crédits dans Supabase
+  fetch('/api/init-credits',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({event_id:id,credits})}).catch(()=>{});
+  ['np1','np2','ndate','nguests','ncredits','nemail'].forEach(x=>document.getElementById(x).value='');document.getElementById('quiz-fields-create').innerHTML='';
+  stab('events',document.getElementById('tb-ev'));renderEL();selEv(id);toast('✦ Événement créé !');
+}
+function delEv(id){
+  const evToDel=DB.events[id];if(!evToDel)return;
+  showDangerModal(
+    'Supprimer cet événement ?',
+    'L\'événement « '+evToDel.couple+' » et toutes ses musiques seront définitivement supprimés. Cette action est irréversible.',
+    function(){_doDelEv(id);}
+  );
+  return;}
+function _doDelEv(id){
+  fetch('/api/event?id='+encodeURIComponent(id),{method:'DELETE'}).catch(()=>{});
+  delete DB.events[id];if(DB.curEv===id){DB.curEv=null;document.getElementById('event-detail').style.display='none';}
+  saveDB();renderEL();toast('Événement supprimé');
+}
+function delSong(eid,sid){
+  const ev=DB.events[eid];if(!ev)return;
+  const song=ev.songs.find(s=>s.id===sid);
+  showDangerModal(
+    'Supprimer cette musique ?',
+    '« '+(song?song.title:'cette musique')+' » sera définitivement supprimée. Cette action est irréversible.',
+    function(){
+      ev.songs=ev.songs.filter(s=>s.id!==sid);if(ev.usedCredits>0)ev.usedCredits--;
+      saveDB();
+      fetch('/api/event',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(ev)}).catch(()=>{});
+      if(song&&song.url&&song.url.includes('supabase')){
+        fetch('/api/delete-file',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:song.url})}).catch(()=>{});
+      }
+      renderDet(eid);toast('Musique supprimée');
+    }
+  );
+}
+function delAllSongs(){
+  const id=DB.curEv;const ev=DB.events[id];if(!ev)return;
+  const count=(ev.songs||[]).length;
+  if(!count){toast('Aucune musique à supprimer');return;}
+  showDangerModal(
+    'Supprimer toutes les musiques ?',
+    count+' musique'+(count>1?'s':'')+' sera'+(count>1?'nt':'')+' définitivement supprimée'+(count>1?'s':'')+'. Cette action est irréversible.',
+    async function(){
+      const songs=[...(ev.songs||[])];
+      ev.songs=[];ev.usedCredits=0;
+      saveDB();
+      fetch('/api/event',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(ev)}).catch(()=>{});
+      // Supprimer tous les fichiers Supabase en parallèle
+      await Promise.allSettled(songs.filter(s=>s.url&&s.url.includes('supabase')).map(s=>
+        fetch('/api/delete-file',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:s.url})})
+      ));
+      renderDet(id);toast(count+' musique'+(count>1?'s':'')+' supprimée'+(count>1?'s':''));
+    }
+  );
+}
+function changePwd(){
+  const old=document.getElementById('opwd').value,p1=document.getElementById('npwd').value,p2=document.getElementById('cpwd').value;
+  if(old!==DB.adminPwd){toast('Mot de passe actuel incorrect');return;}
+  if(p1.length<8){toast('Minimum 8 caractères');return;}
+  if(p1!==p2){toast('Les mots de passe ne correspondent pas');return;}
+  DB.adminPwd=p1;saveDB();
+  document.getElementById('opwd').value='';document.getElementById('npwd').value='';document.getElementById('cpwd').value='';
+  toast('✦ Mot de passe mis à jour');
+}
+function openLink(id){window.open(document.getElementById(id).textContent,'_blank');}
+function copyLink(id){const v=document.getElementById(id).textContent;navigator.clipboard.writeText(v).then(()=>toast('Lien copié !')).catch(()=>toast('Copiez manuellement'));}
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800);}
+function tpwd(id){const el=document.getElementById(id);el.type=el.type==='password'?'text':'password';}
+function fmt(iso){try{return new Date(iso).toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});}catch(e){return '';}}
+function fmtD(d){try{return new Date(d+'T00:00:00').toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'});}catch(e){return d;}}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function genDemo(){
+  try{
+    const ctx=new AudioContext(),dur=3,sr=ctx.sampleRate,buf=ctx.createBuffer(1,sr*dur,sr),d=buf.getChannelData(0);
+    for(let i=0;i<d.length;i++){const t=i/sr,e=Math.min(t,dur-t,.5)*2;d[i]=(Math.sin(2*Math.PI*440*t)*.3+Math.sin(2*Math.PI*554.37*t)*.15+Math.sin(2*Math.PI*659.25*t)*.1)*e;}
+    const len=d.length,ab=new ArrayBuffer(44+len*2),v=new DataView(ab),w=(o,s)=>{for(let i=0;i<s.length;i++)v.setUint8(o+i,s.charCodeAt(i));};
+    w(0,'RIFF');v.setUint32(4,36+len*2,true);w(8,'WAVE');w(12,'fmt ');v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,1,true);v.setUint32(24,sr,true);v.setUint32(28,sr*2,true);v.setUint16(32,2,true);v.setUint16(34,16,true);
+    w(36,'data');v.setUint32(40,len*2,true);for(let i=0;i<len;i++){const s2=Math.max(-1,Math.min(1,d[i]));v.setInt16(44+i*2,s2<0?s2*0x8000:s2*0x7FFF,true);}
+    return URL.createObjectURL(new Blob([ab],{type:'audio/wav'}));
+  }catch(e){return '';}
+}
+
+const LEGAL_CONTENT = {
+  cgv: {
+    title: 'Conditions Générales de Vente',
+    body: `
+<p style="font-size:.72rem;color:#888;margin-bottom:1rem">Version en vigueur au 1er janvier 2025 — Conformes aux dispositions du Code de la consommation, du Code civil, de la loi n°2004-575 du 21 juin 2004 pour la confiance dans l'économie numérique (LCEN), du Règlement (UE) 2016/679 (RGPD) et de la loi n°78-17 du 6 janvier 1978 modifiée (loi Informatique et Libertés).</p>
+
+<h2>Article 1 — Identification du Prestataire et champ d'application</h2>
+<p><strong>1.1</strong> Les présentes Conditions Générales de Vente et d'Utilisation (ci-après « CGV ») sont conclues entre :</p>
+<ul>
+  <li><strong>[NOM SOCIÉTÉ À COMPLÉTER]</strong>, [FORME JURIDIQUE] au capital de [MONTANT] euros, immatriculée au RCS de [VILLE] sous le numéro [SIRET], dont le siège social est situé [ADRESSE COMPLÈTE], représentée par [NOM DU REPRÉSENTANT LÉGAL] en qualité de [TITRE], ci-après « le Prestataire » ;</li>
+  <li>Toute personne physique ou morale utilisant le Service, ci-après « l'Utilisateur » ou « l'Organisateur » selon le contexte.</li>
+</ul>
+<p><strong>1.2</strong> Le Service EVOKE est une application web de génération musicale assistée par intelligence artificielle, accessible à l'adresse [URL DU SERVICE]. Toute utilisation du Service, même partielle, implique l'acceptation pleine, entière et sans réserve des présentes CGV, qui prévalent sur tout autre document.</p>
+<p><strong>1.3</strong> Conformément à l'article L.111-1 du Code de la consommation, le Prestataire communique les présentes CGV à tout Utilisateur qui en fait la demande. En cas de contradiction entre les CGV et tout autre document contractuel, les CGV prévaudront.</p>
+<p><strong>⚠️ Conséquence du non-respect :</strong> Toute utilisation du Service après refus explicite des présentes CGV est constitutive d'un accès frauduleux au sens de l'article 323-1 du Code pénal, passible d'une peine pouvant aller jusqu'à 2 ans d'emprisonnement et 60 000 € d'amende.</p>
+
+<h2>Article 2 — Description du Service</h2>
+<p><strong>2.1</strong> EVOKE est une application web permettant la génération de contenus musicaux personnalisés à partir de prompts textuels, via des API d'intelligence artificielle tierces. Le Service comprend :</p>
+<ul>
+  <li>La génération de morceaux musicaux originaux à partir de descriptions textuelles ;</li>
+  <li>Le stockage temporaire des fichiers audio générés ;</li>
+  <li>La mise à disposition d'une galerie privée sécurisée pour l'Organisateur ;</li>
+  <li>L'envoi de communications par email à l'Organisateur ;</li>
+  <li>Un système de gestion de crédits par événement.</li>
+</ul>
+<p><strong>2.2 Connexion Internet obligatoire.</strong> Le Service nécessite impérativement une connexion Internet active, stable et suffisamment rapide. En l'absence de connexion ou en cas de connexion insuffisante, l'accès au Service et la génération musicale sont techniquement impossibles. Le Prestataire ne saurait être tenu responsable de toute impossibilité d'accès liée à une défaillance du réseau, de l'opérateur ou du dispositif de l'Utilisateur.</p>
+<p><strong>⚠️ Conséquence :</strong> Aucune compensation, indemnité ou remboursement ne pourra être réclamé au Prestataire en raison d'une impossibilité d'accès au Service due à un défaut de connexion Internet imputable à l'Utilisateur ou à son opérateur.</p>
+
+<h2>Article 3 — Conditions d'accès et prérequis techniques</h2>
+<p><strong>3.1</strong> L'accès au Service est conditionné à :</p>
+<ul>
+  <li>Une connexion Internet fonctionnelle (haut débit recommandé, minimum 5 Mbps) ;</li>
+  <li>Un navigateur web moderne et à jour (Chrome v90+, Safari v14+, Firefox v88+, Edge v90+) ;</li>
+  <li>L'activation de JavaScript dans le navigateur ;</li>
+  <li>Un dispositif compatible (ordinateur, tablette ou smartphone).</li>
+</ul>
+<p><strong>3.2 Délai de génération variable.</strong> Le temps de génération musicale est variable et dépend de facteurs indépendants de la volonté du Prestataire, notamment : la qualité et le débit de la connexion Internet de l'Utilisateur, la charge des serveurs d'intelligence artificielle tiers, et la complexité du prompt soumis. Ce délai, indicativement compris entre 30 secondes et plusieurs minutes, ne constitue en aucun cas un engagement contractuel du Prestataire.</p>
+<p><strong>⚠️ Conséquence :</strong> Aucun remboursement, compensation ou crédit ne pourra être exigé du Prestataire en raison d'un délai de génération jugé excessif par l'Utilisateur, dès lors que ce délai résulte de facteurs techniques extérieurs au contrôle du Prestataire.</p>
+
+<h2>Article 4 — Formation du contrat et acceptation des CGV</h2>
+<p><strong>4.1</strong> Conformément aux articles 1113 et suivants du Code civil, le contrat entre le Prestataire et l'Utilisateur est formé dès lors que l'Utilisateur accède au Service et en fait usage, ce qui vaut acceptation pleine et entière des présentes CGV.</p>
+<p><strong>4.2</strong> L'Organisateur, en déployant le Service auprès de ses invités, garantit avoir informé ces derniers des présentes CGV et des conditions d'utilisation du Service. Il se porte fort du respect des présentes CGV par ses invités au sens de l'article 1204 du Code civil.</p>
+<p><strong>⚠️ Conséquence du non-respect :</strong> En cas de manquement d'un invité aux présentes CGV, l'Organisateur pourra voir sa responsabilité contractuelle engagée vis-à-vis du Prestataire, sans préjudice de la responsabilité propre de l'invité auteur du manquement.</p>
+
+<h2>Article 5 — Droits d'utilisation des contenus générés</h2>
+<p><strong>5.1 Usage privé exclusif.</strong> Les musiques générées via le Service sont exclusivement destinées à un usage privé, personnel et non commercial, dans le strict cadre de l'événement pour lequel elles ont été créées. Le Prestataire concède à l'Utilisateur une licence non exclusive, non transférable, révocable, à titre gratuit, limitée à cet usage privé.</p>
+<p><strong>5.2</strong> Il est expressément et formellement interdit de :</p>
+<ul>
+  <li>Diffuser publiquement les contenus générés, à titre gratuit ou onéreux, sur tout support ;</li>
+  <li>Exploiter commercialement les musiques générées, sous quelque forme que ce soit ;</li>
+  <li>Mettre en ligne les contenus sur des plateformes de streaming ou de distribution musicale (Spotify, Deezer, YouTube, TikTok, etc.) ;</li>
+  <li>Revendiquer des droits d'auteur ou droits voisins sur les contenus générés ;</li>
+  <li>Synchroniser les contenus avec des œuvres audiovisuelles destinées à une diffusion publique ou commerciale ;</li>
+  <li>Utiliser les contenus à des fins publicitaires, promotionnelles ou institutionnelles ;</li>
+  <li>Reproduire, représenter, distribuer ou adapter les contenus au-delà du cadre privé autorisé.</li>
+</ul>
+<p><strong>5.3</strong> Le Prestataire ne garantit pas l'originalité des contenus générés ni l'absence de similitude avec des œuvres préexistantes. Il appartient à l'Utilisateur de vérifier que l'utilisation projetée ne porte pas atteinte aux droits de tiers.</p>
+<p><strong>⚠️ Conséquence du non-respect :</strong> Toute exploitation commerciale, diffusion publique ou contrefaçon des contenus générés constitue une violation du présent article susceptible d'engager la responsabilité civile de l'Utilisateur (dommages et intérêts), et pénale au titre de la contrefaçon prévue aux articles L.335-2 et suivants du Code de la propriété intellectuelle, passible d'une peine pouvant aller jusqu'à 3 ans d'emprisonnement et 300 000 € d'amende. Le Prestataire se réserve le droit de résilier immédiatement l'accès au Service et d'engager toute action judiciaire appropriée.</p>
+
+<h2>Article 6 — Responsabilité du Prestataire</h2>
+<p><strong>6.1</strong> Le Prestataire est soumis à une obligation de moyens et non de résultat. Il s'engage à mettre en œuvre tous les moyens raisonnables pour assurer la disponibilité et la qualité du Service, sans garantir un résultat déterminé.</p>
+<p><strong>6.2</strong> La responsabilité du Prestataire ne saurait être engagée pour :</p>
+<ul>
+  <li>Toute indisponibilité temporaire du Service due à des opérations de maintenance, des défaillances techniques ou des interruptions des services tiers (API d'IA, hébergement, stockage) ;</li>
+  <li>Toute perte ou altération des données en cas de défaillance des services de stockage tiers ;</li>
+  <li>L'insatisfaction de l'Utilisateur quant à la qualité artistique subjective des contenus générés ;</li>
+  <li>Toute impossibilité d'accès due à une connexion Internet insuffisante, instable ou absente ;</li>
+  <li>Le contenu des messages, prompts ou textes soumis par les Utilisateurs ou leurs invités ;</li>
+  <li>Le contenu des paroles ou éléments musicaux générés automatiquement par l'IA à partir des prompts des Utilisateurs ;</li>
+  <li>Tout dommage indirect, immatériel ou consécutif résultant de l'utilisation ou de l'impossibilité d'utilisation du Service.</li>
+</ul>
+<p><strong>6.3</strong> En tout état de cause, et conformément à l'article 1231-3 du Code civil, la responsabilité contractuelle du Prestataire est expressément plafonnée au montant des sommes effectivement perçues de l'Utilisateur concerné au cours des 12 derniers mois précédant le fait générateur du dommage.</p>
+<p><strong>⚠️ Conséquence :</strong> Toute action en responsabilité à l'encontre du Prestataire au-delà de ce plafond sera irrecevable. L'Utilisateur reconnaît expressément ce plafonnement comme condition essentielle et déterminante du contrat.</p>
+
+<h2>Article 7 — Disponibilité et conservation des données</h2>
+<p><strong>7.1</strong> Les fichiers audio générés sont stockés sur des serveurs tiers (Supabase) dans la limite de l'espace de stockage alloué. Le Prestataire ne garantit pas la conservation indéfinie des fichiers audio générés. Il est fortement recommandé à l'Organisateur de télécharger et sauvegarder les musiques générées dans les meilleurs délais suivant leur création.</p>
+<p><strong>7.2</strong> Le Prestataire se réserve le droit de supprimer les fichiers après un délai raisonnable suivant la fin de l'événement, sans obligation de notification préalable.</p>
+<p><strong>⚠️ Conséquence :</strong> La perte définitive de fichiers audio non sauvegardés par l'Utilisateur ne pourra donner lieu à aucune indemnisation ni remboursement de la part du Prestataire.</p>
+
+<h2>Article 8 — Responsabilité relative aux contenus soumis et générés</h2>
+<p><strong>8.1 Absence de contrôle préalable.</strong> Les messages, textes et prompts saisis par les invités sont fournis sous leur seule et entière responsabilité. Le Prestataire n'exerce aucun contrôle préalable, automatique ou humain, sur les contenus soumis et ne saurait être tenu responsable de leur contenu, légalité ou caractère approprié. Conformément à l'article 6-I-2 de la LCEN, le Prestataire agit en qualité d'hébergeur et bénéficie du régime de responsabilité limitée prévu par ce texte.</p>
+<p><strong>8.2 Contenus générés par IA.</strong> Les paroles et contenus musicaux générés par l'IA résultent directement des prompts soumis. Le Prestataire ne contrôle, ne supervise ni n'approuve les contenus générés. Sa responsabilité ne saurait être engagée en raison du contenu des paroles générées automatiquement.</p>
+<p><strong>8.3 Contenus strictement interdits.</strong> Il est expressément et formellement interdit d'utiliser le Service pour soumettre ou tenter de générer des contenus :</p>
+<ul>
+  <li><strong>Racistes, xénophobes, antisémites ou négationnistes</strong> — infractions pénales au sens de la loi du 29 juillet 1881 et de la loi Gayssot n°90-615 du 13 juillet 1990 ;</li>
+  <li><strong>Discriminatoires</strong> à raison de tout critère protégé par la loi (origine, sexe, âge, orientation sexuelle, identité de genre, handicap, religion, etc.) — articles 225-1 et suivants du Code pénal ;</li>
+  <li><strong>Injurieux, insultants, diffamatoires</strong> envers toute personne — loi du 29 juillet 1881 ;</li>
+  <li><strong>Constitutifs de harcèlement</strong> moral, sexuel ou en ligne — articles 222-33-2 et suivants du Code pénal ;</li>
+  <li><strong>Incitant à la haine, à la violence ou à la discrimination</strong> — article 24 de la loi du 29 juillet 1881 ;</li>
+  <li>Portant atteinte à la <strong>dignité humaine</strong> — article 225-4-1 et suivants du Code pénal ;</li>
+  <li>Portant atteinte à la <strong>vie privée ou à l'image</strong> de tiers — articles 9 du Code civil et 226-1 du Code pénal ;</li>
+  <li>Constituant une <strong>contrefaçon</strong> de droits de propriété intellectuelle — articles L.335-2 et suivants du CPI ;</li>
+  <li>À caractère <strong>pornographique ou pédopornographique</strong> — articles 227-23 et suivants du Code pénal ;</li>
+  <li>Faisant l'<strong>apologie de crimes ou du terrorisme</strong> — articles 421-2-5 et 24 de la loi du 29 juillet 1881.</li>
+</ul>
+<p><strong>8.4 Conséquences graduées selon la gravité du manquement :</strong></p>
+<ul>
+  <li><strong>Manquement mineur</strong> (contenu inapproprié sans caractère illicite avéré) : avertissement adressé à l'Organisateur, suppression immédiate du contenu litigieux, sans remboursement du crédit consommé ;</li>
+  <li><strong>Manquement grave</strong> (contenu illicite sans caractère pénal établi) : suspension immédiate et sans préavis de l'accès au Service, résiliation du contrat aux torts exclusifs de l'Utilisateur, sans remboursement d'aucune somme, suppression de l'intégralité des données de l'événement concerné ;</li>
+  <li><strong>Manquement très grave</strong> (contenu constitutif d'une infraction pénale) : suspension immédiate, résiliation définitive, suppression des données, signalement obligatoire aux autorités compétentes (police, parquet) conformément aux articles 40 du Code de procédure pénale et 6-I-7 de la LCEN, et engagement de toute action civile et/ou pénale aux fins de réparation intégrale du préjudice subi.</li>
+</ul>
+<p>Dans tous les cas, la responsabilité civile et/ou pénale de l'auteur du contenu litigieux est seule engagée, à l'exclusion de toute responsabilité du Prestataire.</p>
+
+<h2>Article 9 — Gestion des crédits</h2>
+<p><strong>9.1</strong> Chaque génération musicale consomme un crédit. <strong>Un crédit est définitivement décompté dès le lancement de la génération, indépendamment du résultat obtenu</strong> (succès, échec technique, abandon en cours de génération).</p>
+<p><strong>9.2</strong> En cas d'échec technique imputable exclusivement au Service du Prestataire (et non à des services tiers ou à la connexion de l'Utilisateur), le Prestataire pourra, à sa seule et entière discrétion, procéder à la restitution du crédit concerné, sans que cela constitue une obligation ou un droit acquis pour l'Utilisateur.</p>
+<p><strong>⚠️ Conséquence :</strong> L'épuisement des crédits alloués n'ouvre droit à aucune compensation. L'Organisateur demeure responsable de la gestion de son solde de crédits.</p>
+
+<h2>Article 10 — Prix et conditions financières</h2>
+<p><strong>10.1</strong> Les prix du Service sont ceux en vigueur au jour de la commande, exprimés en euros toutes taxes comprises (TTC). Le Prestataire se réserve le droit de modifier ses tarifs à tout moment, les modifications étant applicables aux nouvelles commandes uniquement.</p>
+<p><strong>10.2</strong> Conformément à l'article L.221-18 du Code de la consommation, l'Utilisateur professionnel reconnaît expressément que le Service est souscrit dans le cadre de son activité professionnelle et renonce en conséquence au bénéfice du droit de rétractation prévu pour les consommateurs.</p>
+<p><strong>⚠️ Conséquence du défaut de paiement :</strong> Tout impayé entraînera la suspension immédiate du Service, l'application de pénalités de retard conformément à l'article L.441-10 du Code de commerce (taux légal majoré de 10 points), ainsi qu'une indemnité forfaitaire de recouvrement de 40 euros.</p>
+
+<h2>Article 11 — Force majeure</h2>
+<p>Le Prestataire ne saurait être tenu responsable de l'inexécution ou du retard dans l'exécution de ses obligations résultant d'un événement de force majeure au sens de l'article 1218 du Code civil, notamment : pannes généralisées d'Internet, cyberattaques, catastrophes naturelles, épidémies, grèves des prestataires tiers, décisions gouvernementales ou judiciaires. En cas de force majeure persistant au-delà de 30 jours, chacune des parties pourra résilier le contrat sans indemnité.</p>
+
+<h2>Article 12 — Protection des données personnelles (RGPD)</h2>
+<p>Le traitement des données personnelles des Utilisateurs est régi par la Politique de Confidentialité disponible dans le footer du Service, conforme au Règlement (UE) 2016/679 (RGPD) et à la loi n°78-17 du 6 janvier 1978 modifiée. Toute violation de données à caractère personnel sera notifiée à la CNIL dans les 72 heures conformément à l'article 33 du RGPD.</p>
+<p><strong>⚠️ Conséquence :</strong> Toute utilisation des données personnelles collectées via le Service à des fins autres que celles prévues aux présentes CGV est strictement interdite et pourra faire l'objet de sanctions civiles et pénales, ainsi que de poursuites devant la CNIL.</p>
+
+<h2>Article 13 — Médiation et règlement des litiges</h2>
+<p><strong>13.1</strong> Conformément aux articles L.616-1 et R.616-1 du Code de la consommation, le Prestataire propose un dispositif de médiation de la consommation. En cas de litige non résolu amiablement dans un délai de 60 jours, l'Utilisateur consommateur peut recourir gratuitement au médiateur compétent : [NOM DU MÉDIATEUR À COMPLÉTER — ex : Médiateur du e-commerce de la FEVAD].</p>
+<p><strong>13.2</strong> La plateforme européenne de règlement en ligne des litiges (RLL) est accessible à l'adresse : https://ec.europa.eu/consumers/odr</p>
+<p><strong>13.3</strong> À défaut de résolution amiable ou par médiation, tout litige relatif à la validité, l'interprétation ou l'exécution des présentes CGV sera soumis à la compétence exclusive des tribunaux du ressort de <strong>[VILLE DU SIÈGE SOCIAL]</strong>, nonobstant pluralité de défendeurs ou appel en garantie, y compris pour les procédures d'urgence ou conservatoires.</p>
+
+<h2>Article 14 — Droit applicable</h2>
+<p>Les présentes CGV sont soumises au droit français. En cas de traduction dans une langue étrangère, la version française prévaut.</p>
+
+<h2>Article 15 — Nullité partielle</h2>
+<p>Si l'une quelconque des stipulations des présentes CGV était déclarée nulle ou inapplicable en vertu d'une loi, d'un règlement ou d'une décision judiciaire définitive, cette nullité n'affecterait pas les autres stipulations qui demeureront en vigueur entre les parties.</p>
+
+<h2>Article 16 — Modification des CGV</h2>
+<p>Le Prestataire se réserve le droit de modifier les présentes CGV à tout moment. Les utilisateurs seront informés de toute modification substantielle par email ou par notification dans le Service. Les CGV applicables sont celles en vigueur à la date d'utilisation du Service. L'utilisation du Service après notification d'une modification vaut acceptation des nouvelles CGV.</p>
+    `
+  },
+  privacy: {
+    title: 'Politique de Confidentialité',
+    body: `
+<h2>Article 1 — Responsable du traitement</h2>
+<p>Le responsable du traitement des données personnelles est <strong>[NOM SOCIÉTÉ À COMPLÉTER]</strong>, [FORME JURIDIQUE], immatriculée sous le numéro [SIRET], dont le siège social est situé [ADRESSE COMPLÈTE]. Contact DPO : <strong>[EMAIL À COMPLÉTER]</strong>.</p>
+
+<h2>Article 2 — Données collectées</h2>
+<p>Dans le cadre de l'utilisation du Service, les données suivantes peuvent être collectées :</p>
+<ul>
+  <li><strong>Données fournies volontairement</strong> : prénom ou pseudonyme de l'invité, texte du message personnalisé, choix du style musical et de la voix ;</li>
+  <li><strong>Données techniques</strong> : adresse IP, type de navigateur, données de navigation à des fins de sécurité et de maintenance ;</li>
+  <li><strong>Données de l'Organisateur</strong> : adresse email fournie lors de la création d'un événement, utilisée pour l'envoi des liens et des invitations.</li>
+</ul>
+<p>Aucune donnée bancaire n'est collectée directement par le Service.</p>
+
+<h2>Article 3 — Finalités du traitement</h2>
+<p>Les données collectées sont utilisées pour :</p>
+<ul>
+  <li>La fourniture et l'amélioration du Service ;</li>
+  <li>L'envoi des liens d'invitation et de la galerie à l'Organisateur ;</li>
+  <li>La gestion des crédits et des événements ;</li>
+  <li>La sécurité et la prévention des abus.</li>
+</ul>
+
+<h2>Article 4 — Base légale du traitement</h2>
+<p>Le traitement des données est fondé sur l'exécution du contrat liant l'Utilisateur au Prestataire (article 6.1.b du RGPD), ainsi que sur l'intérêt légitime du Prestataire à assurer la sécurité et la qualité de son service (article 6.1.f du RGPD).</p>
+
+<h2>Article 5 — Durée de conservation</h2>
+<p>Les données personnelles sont conservées pendant une durée n'excédant pas celle nécessaire aux finalités pour lesquelles elles ont été collectées, et en tout état de cause pour une durée maximale de <strong>12 mois</strong> à compter de la date de l'événement. Les fichiers audio sont susceptibles d'être supprimés à l'issue de cette période.</p>
+
+<h2>Article 6 — Destinataires des données</h2>
+<p>Les données peuvent être transmises aux sous-traitants techniques suivants, dans le strict cadre de la fourniture du Service :</p>
+<ul>
+  <li><strong>Supabase Inc.</strong> (stockage des données et fichiers audio) — États-Unis, transfert encadré par les clauses contractuelles types de la Commission européenne ;</li>
+  <li><strong>Vercel Inc.</strong> (hébergement de l'application) — États-Unis ;</li>
+  <li><strong>Resend Inc.</strong> (envoi d'emails transactionnels) ;</li>
+  <li><strong>MusicGPT / fournisseur d'IA musical</strong> (génération musicale).</li>
+</ul>
+<p>Ces données ne sont jamais vendues ni cédées à des tiers à des fins commerciales.</p>
+
+<h2>Article 7 — Droits des personnes concernées</h2>
+<p>Conformément au Règlement Général sur la Protection des Données (RGPD) et à la loi Informatique et Libertés, vous disposez des droits suivants :</p>
+<ul>
+  <li>Droit d'accès, de rectification et d'effacement de vos données ;</li>
+  <li>Droit à la limitation et à la portabilité du traitement ;</li>
+  <li>Droit d'opposition au traitement.</li>
+</ul>
+<p>Pour exercer ces droits, contactez-nous à l'adresse : <strong>[EMAIL À COMPLÉTER]</strong>. En cas de réclamation non résolue, vous disposez du droit de saisir la CNIL (www.cnil.fr).</p>
+
+<h2>Article 8 — Cookies</h2>
+<p>Le Service utilise le stockage local du navigateur (localStorage) à des fins strictement fonctionnelles (mémorisation des préférences, gestion de session). Aucun cookie publicitaire ou de traçage tiers n'est déposé. Aucune plateforme publicitaire n'a accès aux données de navigation des Utilisateurs.</p>
+    `
+  },
+  legal: {
+    title: 'Mentions Légales',
+    body: `
+<h2>Éditeur du site</h2>
+<p><strong>[NOM SOCIÉTÉ À COMPLÉTER]</strong><br>
+[FORME JURIDIQUE] au capital de [MONTANT] euros<br>
+Siège social : [ADRESSE COMPLÈTE]<br>
+SIRET : [NUMÉRO SIRET]<br>
+N° TVA intracommunautaire : [NUMÉRO TVA]<br>
+Email : [EMAIL À COMPLÉTER]<br>
+Directeur de la publication : [NOM DU RESPONSABLE]</p>
+
+<h2>Hébergement</h2>
+<p><strong>Vercel Inc.</strong><br>
+340 Pine Street, Suite 701, San Francisco, CA 94104, États-Unis<br>
+Site web : vercel.com</p>
+
+<h2>Stockage des données</h2>
+<p><strong>Supabase Inc.</strong><br>
+970 Toa Payoh North #07-04, Singapore 318992<br>
+Site web : supabase.com</p>
+
+<h2>Propriété intellectuelle</h2>
+<p>L'ensemble des éléments constituant l'application EVOKE (marque, logo, interface, code source, textes) est la propriété exclusive de <strong>[NOM SOCIÉTÉ À COMPLÉTER]</strong> et est protégé par les lois françaises et internationales relatives à la propriété intellectuelle. Toute reproduction, représentation ou diffusion, totale ou partielle, sans autorisation préalable et écrite est interdite.</p>
+
+<h2>Limitation de responsabilité</h2>
+<p>Le Prestataire s'efforce d'assurer l'exactitude et la mise à jour des informations diffusées sur le Service. Toutefois, il ne peut garantir l'exactitude, la complétude ou l'actualité des informations. En conséquence, l'Utilisateur reconnaît utiliser le Service sous sa seule et entière responsabilité.</p>
+
+<h2>Droit applicable</h2>
+<p>Le présent site est soumis au droit français. Tout litige relatif à son utilisation relève de la compétence exclusive des tribunaux français.</p>
+    `
+  },
+  usage: {
+    title: "Conditions d'utilisation",
+    body: `
+<h2>1. Acceptation des conditions</h2>
+<p>L'accès et l'utilisation du Service EVOKE impliquent l'acceptation sans réserve des présentes conditions. Si vous n'acceptez pas ces conditions, veuillez ne pas utiliser le Service.</p>
+
+<h2>2. Prérequis obligatoires</h2>
+<p><strong>Une connexion Internet active est indispensable</strong> pour utiliser EVOKE. Le Service ne dispose d'aucun mode hors-ligne. Toute interruption de connexion en cours de génération peut entraîner la perte de la composition en cours.</p>
+<p><strong>Le temps de génération musicale est variable</strong> et dépend de facteurs indépendants de la volonté du Prestataire : qualité et débit de la connexion Internet de l'Utilisateur, charge des serveurs d'intelligence artificielle, complexité du prompt. Ce délai peut varier de quelques secondes à plusieurs minutes. L'Utilisateur s'engage à ne pas interrompre le processus de génération en cours.</p>
+
+<h2>3. Usage privé exclusif</h2>
+<p>Les musiques générées via EVOKE sont destinées <strong>exclusivement à un usage privé, dans le cadre strict de l'événement pour lequel elles ont été créées.</strong></p>
+<p>Il est expressément interdit de :</p>
+<ul>
+  <li>Diffuser les musiques sur des plateformes publiques (YouTube, Spotify, TikTok, Instagram, etc.) ;</li>
+  <li>Les utiliser dans un cadre professionnel ou commercial ;</li>
+  <li>Les monétiser sous quelque forme que ce soit ;</li>
+  <li>Les inclure dans des productions destinées à une diffusion publique ;</li>
+  <li>Les revendre, les licencier ou les sous-licencier.</li>
+</ul>
+
+<h2>4. Qualité du service et garanties</h2>
+<p>Le Prestataire ne garantit pas :</p>
+<ul>
+  <li>La qualité artistique subjective des contenus générés ;</li>
+  <li>La disponibilité permanente et ininterrompue du Service ;</li>
+  <li>L'absence d'erreurs ou d'anomalies dans les contenus générés ;</li>
+  <li>La conformité des contenus aux attentes précises de l'Utilisateur ;</li>
+  <li>L'originalité absolue des musiques générées par rapport à des œuvres préexistantes.</li>
+</ul>
+<p>Le Service est fourni « en l'état » (as is), sans garantie d'aucune sorte, explicite ou implicite.</p>
+
+<h2>5. Responsabilité de l'Utilisateur</h2>
+<p>L'Utilisateur est seul responsable des contenus qu'il soumet (messages, prompts). Il s'engage formellement à ne pas soumettre de contenus illicites, racistes, xénophobes, discriminatoires, diffamatoires, injurieux, insultants, ou portant atteinte aux droits, à la dignité ou à la réputation de tiers. <strong>Le Prestataire ne saurait être tenu responsable des contenus soumis par les Utilisateurs ni des paroles générées automatiquement par l'intelligence artificielle.</strong> Toute utilisation abusive, contraire à la loi ou aux présentes conditions engage la responsabilité civile et/ou pénale exclusive de l'Utilisateur. Le Prestataire se réserve le droit de suspendre immédiatement l'accès au Service sans préavis ni remboursement en cas de manquement constaté.</p>
+
+<h2>6. Crédits et utilisation</h2>
+<p>Chaque génération musicale consomme un crédit. <strong>Un crédit est décompté dès le lancement de la génération, indépendamment du résultat obtenu.</strong> En cas d'échec technique imputable aux services tiers d'IA, le Prestataire pourra, à sa discrétion et sans obligation, procéder à la restitution du crédit concerné.</p>
+
+<h2>7. Modification du service</h2>
+<p>Le Prestataire se réserve le droit de modifier, suspendre ou interrompre le Service à tout moment, sans préavis ni indemnité, notamment pour des raisons de maintenance, d'évolution technique ou de cessation d'activité des services tiers intégrés.</p>
+
+<h2>8. Contact</h2>
+<p>Pour toute question relative aux présentes conditions : <strong>[EMAIL À COMPLÉTER]</strong></p>
+    `
+  }
+};
+
+function openLegal(key){
+  const doc=LEGAL_CONTENT[key];if(!doc)return;
+  document.getElementById('legal-modal-title').textContent=doc.title;
+  document.getElementById('legal-modal-body').innerHTML=doc.body;
+  document.getElementById('legal-modal').classList.add('active');
+  document.getElementById('legal-modal-body').scrollTop=0;
+}
+function closeLegal(){document.getElementById('legal-modal').classList.remove('active');}
+// Afficher le footer sur les pages publiques (invité + galerie)
+function showLegalFooter(){document.getElementById('legal-footer').style.display='block';}
+loadDB();route();
+document.getElementById('admin-pwd').addEventListener('keydown',e=>{if(e.key==='Enter')adminLogin();});
+</script>
+
+<!-- FOOTER LÉGAL -->
+<footer class="legal-footer" id="legal-footer" style="display:none">
+  <div class="legal-footer-inner">
+    <div class="legal-footer-logo">EVOKE</div>
+    <div class="legal-footer-tagline">Service de génération musicale pour événements privés</div>
+    <div class="legal-links">
+      <a class="legal-link" onclick="openLegal('cgv')">Conditions générales</a>
+      <a class="legal-link" onclick="openLegal('privacy')">Politique de confidentialité</a>
+      <a class="legal-link" onclick="openLegal('legal')">Mentions légales</a>
+      <a class="legal-link" onclick="openLegal('usage')">Conditions d'utilisation</a>
+    </div>
+    <div class="legal-copy">© 2025 EVOKE — [NOM SOCIÉTÉ À COMPLÉTER] · [ADRESSE À COMPLÉTER] · [EMAIL À COMPLÉTER]<br>
+    Les musiques générées sont destinées à un usage strictement privé et non commercial.</div>
+  </div>
+</footer>
+
+<!-- MODAL LÉGAL -->
+<div class="legal-modal-overlay" id="legal-modal">
+  <div class="legal-modal-box">
+    <div class="legal-modal-header">
+      <div class="legal-modal-title" id="legal-modal-title"></div>
+      <button class="legal-modal-close" onclick="closeLegal()">✕</button>
+    </div>
+    <div class="legal-modal-body" id="legal-modal-body"></div>
+  </div>
+</div>
+</body>
+</html>
