@@ -1,32 +1,120 @@
 {
   "routes": [
-    { "src": "/api/auth-register",           "dest": "/api/auth-register.js" },
-    { "src": "/api/auth-login",              "dest": "/api/auth-login.js" },
-    { "src": "/api/auth-verify",             "dest": "/api/auth-verify.js" },
-    { "src": "/api/auth-profile",            "dest": "/api/auth-profile.js" },
-    { "src": "/api/auth-change-pwd",         "dest": "/api/auth-change-pwd.js" },
-    { "src": "/api/auth-change-email",       "dest": "/api/auth-change-email.js" },
-    { "src": "/api/auth-verify-email-change","dest": "/api/auth-verify-email-change.js" },
-    { "src": "/api/auth-delete",             "dest": "/api/auth-delete.js" },
-    { "src": "/api/siret-lookup",            "dest": "/api/siret-lookup.js" },
-    { "src": "/api/superadmin",              "dest": "/api/superadmin.js" },
-    { "src": "/api/events",                  "dest": "/api/events.js" },
-    { "src": "/api/event",                   "dest": "/api/event.js" },
-    { "src": "/api/queue",                   "dest": "/api/queue.js" },
-    { "src": "/api/generate",               "dest": "/api/generate.js" },
-    { "src": "/api/poll",                    "dest": "/api/poll.js" },
-    { "src": "/api/upload",                  "dest": "/api/upload.js" },
-    { "src": "/api/delete-file",             "dest": "/api/delete-file.js" },
-    { "src": "/api/init-credits",            "dest": "/api/init-credits.js" },
-    { "src": "/api/send-invite",             "dest": "/api/send-invite.js" },
-    { "src": "/login",                       "dest": "/public/login.html" },
-    { "src": "/register",                    "dest": "/public/register.html" },
-    { "src": "/dashboard",                   "dest": "/public/dashboard.html" },
-    { "src": "/superadmin",                  "dest": "/public/superadmin.html" },
-    { "src": "/verify-email",               "dest": "/api/auth-verify.js" },
-    { "src": "/mariage/(.*)",               "dest": "/index.html" },
-    { "src": "/galerie/(.*)",               "dest": "/index.html" },
-    { "src": "/",                            "dest": "/public/login.html" },
-    { "src": "/(.*)",                        "dest": "/index.html" }
+    {
+      "src": "/api/auth-register",
+      "dest": "/api/auth-register.js"
+    },
+    {
+      "src": "/api/auth-login",
+      "dest": "/api/auth-login.js"
+    },
+    {
+      "src": "/api/auth-verify",
+      "dest": "/api/auth-verify.js"
+    },
+    {
+      "src": "/api/auth-profile",
+      "dest": "/api/auth-profile.js"
+    },
+    {
+      "src": "/api/auth-change-pwd",
+      "dest": "/api/auth-change-pwd.js"
+    },
+    {
+      "src": "/api/auth-change-email",
+      "dest": "/api/auth-change-email.js"
+    },
+    {
+      "src": "/api/auth-verify-email-change",
+      "dest": "/api/auth-verify-email-change.js"
+    },
+    {
+      "src": "/api/auth-delete",
+      "dest": "/api/auth-delete.js"
+    },
+    {
+      "src": "/api/credits",
+      "dest": "/api/credits.js"
+    },
+    {
+      "src": "/api/siret-lookup",
+      "dest": "/api/siret-lookup.js"
+    },
+    {
+      "src": "/api/superadmin",
+      "dest": "/api/superadmin.js"
+    },
+    {
+      "src": "/api/events",
+      "dest": "/api/events.js"
+    },
+    {
+      "src": "/api/event",
+      "dest": "/api/event.js"
+    },
+    {
+      "src": "/api/queue",
+      "dest": "/api/queue.js"
+    },
+    {
+      "src": "/api/generate",
+      "dest": "/api/generate.js"
+    },
+    {
+      "src": "/api/poll",
+      "dest": "/api/poll.js"
+    },
+    {
+      "src": "/api/upload",
+      "dest": "/api/upload.js"
+    },
+    {
+      "src": "/api/delete-file",
+      "dest": "/api/delete-file.js"
+    },
+    {
+      "src": "/api/init-credits",
+      "dest": "/api/init-credits.js"
+    },
+    {
+      "src": "/api/send-invite",
+      "dest": "/api/send-invite.js"
+    },
+    {
+      "src": "/login",
+      "dest": "/public/login.html"
+    },
+    {
+      "src": "/register",
+      "dest": "/public/register.html"
+    },
+    {
+      "src": "/dashboard",
+      "dest": "/public/dashboard.html"
+    },
+    {
+      "src": "/superadmin",
+      "dest": "/public/superadmin.html"
+    },
+    {
+      "src": "/verify-email",
+      "dest": "/api/auth-verify.js"
+    },
+    {
+      "src": "/mariage/(.*)",
+      "dest": "/index.html"
+    },
+    {
+      "src": "/galerie/(.*)",
+      "dest": "/index.html"
+    },
+    {
+      "src": "/",
+      "dest": "/public/login.html"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
   ]
 }

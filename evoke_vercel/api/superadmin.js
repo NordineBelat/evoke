@@ -148,5 +148,19 @@ export default async function handler(req, res) {
     } catch (e) { return res.status(500).json({ error: e.message }); }
   }
 
+  // ── GET credit-history ───────────────────────────────────────────────────
+  if (req.method === 'GET' && action === 'credit-history') {
+    const { userId } = req.query;
+    if (!userId) return res.status(400).json({ error: 'userId requis' });
+    try {
+      const r = await fetch(
+        `${url}/rest/v1/credit_history?user_id=eq.${userId}&order=created_at.desc&limit=20`,
+        { headers: h }
+      );
+      const rows = await r.json().catch(() => []);
+      return res.status(200).json(Array.isArray(rows) ? rows : []);
+    } catch (e) { return res.status(500).json({ error: e.message }); }
+  }
+
   return res.status(400).json({ error: 'Action invalide' });
 }

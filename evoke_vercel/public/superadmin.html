@@ -103,6 +103,8 @@ nav{background:var(--card);border-bottom:1px solid var(--border);padding:0 1.5re
 .ab.b:hover{background:rgba(99,102,241,.08);}
 .ab.o{color:var(--orange);border-color:rgba(245,158,11,.2);}
 .ab.o:hover{background:rgba(245,158,11,.08);}
+.ab.p{color:#a855f7;border-color:rgba(168,85,247,.2);}
+.ab.p:hover{background:rgba(168,85,247,.08);}
 
 .empty{text-align:center;padding:3rem;color:var(--text3);font-size:.8rem;}
 .loading-msg{text-align:center;padding:2.5rem;color:var(--text2);font-size:.78rem;}
@@ -209,6 +211,39 @@ nav{background:var(--card);border-bottom:1px solid var(--border);padding:0 1.5re
       <div class="tbl t-songs" id="songs-tbl"></div>
     </div>
 
+  </div>
+</div>
+
+<!-- Modal crédits -->
+<div class="overlay" id="modal-credits">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Gérer les crédits</div>
+    <div class="modal-sub" id="m-credits-user"></div>
+    <div style="display:flex;gap:8px;margin-bottom:.8rem">
+      <button id="btn-cr-add" onclick="setCreditMode(1)" style="flex:1;padding:.6rem;background:rgba(62,207,106,.1);border:1.5px solid rgba(62,207,106,.3);border-radius:var(--rmd);font-family:Plus Jakarta Sans,sans-serif;font-size:.75rem;font-weight:800;color:#16a34a;cursor:pointer">+ Ajouter</button>
+      <button id="btn-cr-remove" onclick="setCreditMode(-1)" style="flex:1;padding:.6rem;background:transparent;border:1.5px solid var(--border);border-radius:var(--rmd);font-family:Plus Jakarta Sans,sans-serif;font-size:.75rem;font-weight:800;color:var(--text2);cursor:pointer">- Retirer</button>
+    </div>
+    <div class="mf">
+      <label>Nombre de crédits</label>
+      <input type="number" id="m-cr-amount" min="1" placeholder="Ex: 50" style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:var(--rmd);padding:.7rem .9rem;font-family:Plus Jakarta Sans,sans-serif;font-size:.85rem;color:var(--text);outline:none">
+    </div>
+    <div class="mf">
+      <label>Motif (visible par l'utilisateur) *</label>
+      <input type="text" id="m-cr-reason" placeholder="Ex: Bonus bienvenue, Correction, Offert…" style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:var(--rmd);padding:.7rem .9rem;font-family:Plus Jakarta Sans,sans-serif;font-size:.85rem;color:var(--text);outline:none">
+    </div>
+    <div class="mf">
+      <label>Note interne (admin uniquement, optionnel)</label>
+      <input type="text" id="m-cr-note" placeholder="Note privée…" style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:var(--rmd);padding:.7rem .9rem;font-family:Plus Jakarta Sans,sans-serif;font-size:.85rem;color:var(--text);outline:none">
+    </div>
+    <div class="mf" id="m-cr-history-wrap">
+      <label>Historique récent</label>
+      <div id="m-cr-history" style="max-height:160px;overflow-y:auto;font-size:.72rem;color:var(--text2)"></div>
+    </div>
+    <div class="modal-actions" style="margin-top:.8rem">
+      <button class="btn-cancel" onclick="closeCreditsModal()">Annuler</button>
+      <button class="btn-save" id="btn-cr-save" onclick="saveCredits()">Confirmer</button>
+    </div>
   </div>
 </div>
 
@@ -357,6 +392,7 @@ function renderUsers(users){
       '<div class="cell-n">'+((u.credits||0)-(u.creditsUsed||0))+'<span style="color:var(--text3);font-size:.6rem"> / '+(u.credits||0)+'</span></div>'+
       '<div class="acts" onclick="event.stopPropagation()">'+
         '<button class="ab g" onclick="openEdit(&quot;'+u.id+'&quot;)">✏️ Modifier</button>'+
+        '<button class="ab p" onclick="openCredits(&quot;'+u.id+'&quot;)">💳 Crédits</button>'+
         '<button class="ab b" onclick="impersonate(&quot;'+u.id+'&quot;)">👁 Voir</button>'+
         '<button class="ab '+(u.status==='suspended'?'g':'o')+'" onclick="toggleSuspend(&quot;'+u.id+'&quot;,&quot;'+u.status+'&quot;)">'+(u.status==='suspended'?'Réactiver':'Suspendre')+'</button>'+
         '<button class="ab r" onclick="openDelete(&quot;'+u.id+'&quot;,&quot;'+esc(u.firstName)+' '+esc(u.lastName)+'&quot;)">🗑</button>'+
@@ -401,6 +437,7 @@ async function loadUserDetail(userId){
     '</div>'+
     '<div class="acts">'+
       '<button class="ab g" onclick="openEdit(&quot;'+u.id+'&quot;)">✏️ Modifier</button>'+
+      '<button class="ab p" onclick="openCredits(&quot;'+u.id+'&quot;)">💳 Donner des crédits</button>'+
       '<button class="ab b" onclick="impersonate(&quot;'+u.id+'&quot;)">👁 Voir son espace</button>'+
       '<button class="ab '+(u.status==='suspended'?'g':'o')+'" onclick="toggleSuspend(&quot;'+u.id+'&quot;,&quot;'+u.status+'&quot;)">'+(u.status==='suspended'?'Réactiver':'Suspendre')+'</button>'+
       '<button class="ab r" onclick="openDelete(&quot;'+u.id+'&quot;,&quot;'+esc(u.first_name)+' '+esc(u.last_name)+'&quot;)">🗑 Supprimer</button>'+
@@ -518,6 +555,99 @@ function fmt(iso){ try{ return new Date(iso).toLocaleDateString('fr-FR',{day:'2-
 function fmtDate(d){ try{ return new Date(d+'T00:00:00').toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'}); }catch{ return d||'—'; } }
 function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function toast(msg){ var t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(function(){t.classList.remove('show');},2800); }
+
+
+// ── CRÉDITS ──────────────────────────────────────────────────────────────
+var creditUserId = null;
+var creditMode = 1;
+
+function openCredits(userId) {
+  var u = allUsers.find(function(x){ return x.id===userId; });
+  if(!u) return;
+  creditUserId = userId;
+  creditMode = 1;
+  document.getElementById('m-credits-user').textContent = u.firstName+' '+u.lastName+' — '+u.email+' — Solde actuel: '+((u.credits||0)-(u.creditsUsed||0))+' crédits';
+  document.getElementById('m-cr-amount').value = '';
+  document.getElementById('m-cr-reason').value = '';
+  document.getElementById('m-cr-note').value = '';
+  setCreditMode(1);
+  loadSACreditHistory(userId);
+  document.getElementById('modal-credits').classList.add('show');
+}
+
+function setCreditMode(mode) {
+  creditMode = mode;
+  var btnAdd = document.getElementById('btn-cr-add');
+  var btnRm = document.getElementById('btn-cr-remove');
+  var btnSave = document.getElementById('btn-cr-save');
+  if(mode === 1) {
+    btnAdd.style.background = 'rgba(62,207,106,.15)';
+    btnAdd.style.borderColor = 'rgba(62,207,106,.4)';
+    btnRm.style.background = 'transparent';
+    btnRm.style.borderColor = 'var(--border)';
+    btnSave.textContent = '✓ Ajouter les crédits';
+    btnSave.style.background = 'var(--green)';
+  } else {
+    btnRm.style.background = 'rgba(255,91,91,.15)';
+    btnRm.style.borderColor = 'rgba(255,91,91,.3)';
+    btnAdd.style.background = 'transparent';
+    btnAdd.style.borderColor = 'var(--border)';
+    btnSave.textContent = '✓ Retirer les crédits';
+    btnSave.style.background = 'var(--red)';
+  }
+}
+
+async function loadSACreditHistory(userId) {
+  var el = document.getElementById('m-cr-history');
+  if(!el) return;
+  el.textContent = 'Chargement…';
+  try {
+    var r = await fetch('/api/superadmin?action=credit-history&userId='+userId, {
+      headers: {'x-admin-token': TOKEN}
+    });
+    if(!r.ok) { el.textContent = 'Historique indisponible'; return; }
+    var rows = await r.json();
+    if(!rows.length) { el.textContent = 'Aucun mouvement de crédits'; return; }
+    el.innerHTML = rows.slice(0,8).map(function(row) {
+      var isAdd = row.amount > 0;
+      return '<div style="display:flex;justify-content:space-between;align-items:flex-start;padding:.4rem 0;border-bottom:1px solid var(--border)">'+
+        '<div>'+
+          '<div style="font-weight:700;color:var(--text)">'+esc(row.reason)+'</div>'+
+          (row.admin_note ? '<div style="color:var(--text3);font-size:.65rem;font-style:italic">'+esc(row.admin_note)+'</div>' : '')+
+          '<div style="color:var(--text3);font-size:.65rem">'+fmt(row.created_at)+' · Solde après: '+row.balance_after+'</div>'+
+        '</div>'+
+        '<span style="font-weight:800;color:'+(isAdd?'var(--green)':'var(--red)')+'">'+( isAdd?'+':'')+row.amount+'</span>'+
+      '</div>';
+    }).join('');
+  } catch(e) { el.textContent = 'Erreur'; }
+}
+
+async function saveCredits() {
+  var amount = parseInt(document.getElementById('m-cr-amount').value);
+  var reason = document.getElementById('m-cr-reason').value.trim();
+  var note = document.getElementById('m-cr-note').value.trim();
+  if(!amount || amount < 1) { toast('Entrez un nombre valide (minimum 1)'); return; }
+  if(!reason) { toast('Le motif est obligatoire'); return; }
+  var finalAmount = creditMode * amount;
+  try {
+    var r = await fetch('/api/credits', {
+      method: 'POST',
+      headers: {'x-admin-token': TOKEN, 'Content-Type': 'application/json'},
+      body: JSON.stringify({userId: creditUserId, amount: finalAmount, reason: reason, adminNote: note})
+    });
+    var d = await r.json();
+    if(!r.ok) { toast('❌ '+d.error); return; }
+    toast('✅ Crédits mis à jour — nouveau solde: '+d.newBalance);
+    closeCreditsModal();
+    await Promise.all([loadKPIs(), loadUsers()]);
+    if(currentUserId === creditUserId) loadUserDetail(creditUserId);
+  } catch(e) { toast('❌ Erreur réseau: '+e.message); }
+}
+
+function closeCreditsModal() {
+  document.getElementById('modal-credits').classList.remove('show');
+  creditUserId = null;
+}
 
 // Init au chargement
 window.onload = function() {

@@ -198,7 +198,8 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;height:60px;background:rgba(
     <button class="tab active" id="t-events" onclick="switchTab(0)">Événements</button>
     <button class="tab" id="t-create" onclick="switchTab(1)">+ Créer</button>
     <button class="tab" id="t-profile" onclick="switchTab(2)">Profil</button>
-    <button class="tab" id="t-settings" onclick="switchTab(3)">Réglages</button>
+    <button class="tab" id="t-credits" onclick="switchTab(3)">Crédits</button>
+    <button class="tab" id="t-settings" onclick="switchTab(4)">Réglages</button>
   </div>
 
   <!-- PANEL 0: ÉVÉNEMENTS -->
@@ -256,7 +257,18 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;height:60px;background:rgba(
     </div>
   </div>
 
-  <!-- PANEL 3: RÉGLAGES -->
+  <!-- PANEL 3: CRÉDITS -->
+  <div id="p-credits" class="panel">
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">Historique des crédits</div>
+        <div id="credit-balance" style="font-size:.75rem;font-weight:800;color:var(--dark)"></div>
+      </div>
+      <div id="credit-history"><div style="text-align:center;padding:1.5rem;color:var(--text2);font-size:.8rem">Chargement…</div></div>
+    </div>
+  </div>
+
+  <!-- PANEL 4: RÉGLAGES -->
   <div id="p-settings" class="panel">
     <div class="card">
       <div class="settings-group">
@@ -366,8 +378,8 @@ window.onload = function() {
 };
 
 // ── TABS ──────────────────────────────────────────────────────────────────
-var TAB_IDS = ["p-events","p-create","p-profile","p-settings"];
-var TAB_BTNS = ["t-events","t-create","t-profile","t-settings"];
+var TAB_IDS = ["p-events","p-create","p-profile","p-credits","p-settings"];
+var TAB_BTNS = ["t-events","t-create","t-profile","t-credits","t-settings"];
 
 function switchTab(n) {
   touchSession();
@@ -380,7 +392,8 @@ function switchTab(n) {
     if(el) el.classList.toggle("active", i===n);
   });
   if(n===2) loadProfile();
-  if(n===3) {} // settings ready
+  if(n===3) loadCreditHistory();
+  if(n===4) {} // settings ready
 }
 
 // ── EVENTS ────────────────────────────────────────────────────────────────
@@ -428,12 +441,8 @@ async function createEvent() {
   if(!p1||!p2) { errEl.textContent="Les deux prénoms sont requis."; errEl.classList.add("show"); return; }
   if(credits < 1) { errEl.textContent="Entrez un nombre de crédits valide (minimum 1)."; errEl.classList.add("show"); return; }
 
-  // Vérifier crédits disponibles
+  // Info crédits disponibles (non bloquant)
   var available = Math.max(0, (USER.credits||0) - (USER.creditsUsed||0));
-  if(credits > available) {
-    errEl.textContent = "Vous n'avez que "+available+" crédits disponibles.";
-    errEl.classList.add("show"); return;
-  }
 
   var btn = document.getElementById("btn-create");
   btn.disabled = true; btn.textContent = "Création…";
@@ -777,6 +786,40 @@ async function loadProfile() {
 
     document.getElementById("h-credits").textContent = cr;
   } catch(e) {}
+}
+
+async function loadCreditHistory() {
+  var el = document.getElementById("credit-history");
+  var balEl = document.getElementById("credit-balance");
+  if(!el) return;
+  el.innerHTML = "<div style='text-align:center;padding:1.5rem;color:var(--text2);font-size:.8rem'>Chargement…</div>";
+  try {
+    var r = await fetch("/api/credits", { headers: {"Authorization":"Bearer "+SESSION.token} });
+    if(!r.ok) throw new Error("Erreur");
+    var rows = await r.json();
+    // Afficher le solde
+    var available = Math.max(0, (USER.credits||0)-(USER.creditsUsed||0));
+    if(balEl) balEl.textContent = available + " crédits disponibles";
+    if(!rows.length) {
+      el.innerHTML = "<div style='text-align:center;padding:2rem;color:var(--text2);font-size:.8rem'>Aucun mouvement de crédits</div>";
+      return;
+    }
+    el.innerHTML = rows.map(function(row) {
+      var isAdd = row.amount > 0;
+      var dateStr = fmt(row.created_at);
+      var amountStr = (isAdd?"+":"")+row.amount;
+      return "<div style='display:flex;align-items:flex-start;justify-content:space-between;padding:.75rem 0;border-bottom:1px solid var(--border);gap:.8rem'>" +
+        "<div style='flex:1;min-width:0'>" +
+          "<div style='font-size:.78rem;font-weight:700;color:var(--dark);margin-bottom:.15rem'>"+esc(row.reason)+"</div>" +
+          (row.admin_note?"<div style='font-size:.65rem;color:var(--text2);font-style:italic'>"+esc(row.admin_note)+"</div>":"") +
+          "<div style='font-size:.62rem;color:var(--text3);margin-top:.15rem'>"+dateStr+" · Solde après : "+row.balance_after+"</div>" +
+        "</div>" +
+        "<div style='font-size:.88rem;font-weight:800;color:"+(isAdd?"#16a34a":"var(--red)")+"'>"+amountStr+"</div>" +
+      "</div>";
+    }).join("");
+  } catch(e) {
+    el.innerHTML = "<div style='text-align:center;padding:1.5rem;color:var(--text2);font-size:.8rem'>Erreur de chargement</div>";
+  }
 }
 
 function profRow(k, v) {
