@@ -464,6 +464,10 @@ async function createEvent() {
     errEl.textContent = "Les deux prénoms sont requis.";
     errEl.classList.add("show"); return;
   }
+  if(!date) {
+    errEl.textContent = "La date du mariage est obligatoire.";
+    errEl.classList.add("show"); return;
+  }
   if(credits < 1) {
     errEl.textContent = "Le champ Crédits est vide ou vaut 0 — entrez un nombre minimum de 1.";
     errEl.classList.add("show"); return;
@@ -536,6 +540,8 @@ async function openEvent(id) {
   if(!currentEv) return;
   currentEvId = id;
 
+  // S'assurer qu'on est sur le bon tab avant d'ouvrir le détail
+  switchTab(0);
   document.getElementById("view-list").style.display = "none";
   document.getElementById("view-detail").style.display = "block";
   renderDetail();
