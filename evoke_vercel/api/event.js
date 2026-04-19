@@ -92,14 +92,13 @@ export default async function handler(req, res) {
       songs:        body.songs       || [],
       token:        body.token       || null,
       quiz:         body.quiz        || [],
-      created_at:   body.createdAt   || new Date().toISOString(),
       user_id:      body.user_id     || null
     };
 
     try {
       const r = await fetch(`${SB_URL}/rest/v1/events`, {
         method: 'POST',
-        headers: { ...h, 'Prefer': 'resolution=merge-duplicates,return=minimal' },
+        headers: { ...h, 'Prefer': 'resolution=merge-duplicates' },
         body: JSON.stringify(ev)
       });
       if (!r.ok) {
