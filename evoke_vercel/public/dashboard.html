@@ -410,10 +410,16 @@ async function loadEvents() {
   try {
     var r = await fetch("/api/events", { headers: { "Authorization": "Bearer " + SESSION.token } });
     if (r.status === 401) { doLogout(); return; }
-    events = await r.json();
+    var data = await r.json();
+    if (!Array.isArray(data)) {
+      var msg = data.error || data.message || JSON.stringify(data);
+      document.getElementById("ev-list").innerHTML = "<div style='padding:1rem;color:#c0392b;font-size:.8rem;font-weight:600'>❌ Erreur Supabase : " + msg + "</div>";
+      return;
+    }
+    events = data;
     renderEvents();
   } catch(e) {
-    document.getElementById("ev-list").innerHTML = "<div style='text-align:center;padding:2rem;color:var(--text2);font-size:.8rem'>Erreur de chargement</div>";
+    document.getElementById("ev-list").innerHTML = "<div style='padding:1rem;color:#c0392b;font-size:.8rem;font-weight:600'>❌ Erreur réseau : " + e.message + "</div>";
   }
 }
 
