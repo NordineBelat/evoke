@@ -331,6 +331,12 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;height:60px;background:rgba(
 </div><!-- /main -->
 
 <script>
+function esc(s){ return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+function toast(msg){ var t=document.getElementById("toast"); t.textContent=msg; t.classList.add("show"); setTimeout(function(){t.classList.remove("show");},2800); }
+function fmt(iso){ try{ return new Date(iso).toLocaleDateString("fr-FR",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"}); }catch{ return "—"; } }
+function fmtDate(iso){ try{ return new Date(iso).toLocaleDateString("fr-FR",{day:"numeric",month:"long",year:"numeric"}); }catch{ return "—"; } }
+function togglePw(id){ var i=document.getElementById(id); if(i) i.type=i.type==="password"?"text":"password"; }
+
 // ── SESSION & SÉCURITÉ ────────────────────────────────────────────────────
 var SESSION = null;
 var USER = null;
@@ -913,10 +919,6 @@ async function saveProfile() {
 }
 
 // ── SETTINGS ──────────────────────────────────────────────────────────────
-function togglePw(id) {
-  var el = document.getElementById(id);
-  if(el) el.type = el.type==="password"?"text":"password";
-}
 function toggleEyeEdit() {
   var el = document.getElementById("etoken");
   if(el) el.type = el.type==="password"?"text":"password";
@@ -1030,10 +1032,7 @@ function copyText(text) {
   navigator.clipboard.writeText(text).then(function(){ toast("✓ Lien copié !"); }).catch(function(){ toast("Copiez manuellement"); });
 }
 
-function fmt(iso){ try{ return new Date(iso).toLocaleDateString("fr-FR",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"}); }catch{ return "—"; } }
-function fmtDate(iso){ try{ return new Date(iso).toLocaleDateString("fr-FR",{day:"numeric",month:"long",year:"numeric"}); }catch{ return "—"; } }
-function esc(s){ return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
-function toast(msg){ var t=document.getElementById("toast"); t.textContent=msg; t.classList.add("show"); setTimeout(function(){t.classList.remove("show");},2800); }
+// utils moved to top
 </script>
 </body>
 </html>
